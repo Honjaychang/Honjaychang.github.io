@@ -12,7 +12,7 @@
             <link>https://honjaychang.github.io/blog/record</link>
             <guid>record</guid>
             <pubDate>Wed, 23 Jun 2021 00:00:00 GMT</pubDate>
-            <description><![CDATA[This is a test post.]]></description>
+            <description><![CDATA[记录自己搭建 docusaurus 并部署到 github actions 的心酸过程]]></description>
         </item>
     </channel>
 </rss>

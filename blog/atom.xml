@@ -12,6 +12,6 @@
         <id>record</id>
         <link href="https://honjaychang.github.io/blog/record"/>
         <updated>2021-06-23T00:00:00.000Z</updated>
-        <summary type="html"><![CDATA[This is a test post.]]></summary>
+        <summary type="html"><![CDATA[记录自己搭建 docusaurus 并部署到 github actions 的心酸过程]]></summary>
     </entry>
 </feed>
