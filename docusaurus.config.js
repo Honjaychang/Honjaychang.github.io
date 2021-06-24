@@ -7,7 +7,7 @@ module.exports = {
   tagline: 'Recording',
   url: 'https://honjaychang.github.io/',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'ignore',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'Honjaychang',
