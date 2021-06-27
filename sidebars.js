@@ -16,14 +16,15 @@ module.exports = {
   // But you can create a sidebar manually
   docs: {
     HC: ['hc/html', 'hc/css'],
-    JS: ['js/basic', 'js/advanced', 'js/dataStructure', 'js/module'],
+    JS: ['js/basic', 'js/advanced', 'js/dataStructure', 'js/module', 'js/reg'],
+    Extension: ['extension/web-api', 'extension/http-browser'],
     TS: ['ts/basic'],
     React: ['react/basic'],
     Dev: ['dev/git', 'dev/node', 'dev/os', 'dev/webpack'],
     Network: ['network/basic'],
     Algo: ['algo/basic', 'algo/sort', 'algo/sword', 'algo/tree'],
-    Interview: ['interview/hand'],
+    Interview: ['interview/hand', 'interview/scene'],
     Vue: ['vue/basic'],
-    // Fe  todo
+    // Fe  todo  downloads
   },
 };

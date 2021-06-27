@@ -10,19 +10,19 @@
 function deepClone(obj = {}) {
   if (typeof obj !== 'object' || obj == null) {
     // 如果obj是null 或者 obj不是对象和数组 就直接返回
-    return obj
+    return obj;
   }
   // 初始化返回结果
-  let res = obj instanceof Array ? [] : {}
+  let res = obj instanceof Array ? [] : {};
 
   for (let key in obj) {
     // 保证key不是原型的属性
     if (obj.hasOwnProperty(key)) {
       // 递归调用
-      res[key] = deepClone(obj[key])
+      res[key] = deepClone(obj[key]);
     }
   }
-  return res
+  return res;
 }
 
 const obj1 = {
@@ -30,16 +30,14 @@ const obj1 = {
   name: 'John',
   address: { street: 'baiyang' },
   arr: ['a', 'b', 'c', ['d', 'e']],
-}
+};
 
-const obj2 = deepClone(obj1)
-obj2.address.street = 'baiyang111'
-obj2.arr[3][0] = 'd111'
-console.log(obj1)
-console.log(obj2)
+const obj2 = deepClone(obj1);
+obj2.address.street = 'baiyang111';
+obj2.arr[3][0] = 'd111';
+console.log(obj1);
+console.log(obj2);
 ```
-
-
 
 ## 手写防抖、节流
 
@@ -57,38 +55,39 @@ console.log(obj2)
  * 防抖: 用户输入结束或暂停时，才会触发 change事件
  */
 
-const input1 = document.getElementById('input1')
-let timer = null
+const input1 = document.getElementById('input1');
+let timer = null;
 input1.addEventListener('keyup', function () {
-  if (timer) clearTimeout(timer)
+  if (timer) clearTimeout(timer);
   timer = setTimeout(function () {
-    console.log(input1.value) // 模拟触发change事件
+    console.log(input1.value); // 模拟触发change事件
     // 清空定时器
-    timer = null
-  }, 500)
-})
+    timer = null;
+  }, 500);
+});
 
 // 封装
 function debunce(fn, delay = 500) {
   // timer 是闭包中的
-  let timer = null
+  let timer = null;
   return function () {
     if (timer) {
-      clearTimeout(timer)
+      clearTimeout(timer);
     }
-    timer = setTimeout(() => { // 下面用this这边必须要用箭头 历史遗留问题？
-      fn.apply(this, arguments) // fn() 也可以 但是不能用this了
-      timer = null
-    }, delay)
-  }
+    timer = setTimeout(() => {
+      // 下面用this这边必须要用箭头 历史遗留问题？
+      fn.apply(this, arguments); // fn() 也可以 但是不能用this了
+      timer = null;
+    }, delay);
+  };
 }
 input1.addEventListener(
   'keyup',
   debunce(function () {
-    console.log(this.value)
+    console.log(this.value);
   })
   // debunce(() => { console.log(input1.value) })
-)
+);
 ```
 
 #### 节流
@@ -104,32 +103,32 @@ input1.addEventListener(
  * 节流:无论拖拽速度多快，都会每隔100ms触发一次
  */
 
-const div1 = document.getElementById('div1')
-let timer = null
+const div1 = document.getElementById('div1');
+let timer = null;
 div1.addEventListener('drag', function (e) {
-  if (timer) return
+  if (timer) return;
   timer = setTimeout(function () {
-    console.log(e.offsetX, e.offsetY)
-    timer = null
-  }, 500)
-})
+    console.log(e.offsetX, e.offsetY);
+    timer = null;
+  }, 500);
+});
 // 封装
 function throttle(fn, delay = 100) {
-  let timer = null
+  let timer = null;
   return function () {
-    if (timer) return
+    if (timer) return;
     timer = setTimeout(() => {
-      fn.apply(this, arguments) // throttle 的 event事件对象 会传递给throttle返回的函数 若想console输出event相关的信息就要通过apply 传递this 单纯通过fn()是不行的
-      timer = null
-    }, delay)
-  }
+      fn.apply(this, arguments); // throttle 的 event事件对象 会传递给throttle返回的函数 若想console输出event相关的信息就要通过apply 传递this 单纯通过fn()是不行的
+      timer = null;
+    }, delay);
+  };
 }
 div1.addEventListener(
   'drag',
   throttle(function (e) {
-    console.log(e.offsetX, e.offsetY)
+    console.log(e.offsetX, e.offsetY);
   })
-)
+);
 ```
 
 #### 异同
@@ -138,38 +137,33 @@ div1.addEventListener(
 
 - 目的都是：降低回调执行频率，节省计算资源
 
-
 ##### 异
 
-* 防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行。
-* 区别在于，假设一个用户一直触发这个函数，且每次触发函数的间隔小于 wait，防抖的情况下只会调用一次，而节流的情况会每隔一定时间（参数 wait）调用函数。
-* 防抖：在事件被触发 n 秒后再执行回调，如果在这 n 秒内又被触发，则重新计时。
-* 节流：规定在一个单位时间内，只能触发一次函数。
+- 防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行。
+- 区别在于，假设一个用户一直触发这个函数，且每次触发函数的间隔小于 wait，防抖的情况下只会调用一次，而节流的情况会每隔一定时间（参数 wait）调用函数。
+- 防抖：在事件被触发 n 秒后再执行回调，如果在这 n 秒内又被触发，则重新计时。
+- 节流：规定在一个单位时间内，只能触发一次函数。
 
-## 手写ajax
+## 手写 ajax
 
 ```js
 // XMLHttpRequest get 请求
-const xhr = new XMLHttpRequest()
-xhr.open('GET', 'data.json', false) // 是否异步 false
+const xhr = new XMLHttpRequest();
+xhr.open('GET', 'data.json', false); // 是否异步 false
 xhr.onreadystatechange = function () {
   if (xhr.readyState === 4) {
     if (xhr.status === 200) {
-      console.log(JSON.parse(xhr.responseText))
-      console.log(xhr.responseText)
+      console.log(JSON.parse(xhr.responseText));
+      console.log(xhr.responseText);
     } else {
-      console.log('some error happened')
+      console.log('some error happened');
     }
   }
-}
-xhr.send(null)
+};
+xhr.send(null);
 ```
 
-
-
-
-
-## 手写call、apply、bind
+## 手写 call、apply、bind
 
 - 不传入第一个参数，那么默认为 `window`
 - 改变 this 指向，让新的对象可以执行该函数 ==> 给新的对象添加一个函数，然后在执行完以后删除
@@ -179,14 +173,14 @@ xhr.send(null)
 ```js
 const person = {
   age: 18,
-}
+};
 
 function getVal(a, b, c) {
-  console.log(a, b, c)
-  console.log(this.age)
+  console.log(a, b, c);
+  console.log(this.age);
 }
 
-const arr = [1, 2, 3]
+const arr = [1, 2, 3];
 
 // myCall
 Function.prototype.myCall = function (ctx, ...args) {
@@ -200,12 +194,11 @@ Function.prototype.myCall = function (ctx, ...args) {
   return res;
 };
 
+getVal.call(person, ...arr); // 1 2 3   18
+getVal.call(person); // undefined undefined undefined    18
 
-getVal.call(person, ...arr) // 1 2 3   18
-getVal.call(person) // undefined undefined undefined    18
-
-getVal.myCall(person, ...arr)
-getVal.myCall(person)
+getVal.myCall(person, ...arr);
+getVal.myCall(person);
 ```
 
 #### `Function.prototype.apply()`
@@ -229,25 +222,25 @@ Function.prototype.myApply = function (ctx, arr) {
 
 ```js
 function fn1(a, b, c) {
-  console.log('this: ', this)
-  console.log(a, b, c)
+  console.log('this: ', this);
+  console.log(a, b, c);
 }
 
 // const fn2 = fn1.bind({ x: 100 }, 10, 20, 30)
 // console.log(fn2()) // this:  { x: 100 } 10 20 30
-console.log(fn1.__proto__ === Function.prototype)
+console.log(fn1.__proto__ === Function.prototype);
 
 // bind 传参与call类似
 Function.prototype.myBind = function (ctx) {
   let originFn = this,
-      // bind传递的test的参数
-      args = [].slice.call(arguments, 1);
+    // bind传递的test的参数
+    args = [].slice.call(arguments, 1);
   // // 原型传递中介参数
   // _tempFn = function () {}; // 圣杯模式
   var newFn = function () {
     // 返回的新函数t的参数列表
     var newArgs = [].slice.call(arguments);
-    // 如果 new t,  this => newFn构造函数(即实例化了) 
+    // 如果 new t,  this => newFn构造函数(即实例化了)
     // this => newFn的实例 ||ctx
     return originFn.apply(
       this instanceof newFn ? this : ctx,
@@ -262,63 +255,65 @@ Function.prototype.myBind = function (ctx) {
   return newFn;
 };
 
-const fn2 = fn1.myBind({ x: 100 }, 10, 20, 30)
-console.log(fn2()) // this:  { x: 100 } 10 20 30
+const fn2 = fn1.myBind({ x: 100 }, 10, 20, 30);
+console.log(fn2()); // this:  { x: 100 } 10 20 30
 ```
 
-
-
-## 手写Promise
+## 手写 Promise
 
 #### `Promise`
 
- [面试够用版](https://juejin.cn/post/6844903809206976520#heading-17) 
+[面试够用版](https://juejin.cn/post/6844903809206976520#heading-17)
 
 ```js
-function myPromise(constructor){
-    let self=this;
-    self.status="pending" //定义状态改变前的初始状态
-    self.value=undefined;//定义状态为resolved的时候的状态
-    self.reason=undefined;//定义状态为rejected的时候的状态
-    function resolve(value){
-        //两个==="pending"，保证了状态的改变是不可逆的
-       if(self.status==="pending"){
-          self.value=value;
-          self.status="resolved";
-       }
+function myPromise(constructor) {
+  let self = this;
+  self.status = 'pending'; //定义状态改变前的初始状态
+  self.value = undefined; //定义状态为resolved的时候的状态
+  self.reason = undefined; //定义状态为rejected的时候的状态
+  function resolve(value) {
+    //两个==="pending"，保证了状态的改变是不可逆的
+    if (self.status === 'pending') {
+      self.value = value;
+      self.status = 'resolved';
     }
-    function reject(reason){
-        //两个==="pending"，保证了状态的改变是不可逆的
-       if(self.status==="pending"){
-          self.reason=reason;
-          self.status="rejected";
-       }
+  }
+  function reject(reason) {
+    //两个==="pending"，保证了状态的改变是不可逆的
+    if (self.status === 'pending') {
+      self.reason = reason;
+      self.status = 'rejected';
     }
-    //捕获构造异常
-    try{
-       constructor(resolve,reject);
-    }catch(e){
-       reject(e);
-    }
+  }
+  //捕获构造异常
+  try {
+    constructor(resolve, reject);
+  } catch (e) {
+    reject(e);
+  }
 }
 
 // 同时，需要在myPromise的原型上定义链式调用的then方法
-myPromise.prototype.then=function(onFullfilled,onRejected){
-   let self=this;
-   switch(self.status){
-      case "resolved":
-        onFullfilled(self.value);
-        break;
-      case "rejected":
-        onRejected(self.reason);
-        break;
-      default:       
-   }
-}
+myPromise.prototype.then = function (onFullfilled, onRejected) {
+  let self = this;
+  switch (self.status) {
+    case 'resolved':
+      onFullfilled(self.value);
+      break;
+    case 'rejected':
+      onRejected(self.reason);
+      break;
+    default:
+  }
+};
 
 // test
-var p=new myPromise(function(resolve,reject){resolve(1)});
-p.then(function(x){console.log(x)})
+var p = new myPromise(function (resolve, reject) {
+  resolve(1);
+});
+p.then(function (x) {
+  console.log(x);
+});
 //输出1
 ```
 
@@ -327,110 +322,108 @@ p.then(function(x){console.log(x)})
 ```js
 const p1 = new Promise((resolve, reject) => {
   setTimeout(() => {
-    resolve('第一个任务')
-  }, 200)
-})
+    resolve('第一个任务');
+  }, 200);
+});
 const p2 = new Promise((resolve, reject) => {
   setTimeout(() => {
-    resolve('第二个任务')
-  }, 1000)
-})
+    resolve('第二个任务');
+  }, 1000);
+});
 const p3 = new Promise((resolve, reject) => {
   setTimeout(() => {
-    resolve('第三个任务')
-  }, 500)
-})
+    resolve('第三个任务');
+  }, 500);
+});
 ```
 
 #### `Promise.all`
 
-- 全部成功是按照传入顺序输出，当出现失败的时候会优先输出失败的那个（执行还是按delay执行的
+- 全部成功是按照传入顺序输出，当出现失败的时候会优先输出失败的那个（执行还是按 delay 执行的
 
 ```js
 function promiseAll(promise) {
-  let promises = Array.from(promise) //将iterator转换为数组
+  let promises = Array.from(promise); //将iterator转换为数组
   if (!Array.isArray(promises)) {
-    return reject(new TypeError('arguments muse be an array'))
+    return reject(new TypeError('arguments muse be an array'));
   }
   return new Promise((resolve, reject) => {
     //如果数组长度为0则返回空数组
-    if (promises.length === 0) resolve([])
+    if (promises.length === 0) resolve([]);
     else {
-      let result = [] //存放已成功的异步操作
-      let count = 0 //记录已成功的操作数
-      let len = promises.length
+      let result = []; //存放已成功的异步操作
+      let count = 0; //记录已成功的操作数
+      let len = promises.length;
       for (let i = 0; i < len; i++) {
         Promise.resolve(promises[i]) //执行每一个promise
           .then(
-            (data) => {
-              count++
-              result[i] = data
-              if (count === len) return resolve(result)
+            data => {
+              count++;
+              result[i] = data;
+              if (count === len) return resolve(result);
             },
-            (err) => {
-              return reject(err)
+            err => {
+              return reject(err);
             }
-          )
+          );
       }
     }
-  })
+  });
 }
 
 promiseAll([p1, p2, p3])
-  .then((result) => console.log(result))
-  .catch((e) => console.log(e))
+  .then(result => console.log(result))
+  .catch(e => console.log(e));
 ```
 
 #### `Promise.race`
 
 ```js
-function promiseRace (promise) {
-  let promises = Array.from(promise)
+function promiseRace(promise) {
+  let promises = Array.from(promise);
   return new Promise((resolve, reject) => {
     for (var i = 0; i < promises.length; i++) {
       Promise.resolve(promises[i]).then(
         data => resolve(data),
         err => reject(err)
-      )
+      );
     }
-  })
+  });
 }
 promiseRace([p1, p2, p3])
   .then(result => console.log(result))
-  .catch(e => console.log(e))
+  .catch(e => console.log(e));
 ```
 
 #### `Promise.allSettled`
 
 ```js
 Promise.allSettled = function (promises) {
-  if (!Array.isArray(promises)) return new Error('xx')
+  if (!Array.isArray(promises)) return new Error('xx');
   return new Promise((resolve, reject) => {
-    let len = promises.length
-    let res = new Array(len)
-    let count = 0
+    let len = promises.length;
+    let res = new Array(len);
+    let count = 0;
     for (let i = 0; i < len; i++) {
       Promise.resolve(promises[i]).then(
-        (data) => {
-          res[i] = data
-          count++
-          if (count === len) return resolve(res)
+        data => {
+          res[i] = data;
+          count++;
+          if (count === len) return resolve(res);
         },
-        (err) => {
-          res[i] = err
-          count++
-          if (count === len) return resolve(res)
+        err => {
+          res[i] = err;
+          count++;
+          if (count === len) return resolve(res);
         }
-      )
+      );
     }
-  })
-}
+  });
+};
 Promise.allSettled([p1, p2, p3])
-  .then((result) => console.log(result))
-  .catch((e) => console.log(e))
+  .then(result => console.log(result))
+  .catch(e => console.log(e));
 ```
-
-
 
 ## Jsonp
 
@@ -440,29 +433,29 @@ Promise.allSettled([p1, p2, p3])
 
 function jsonp(url, data = {}, callback = 'callback') {
   //处理json对象，拼接url
-  data.callback = callback
-  let params = []
+  data.callback = callback;
+  let params = [];
   for (let key in data) {
-    params.push(key + '=' + data[key])
+    params.push(key + '=' + data[key]);
   }
-  let script = document.createElement('script')
-  script.src = url + '?' + params.join('&')
-  document.body.appendChild(script)
+  let script = document.createElement('script');
+  script.src = url + '?' + params.join('&');
+  document.body.appendChild(script);
 
   //返回Promise
   return new Promise((resolve, reject) => {
-    window[callback] = (data) => {
+    window[callback] = data => {
       try {
-        resolve(data)
+        resolve(data);
       } catch (e) {
-        reject(e)
+        reject(e);
       } finally {
         //移除script元素
-        script.parentNode.removeChild(script)
-        console.log(script)
+        script.parentNode.removeChild(script);
+        console.log(script);
       }
-    }
-  })
+    };
+  });
 }
 
 //请求数据
@@ -473,42 +466,38 @@ jsonp(
     cate: 'recommend',
   },
   'jsoncallback'
-).then((data) => {
-  console.log(data)
-})
+).then(data => {
+  console.log(data);
+});
 ```
 
-
-
-
-
-#### 手写一个简易的jQuery ，考虑插件和扩展性
+#### 手写一个简易的 jQuery ，考虑插件和扩展性
 
 ```js
 // jquery demo  DOM 查询
 class JQuery {
   constructor(selector) {
-    const result = document.querySelectorAll(selector)
-    const length = result.length
+    const result = document.querySelectorAll(selector);
+    const length = result.length;
     for (let i = 0; i < length; i++) {
-      this[i] = result[i] // 类数组
+      this[i] = result[i]; // 类数组
     }
-    this.length = length
-    this.selector = selector
+    this.length = length;
+    this.selector = selector;
   }
   get(index) {
-    return this[index]
+    return this[index];
   }
   each(fn) {
     for (let i = 0; i < this.length; i++) {
-      const elem = this[i]
-      fn(elem)
+      const elem = this[i];
+      fn(elem);
     }
   }
   on(type, fn) {
-    return this.each((elem) => {
-      elem.addEventListener(type, fn, false)
-    })
+    return this.each(elem => {
+      elem.addEventListener(type, fn, false);
+    });
   }
 }
 
@@ -524,21 +513,21 @@ class JQuery {
 ```js
 function bindEvent(elem, type, selector, cb) {
   if (cb == null) {
-    cb = selector
-    selector = null
+    cb = selector;
+    selector = null;
   }
-  elem.addEventListener(type, (event) => {
-    const target = event.target
+  elem.addEventListener(type, event => {
+    const target = event.target;
     if (selector) {
       // 代理绑定
       if (target.matches(selector)) {
-        cb.call(target, event)
+        cb.call(target, event);
       }
     } else {
       // 普通绑定
-      cb.call(target, event)
+      cb.call(target, event);
     }
-  })
+  });
 }
 
 // 箭头函数的this 会绑定到全局  所以要改为普通的function
@@ -547,113 +536,105 @@ function bindEvent(elem, type, selector, cb) {
 ## 手写深度比较，模拟`lodash.isEqual`
 
 ```js
-const obj1 = { a: 10, b: { x: 100, y: { z: 200 } } }
-const obj2 = { a: 10, b: { x: 100, y: { z: 200 } } }
+const obj1 = { a: 10, b: { x: 100, y: { z: 200 } } };
+const obj2 = { a: 10, b: { x: 100, y: { z: 200 } } };
 
-console.log(isEqual(obj1, obj2))
+console.log(isEqual(obj1, obj2));
 
 // 判断是否是对象或数组
 function isObject(obj) {
-  return typeof obj === 'object' && obj !== null
+  return typeof obj === 'object' && obj !== null;
 }
 
 function isEqual(obj1, obj2) {
   if (!isObject(obj1) || !isObject(obj2)) {
     // 值类型 暂不考虑函数
-    return obj1 === obj2
+    return obj1 === obj2;
   }
 
-  if (obj1 === obj2) return true
+  if (obj1 === obj2) return true;
 
   // 两个都是对象或者数组，而且不相等
 
-  if (Object.keys(obj1).length !== Object.keys(obj2).length) return false
+  if (Object.keys(obj1).length !== Object.keys(obj2).length) return false;
 
   // 以 obj1 为基准 和 obj2 依次递归比较
   for (let key in obj1) {
-    const res = isEqual(obj1[key], obj2[key])
-    if (!res) return false
+    const res = isEqual(obj1[key], obj2[key]);
+    if (!res) return false;
   }
-  return true
+  return true;
 }
 ```
 
-`Ref`
+:::note Ref
 
-- [JavaScript专题之如何判断两个对象相等](https://segmentfault.com/a/1190000010567491?utm_source=sf-similar-article)
+- [JavaScript 专题之如何判断两个对象相等](https://segmentfault.com/a/1190000010567491?utm_source=sf-similar-article)
+
+:::
 
 #### 写一个原型链继承的例子
 
 ```js
 function Elem(id) {
-    this.elem = document.getElementById(id)
-  }
+  this.elem = document.getElementById(id);
+}
 Elem.prototype.html = function (val) {
-  var elem = this.elem
+  var elem = this.elem;
   if (val) {
-    elem.innerHTML = val
+    elem.innerHTML = val;
     // return this // 方便链式调用
   } else {
-    return elem.innerHTML
+    return elem.innerHTML;
   }
-}
+};
 Elem.prototype.on = function (type, fn) {
-  var elem = this.elem
-  elem.addEventListener(type, fn)
+  var elem = this.elem;
+  elem.addEventListener(type, fn);
   // return this
-}
+};
 
-let div1 = new Elem('div')
-div1.html()
-div1.html('hello')
+let div1 = new Elem('div');
+div1.html();
+div1.html('hello');
 div1.on('click', function () {
-  console.log(this.innerHTML)
-})
+  console.log(this.innerHTML);
+});
 // div1.html('hello').on('click', function () { console.log(this.innerHTML) })
 ```
 
-#### 写一个能遍历对象和数组的forEach函数
+#### 写一个能遍历对象和数组的 forEach 函数
 
 ```js
-let arr = [1, 2, 3, 4, 5]
-let obj = { a: 1, b: 2, c: 3, d: 4, e: 5 }
+let arr = [1, 2, 3, 4, 5];
+let obj = { a: 1, b: 2, c: 3, d: 4, e: 5 };
 function forEach(obj, fn) {
   if (obj instanceof Array) {
     obj.forEach((item, index) => {
-      fn(index, item)
-    })
+      fn(index, item);
+    });
   } else {
     for (key in obj) {
       if (obj.hasOwnProperty(key)) {
-          fn(key, obj[key])
+        fn(key, obj[key]);
       }
     }
   }
 }
 forEach(arr, function (index, item) {
-  console.log(index, item)
-})
+  console.log(index, item);
+});
 forEach(obj, function (key, val) {
-  console.log(key, val)
-})
+  console.log(key, val);
+});
 ```
-
-
-
-
-
-
-
-
-
-
 
 ## 数组扁平化
 
 - 数组扁平化是指将一个多维数组变为一个一维数组
 
 ```js
-const arr = [1, [2, [3, [4,5]]], 6];
+const arr = [1, [2, [3, [4, 5]]], 6];
 // => [1, 2, 3, 4, 5, 6]
 ```
 
@@ -671,16 +652,16 @@ const arr = [1, [2, [3, [4,5]]], 6];
 - ~~2、判断`arr[i]`是不是数字，如果是就`push`，不是就调用~~ (感觉自己的方法不妥，数组又不一定只存放数字)
 
 ```js {7}
-let newarr1 = []
+let newarr1 = [];
 
 function flat(arr) {
   for (let i = 0; i < arr.length; i++) {
     // if (typeof arr[i] === 'number') newarr1.push(arr[i])
     // else flat(arr[i])
-    if (Array.isArray(arr[i])) flat(arr[i])
-    else newarr1.push(arr[i])
+    if (Array.isArray(arr[i])) flat(arr[i]);
+    else newarr1.push(arr[i]);
   }
-  return newarr1
+  return newarr1;
 }
 ```
 
@@ -689,34 +670,32 @@ function flat(arr) {
 ```js
 function unique(arr) {
   // 验证数组中 还有没有 深层数组
-  const isDeep = arr.some((item) => item instanceof Array)
-  if (!isDeep) return arr
-  const res = Array.prototype.concat.apply([], arr)
+  const isDeep = arr.some(item => item instanceof Array);
+  if (!isDeep) return arr;
+  const res = Array.prototype.concat.apply([], arr);
   // const res = [].concat.apply([], arr)
-  return unique(res) // 递归
+  return unique(res); // 递归
 }
 ```
 
-##### 使用reduce
+##### 使用 reduce
 
 ```js
 function flatten(arr) {
   return arr.reduce((pre, cur) => {
-    return pre.concat(Array.isArray(cur) ? flatten(cur) : cur)
-  }, [])
+    return pre.concat(Array.isArray(cur) ? flatten(cur) : cur);
+  }, []);
 }
 ```
-
-
 
 ## 数组去重
 
 ```js
-const arr = [1, 1, '1', 17, true, true, false, false,'true', 'a', {}, {}]
+const arr = [1, 1, '1', 17, true, true, false, false, 'true', 'a', {}, {}];
 // => [1, '1', 17, true, false,'true', 'a', {}, {}]
 ```
 
-##### 利用Set
+##### 利用 Set
 
 - `return Array.from(new Set(arr))`
 - `return [...new Set(arr)]`
@@ -725,24 +704,24 @@ const arr = [1, 1, '1', 17, true, true, false, false,'true', 'a', {}, {}]
 ##### `indexOf includes`
 
 ```js
-const unique = (arr) => {
-  const res = []
+const unique = arr => {
+  const res = [];
   for (let i = 0; i < arr.length; i++) {
     // if (res.indexOf(arr[i]) === -1) res.push(arr[i])
-    if (!res.includes(arr[i])) res.push(arr[i])
+    if (!res.includes(arr[i])) res.push(arr[i]);
   }
-  return res
-}
+  return res;
+};
 ```
 
 ##### `filter`
 
 ```js
-const unique = (arr) => {
+const unique = arr => {
   return arr.filter((item, index) => {
-    return arr.indexOf(item) === index
-  })
-}
+    return arr.indexOf(item) === index;
+  });
+};
 ```
 
 ## 随机数组
@@ -750,7 +729,7 @@ const unique = (arr) => {
 ##### 随机生成一个正负数，并返回给`sort`方法
 
 ```js
-function randomSortA (arr) {
+function randomSortA(arr) {
   return arr.sort(() => Math.random() - 0.5);
 }
 ```
@@ -760,23 +739,23 @@ function randomSortA (arr) {
 ```js
 function randSort(arr) {
   for (var i = 0; i < arr.length; i++) {
-    var rand = parseInt(Math.random() * len)
-    ;[arr[i], arr[rand]] = [arr[rand], arr[i]]
+    var rand = parseInt(Math.random() * len);
+    [arr[i], arr[rand]] = [arr[rand], arr[i]];
   }
-  return arr
+  return arr;
 }
 ```
 
-##### 随机选中一个值，在原数组中删除它，并将它push到新数组中
+##### 随机选中一个值，在原数组中删除它，并将它 push 到新数组中
 
 ```js
 function randSort(arr) {
-  var newArr = []
+  var newArr = [];
   while (arr.length > 0) {
-    var randomIndex = Math.floor(Math.random() * arr.length)
-    newArr.push(arr.splice(randomIndex, 1)[0])
+    var randomIndex = Math.floor(Math.random() * arr.length);
+    newArr.push(arr.splice(randomIndex, 1)[0]);
   }
-  return newArr
+  return newArr;
 }
 ```
 
@@ -786,7 +765,7 @@ function randSort(arr) {
 
 ```js
 function randomSort(arr) {
-  let mapped = arr.map(item => ({value: item, sort: Math.random()}));
+  let mapped = arr.map(item => ({ value: item, sort: Math.random() }));
   mapped.sort((a, b) => a.sort - b.sort);
   return mapped.map(item => item.value);
 }
@@ -794,39 +773,41 @@ function randomSort(arr) {
 
 ##### 洗牌算法
 
-- 原始方法  `O(n^2)` 上面第三种
+- 原始方法 `O(n^2)` 上面第三种
   - 写下从 1 到 N 的数字
   - 取一个从 1 到剩下的数字（包括这个数字）的随机数 k
   - 从低位开始，得到第 k 个数字（这个数字还没有被取出），把它写在独立的一个列表的最后一位
   - 重复第 2 步，直到所有的数字都被取出
   - 第 3 步写出的这个序列，现在就是原始数字的随机排列
-- 现代方法  `O(n)`
+- 现代方法 `O(n)`
   - **在每次迭代时交换这个被取出的数字到原始列表的最后**
 
 ```js
 Array.prototype.shuffle = function () {
-  var nums = this
-  let len = nums.length
+  var nums = this;
+  let len = nums.length;
   while (len > 1) {
-    let randomIndex = Math.floor(Math.random() * len--)
-    ;[nums[len], nums[randomIndex]] = [nums[randomIndex], nums[len]]
+    let randomIndex = Math.floor(Math.random() * len--);
+    [nums[len], nums[randomIndex]] = [nums[randomIndex], nums[len]];
   }
-  return nums
-}
+  return nums;
+};
 ```
 
 ##### 关于`sort`
 
 - `v8`在处理`sort`方法时，使用了插入排序和快排两种方案
-  - 当目标数组长度小于10时，使用插入排序；反之，使用快速排序
+  - 当目标数组长度小于 10 时，使用插入排序；反之，使用快速排序
 
-`Ref`:
+:::note Ref
 
-- [数组随机排序的4中JS实现](https://juejin.cn/post/6850418109577347079#comment)
+- [数组随机排序的 4 中 JS 实现](https://juejin.cn/post/6850418109577347079#comment)
 - [Fisher–Yates shuffle 洗牌算法](https://gaohaoyang.github.io/2016/10/16/shuffle-algorithm/#top)
 - [「前端进阶」数组乱序](https://juejin.cn/post/6844903863812620296)
 
-## 数组中出现次数大于1/2
+:::
+
+## 数组中出现次数大于 1/2
 
 ```js
 let arr = [1, 2, 3, 2, 2, 2, 5, 4, 2]; // 2
@@ -838,7 +819,7 @@ let arr = [1, 2, 3, 2, 2, 2, 5, 4, 2]; // 2
 return arr.sort((a, b) => a - b)[Math.floor(arr.length / 2)];
 ```
 
-- Map 存储遍历 
+- Map 存储遍历
 
 ```js
 function fn(arr) {
@@ -888,14 +869,13 @@ function moer(arr) {
 //   else console.log(err);
 // }
 
-
 function readFile(filePath) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, (data, err) => {
-      if (err) return reject(err)
-      resolve(data.toString())
-    })
-  })
+      if (err) return reject(err);
+      resolve(data.toString());
+    });
+  });
 }
 ```
 
@@ -918,4 +898,3 @@ mySetInterval(() => {
 ```
 
 另外，还可以实现 `clearTimeInterval`（利用全局 `obj` 存储自增的 `id` 到 `timeId` 的映射） 和 `arguments` 自定义参数。
-

@@ -188,10 +188,12 @@ function create() {  const a = 100;  return function () {    console.log(a); // 
 function print(fn) {  const a = 200;  fn();}const a = 100;function fn() {  console.log(a); // a是自由变量}console.log(print(fn)); //100// 所有的自由变量的查找，是在函数定义的地方，向上级作用域查找  而不是在执行的地方！！！
 ```
 
-`ref`
+:::note Ref
 
 - [闭包，看这一篇就够了——带你看透闭包的本质，百发百中](https://blog.csdn.net/weixin_43586120/article/details/89456183?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control&dist_request_id=1328626.21589.16154409814490145&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-2.control)
 - [对 JS 闭包的理解及常见应用场景](https://blog.csdn.net/qq_21132509/article/details/80694517?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control&dist_request_id=1328655.9588.16158629577837531&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.control)
+
+:::
 
 ## 关于 This
 
@@ -326,13 +328,15 @@ new Add(1, 2)
 </script>
 ```
 
-`ref`
+:::note Ref
 
 - [【全网首发:已完结】『this 指向问题』全解析【面试开发必备知识】](https://www.bilibili.com/video/BV1qp4y1Y7yQ)
 - [深入理解 ES6 箭头函数中的 this](https://zhuanlan.zhihu.com/p/26475137)
 - [JS 中的箭头函数与 this](https://juejin.cn/post/6844903573428371464)
 - [babel 转译](https://babeljs.io/repl)
 - [this 关键字](https://wangdoc.com/javascript/oop/this.html)
+
+:::
 
 ## 函数
 
@@ -372,7 +376,10 @@ test(1, 2, 3, 4); //2	4
 - 默认参数
 
 ```javascript
-function greeting(name = 'honjay') {  console.log('hello ' + name);}greeting();//对于多个参数function greetingWeather(name = 'honjay', weather) {  console.log('hello ' + name + 'today weather: ' + weather);}greetingWeather(undefined, 'sunny'); //使用undefined 只修改第二个参数
+function greeting(name = 'honjay') {
+  console.log('hello ' + name);
+}
+greeting(); //对于多个参数function greetingWeather(name = 'honjay', weather) {  console.log('hello ' + name + 'today weather: ' + weather);}greetingWeather(undefined, 'sunny'); //使用undefined 只修改第二个参数
 ```
 
 ##### 斐波那契数列
@@ -1050,7 +1057,7 @@ fn('zhang', 18);
   $.get('./data.json', function (data) {
     console.log(data);
   });
-  
+
   // 图片加载
   let img = document.createElement('img');
   img.onload = function () {
@@ -1064,7 +1071,7 @@ fn('zhang', 18);
   ```js
   var timer = setTimeout(() => {}, 1000); // 一次
   setInterval(() => {}, 1000); // 循环
-  
+
   clearTimeout(timer); // 可以在执行前取消定时器
   ```
 
@@ -1095,7 +1102,7 @@ console.log(5); // 1 3 5 4 2
 
 图源：[MDN 官网](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
-<img src="https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/promises.png" />
+![mdn](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/promises.png)
 
 #### 关于`promise`
 
@@ -1509,14 +1516,14 @@ loadImage(url1)
 
 #### Event Loop
 
-`Ref`
+:::note Ref
 
 - [事件循环学习笔记](https://juejin.cn/post/6958460865905590285#comment)
-
 - 事件循环 事件轮询
-
 - `JS`是单线程运行的，异步要基于回调来实现
 - `event loop` 就是异步回调的实现原理
+
+:::
 
 ##### Event Loop 流程
 

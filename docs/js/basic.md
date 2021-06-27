@@ -1,17 +1,17 @@
 # JS 基础
 
+:::note Ref
 
+- [前端应该知道的 JavaScript 浮点数和大数的原理](https://zhuanlan.zhihu.com/p/66949640)
 
-`Ref`
-
-- [前端应该知道的JavaScript浮点数和大数的原理](https://zhuanlan.zhihu.com/p/66949640)
+:::
 
 ##### `Number`:
 
 双精度存储
 
 - 使用 IEEE 754 双精度格式存储整数和浮点数
-  - 64个`bit`位来存储 => **1个符号位+11个指数位+52个尾数位**
+  - 64 个`bit`位来存储 => **1 个符号位+11 个指数位+52 个尾数位**
 - 存储浮点值使用的内存空间是存储整数值的两倍
 - 科学计数法`3e6==>3000000`
 - 值的范围`Number.MIN_VALUE&&Number.MAX_VALUE` `isFinite()`来判断一个数是不是有限大
@@ -27,22 +27,19 @@ console.log((1/3)===(1-2/3));
 `BigInt`
 
 ```js
-BigInt(10n)
-let a = 10n
+BigInt(10n);
+let a = 10n;
 ```
 
 `Number`类型的数字和`BigInt`类型的数字不能混合计算
 
-
-
-`//可以用
-var newarr = [...arr]   /   var newarr = newarr.concat(arr);`
+`//可以用 var newarr = [...arr] / var newarr = newarr.concat(arr);`
 
 `typeof null` 底层 000
 
 `JavaScript`是解释型语言 单线程语言 支持面向对象 动态类型语言
 
-动态类型语言是指在运行期间才去做数据类型检查的语言 
+动态类型语言是指在运行期间才去做数据类型检查的语言
 
 静态类型语言的数据类型是在编译期间检查的
 
@@ -51,7 +48,7 @@ var newarr = [...arr]   /   var newarr = newarr.concat(arr);`
 - 严格检查模式
 
 ```js
-'use strict' //预防js的随意性而导致的一些问题  必须写在js文件第一行 ES5
+'use strict'; //预防js的随意性而导致的一些问题  必须写在js文件第一行 ES5
 ```
 
 - 三元表达式：`condition ? statement-if-true : statement-if-false;`
@@ -59,8 +56,8 @@ var newarr = [...arr]   /   var newarr = newarr.concat(arr);`
 #### `var let const`
 
 - 局部作用域：
-  - `var` 函数作用域   `let、const` 声明的是块级作用域
-- var是 ES5 语法，`let const` 是ES6 语法；var有变量提升
+  - `var` 函数作用域 `let、const` 声明的是块级作用域
+- var 是 ES5 语法，`let const` 是 ES6 语法；var 有变量提升
 - 可否修改
   - `var、let` 声明的是变量，可以被修改
   - `const` 声明一个只读的常量 在声明的时候必须被赋值
@@ -73,31 +70,29 @@ var newarr = [...arr]   /   var newarr = newarr.concat(arr);`
 - 同时`typeof`也不再安全
 
 ```js
-typeof x // ReferenceError: x is not defined
-let x
+typeof x; // ReferenceError: x is not defined
+let x;
 
-typeof a // undefined
+typeof a; // undefined
 ```
 
-##### class不能变量提升
+##### class 不能变量提升
 
 ```js
 const p = new Rectangle();
 console.log(typeof p);
 
-class Rectangle{}
+class Rectangle {}
 
 //error   class 的定义不会提升，所以在new Rectangle()的时候会抛出错误。
 ```
-
-
 
 ## 数据类型
 
 #### 数据类型
 
-- 简单数据类型 => 原始类型: 
-  - `Undefined` `Null` `Boolean` `Number` `String` `Symbol` 
+- 简单数据类型 => 原始类型:
+  - `Undefined` `Null` `Boolean` `Number` `String` `Symbol`
   - 存放在 栈内
 - 复杂数据类型 => 对象 => 引用类型: `Object`
   - 内存地址 栈 和 堆
@@ -106,7 +101,7 @@ class Rectangle{}
 
 ##### 检测方法
 
-- `typeof value` 
+- `typeof value`
 
   - 返回当前值的数据类型
   - 返回的都是字符串 `typeof(typeof(NaN)) ==> string`
@@ -114,14 +109,14 @@ class Rectangle{}
 - `instanceof` 判断一个对象是否是数据类型的实例
 
   ```js
-  console.log(2 instanceof Number) // false
-  console.log(new Number(2) instanceof Number) // true
+  console.log(2 instanceof Number); // false
+  console.log(new Number(2) instanceof Number); // true
   ```
 
 - `constructor` 通过原型判断类型
 
   ```js
-  console.log((2).constructor === Number) // true
+  console.log((2).constructor === Number); // true
   ```
 
   - `constructor` 能成功检测数据类型的前提是 原型没有被更改
@@ -146,16 +141,16 @@ const s = Symbol('s')			typeof s // 'symbol'
 - 识别函数
 
 ```js
-typeof console.log 		// 'function'
-typeof function fun(){} // 'function' 特殊引用类型，但不用于存储数据
+typeof console.log; // 'function'
+typeof function fun() {}; // 'function' 特殊引用类型，但不用于存储数据
 ```
 
 - 判断是否是引用类型（不可再细分）
 
 ```js
-typeof null 	// 'object' 特殊引用类型，指针指向空地址
-typeof [1, 2] 	// 'object'
-typeof {age: 18} // 'object'
+typeof null; // 'object' 特殊引用类型，指针指向空地址
+typeof [1, 2]; // 'object'
+typeof { age: 18 }; // 'object'
 ```
 
 #### Number
@@ -178,7 +173,7 @@ Number.isSafeInteger()
 Number(null) // 0
 Number(undefined) // NaN
 
-0/0 // NaN 
+0/0 // NaN
 1/0 // infinity
 -1/0 // -Infinity
 ```
@@ -187,25 +182,25 @@ Number(undefined) // NaN
 
 - `Number.prototype.toFixed(digits)`
 
-  - 返回包含指定小数点位数的数值字符串，不够补0，多余四舍五入
+  - 返回包含指定小数点位数的数值字符串，不够补 0，多余四舍五入
 
   ```js
   var num = 12.3456;
-  var numStr = num.toFixed(2);//保留两位小数==>12.34
+  var numStr = num.toFixed(2); //保留两位小数==>12.34
   //typeof numStr	==>	String
   ```
 
 - `Number.prototype.toString(radix)`
 
   - 返回指定 `Number` 对象的字符串表示形式
-  - `radix` 默认为10   可以用来二进制和十进制转换
+  - `radix` 默认为 10 可以用来二进制和十进制转换
 
   ```js
-  var num = 10
-  console.log(num.toString()) // 10
-  console.log(num.toString(2)) // 1010
-  
-  parseInt(num.toString(2), 2) // 10
+  var num = 10;
+  console.log(num.toString()); // 10
+  console.log(num.toString(2)); // 1010
+
+  parseInt(num.toString(2), 2); // 10
   ```
 
 - `Number.prototype.valueOf()`
@@ -219,9 +214,9 @@ Number(undefined) // NaN
   - 单独使用`+` 而不是字符串拼接
 
   ```js
-  let str = '12'
-  let num = +str
-  console.log(typeof str, typeof num) // string number
+  let str = '12';
+  let num = +str;
+  console.log(typeof str, typeof num); // string number
   ```
 
 - 数组里的字符串数字与数字互转
@@ -229,14 +224,12 @@ Number(undefined) // NaN
 ```js
 // 字符串数字转数字
 var arr = [1, 2, 3, 4, 5];
-arr.map(String);  // ['1', '2', '3', '4', '5']
+arr.map(String); // ['1', '2', '3', '4', '5']
 
 // 数字转字符串数字
-var arr2 = ['1', '2', '3', '4', '5']
-arr2.map(Number);  // [1, 2, 3, 4, 5]
+var arr2 = ['1', '2', '3', '4', '5'];
+arr2.map(Number); // [1, 2, 3, 4, 5]
 ```
-
-
 
 #### `null & undefined &NaN`
 
@@ -261,19 +254,19 @@ typeof NAN ==> 'number'
 - 只能通过 isNaN(NaN) 来判断这个数是否是NaN
 
 isNaN(NaN) / isNaN('NaN') // true
-isNaN(undefined) // true 
+isNaN(undefined) // true
 isNaN() // true
 
-isNaN(0) / isNaN('0') // false 
+isNaN(0) / isNaN('0') // false
 isNaN('') // false
 isNaN(null) // false
 
 NaN 与任何数运算都返回NaN
-1 + undefined 
+1 + undefined
 true + undefined
 ```
 
-- 
+-
 
 ```js
 undefined&null 既不大于0 也不小于0
@@ -284,37 +277,37 @@ undefined === null //false
 
 ##### 假值`false`
 
-- `0	NaN	''	false	null	undefined ==> false`
+- `0 NaN '' false null undefined ==> false`
 
-- `truly变量:	!!a===true的变量`
-- `falsely变量:	!!a===false的变量`
+- `truly变量: !!a===true的变量`
+- `falsely变量: !!a===false的变量`
 
 ```js
 // 以下都是falsely变量，此外都是truly变量
-!!0 === false
-!!NAN === false
-!!'' === false
-!!null === false
-!!undefined === false
-!!false === false
+!!0 === false;
+!!NAN === false;
+!!'' === false;
+!!null === false;
+!!undefined === false;
+!!false === false;
 
 // 空数组和空对象对应的bool值都是true
-{} []
+{
+}
+[];
 ```
-
-
 
 #### 类型转换
 
 - 对象在转换基本类型时，首先会调用 `valueOf` 然后调用 `toString`
 - 如果只改写 `valueOf()` 或是 `toString()` 其中一个，会优先调用被改写了的方法
-- 当同时重写函数的 `toString` 方法与 `valueOf` 方法时，最终会调用`valueOf` 
+- 当同时重写函数的 `toString` 方法与 `valueOf` 方法时，最终会调用`valueOf`
   - 重写的`valueOf`要比重写的`toString` 优先级高
   - 在 `valueOf()` 方法返回的是非原始类型的情况下再查询 `toString()` 方法
 
 ##### 强制类型转换
 
-- `Number(null)==>0	Number('1a')==>NaN`
+- `Number(null)==>0 Number('1a')==>NaN`
 - `parseInt(string, radix)`
 - ` parseFloat(string)`
 
@@ -323,13 +316,13 @@ undefined === null //false
 - ##### 字符串拼接 +
 
 ```js
-const a = 100 + 10
-const b = 100 + '10'
-const c = true + '10'
-console.log(a, b, c) // 110 '10010' 'true10'
+const a = 100 + 10;
+const b = 100 + '10';
+const c = true + '10';
+console.log(a, b, c); // 110 '10010' 'true10'
 ```
 
-- `*/-  ==>   str -> num`
+- `*/- ==> str -> num`
 
 #### 运算符
 
@@ -340,21 +333,23 @@ console.log(a, b, c) // 110 '10010' 'true10'
 
 ```js
 // true
-100 == '100'
-0 == '0'
-0 == false
-false == ''
-null == undefined
+100 == '100';
+0 == '0';
+0 == false;
+false == '';
+null == undefined;
 ```
 
 - 何时使用`=== `何时使用` ==`
 
 ```js
 // 除了 == null之外，其他都用 ===
-const obj = { x: 100 }
-if (obj.x == null) {}
+const obj = { x: 100 };
+if (obj.x == null) {
+}
 
-if(obj.x === null || obj.x === undefined) {}
+if (obj.x === null || obj.x === undefined) {
+}
 ```
 
 - 四则运算符
@@ -397,10 +392,6 @@ a.onclick = function(e){
 - 表示独一无二的值 符号是原始值，且符号实例是唯一、不可变的
 - 符号的用途是确保对象属性使用唯一标识符，不会发生属性冲突的危险
 
-
-
-
-
 ## 字符串
 
 - `\` 转义字符
@@ -411,15 +402,15 @@ a.onclick = function(e){
 ```js
 var msg = `hello
 world
-nihao`
+nihao`;
 ```
 
 #### 模板字符串
 
 ```javascript
-let name = 'honjay'
-let msg = `nihao,${name}`
-console.log(msg) //nihao,honjay
+let name = 'honjay';
+let msg = `nihao,${name}`;
+console.log(msg); //nihao,honjay
 ```
 
 #### 方法
@@ -430,10 +421,10 @@ console.log(msg) //nihao,honjay
 
 ```js
 //substring(start,end)    //返回位于 String 对象中指定位置的子字符串。
-//substr(begin,length)		
+//substr(begin,length)
 //[start,end)
 
-str.substring(start, end)
+str.substring(start, end);
 ```
 
 根据字符获取字符串索引
@@ -451,26 +442,26 @@ str.substring(start, end)
 ##### 大小写转换
 
 ```javascript
-str.toUpperCase()
-str.toLowerCase()
+str.toUpperCase();
+str.toLowerCase();
 ```
 
 ##### `Ascii码 之间转换`
 
 ```javascript
-String.fromCharCode(65) // A
-String.fromCharCode(90) // Z
+String.fromCharCode(65); // A
+String.fromCharCode(90); // Z
 
-String.fromCodePoint(97) // a
-String.fromCodePoint(122) // z
+String.fromCodePoint(97); // a
+String.fromCodePoint(122); // z
 
-'A'.charCodeAt() // 65
-'a'.charCodeAt() // 97
+'A'.charCodeAt(); // 65
+'a'.charCodeAt(); // 97
 
-const sentence = 'The quick brown fox jumps over the lazy dog.'
-const index = 4
-sentence.charCodeAt(index) ///113
-sentence.charAt(index) //"q"
+const sentence = 'The quick brown fox jumps over the lazy dog.';
+const index = 4;
+sentence.charCodeAt(index); ///113
+sentence.charAt(index); //"q"
 ```
 
 ##### 字符串拼接
@@ -482,14 +473,14 @@ sentence.charAt(index) //"q"
 - `padStart()`: 用字符串从开头填充字符串
 
 ```js
-'x'.padStart(5, 'ab') // 'ababx'
-'x'.padStart(4, 'ab') // 'abax'
-'x'.padEnd(5, 'ab') // 'xabab'
-'x'.padEnd(4, 'ab') // 'xaba'
-'abc'.padEnd(10) // "abc       "
-'abc'.padEnd(10, 'foo') // "abcfoofoof"
-'abc'.padEnd(6, '123456') // "abc123"
-'abc'.padEnd(1) // "abc"
+'x'.padStart(5, 'ab'); // 'ababx'
+'x'.padStart(4, 'ab'); // 'abax'
+'x'.padEnd(5, 'ab'); // 'xabab'
+'x'.padEnd(4, 'ab'); // 'xaba'
+'abc'.padEnd(10); // "abc       "
+'abc'.padEnd(10, 'foo'); // "abcfoofoof"
+'abc'.padEnd(6, '123456'); // "abc123"
+'abc'.padEnd(1); // "abc"
 ```
 
 ##### 去除空格
@@ -502,33 +493,29 @@ sentence.charAt(index) //"q"
 
 ##### `replace() 替换`
 
-
-
 ## 数组
 
 - `js`的数组可以存放不同类型的数据
 - 改变`arr.length`的值 数组大小就会动态发生变化
 
 ```js
-var arr = [1, 2, 3, 'hello', null, true]
+var arr = [1, 2, 3, 'hello', null, true];
 ```
 
 #### `创建数组`
 
 ```javascript
 //字面值
-var arr1 = [1, 2, 3]
+var arr1 = [1, 2, 3];
 //构造函数
-var arr2 = new Array(4, 5, 6)
+var arr2 = new Array(4, 5, 6);
 //数组object
-var arr3 = Array(7, 8, 9)
+var arr3 = Array(7, 8, 9);
 //Array.of
-var arr4 = Array.of(10, 11, 12)
+var arr4 = Array.of(10, 11, 12);
 
 //如果创建的数组只有一个参数的时候用 arr1/arr4。其他两个代表的是数组的长度
 ```
-
-
 
 #### 方法
 
@@ -551,50 +538,50 @@ some every
 
 - `Array.isArray()`
 
-````js
-let arr = [1, 2, 3]
-Array.isArray(arr) // true
-````
+```js
+let arr = [1, 2, 3];
+Array.isArray(arr); // true
+```
 
-- `Array.from(arrayLike[, mapFn[, thisArg]])` 
+- `Array.from(arrayLike[, mapFn[, thisArg]])`
   - 从一个类似数组或可迭代对象创建一个新的，浅拷贝的数组实例
 
 ##### `pop push unshift shift`
 
-- 栈方法：`push(), pop()`  在栈顶操作 => 数组尾部操作
+- 栈方法：`push(), pop()` 在栈顶操作 => 数组尾部操作
 - 队列方法：`unshift(), shift()` 头部
 
 ```js
-const arr = [1, 2, 3, 4, 5]
+const arr = [1, 2, 3, 4, 5];
 
-console.log(arr.pop(), arr) // 移除栈顶元素 
+console.log(arr.pop(), arr); // 移除栈顶元素
 // 5 [ 1, 2, 3, 4 ] 返回pop出的元素
 
-console.log(arr.push(10), arr) // 向栈顶添加元素 
+console.log(arr.push(10), arr); // 向栈顶添加元素
 // 6 [ 1, 2, 3, 4, 5, 10 ] 返回push后arr的长度
 
-console.log(arr.shift(), arr) // 移除队列头部元素 
+console.log(arr.shift(), arr); // 移除队列头部元素
 // 1 [ 2, 3, 4, 5 ] 返回shift出的元素
 
-console.log(arr.unshift(10), arr) // 向队列头部添加元素 
+console.log(arr.unshift(10), arr); // 向队列头部添加元素
 // 6 [ 10, 1, 2, 3, 4, 5 ] 返回unshift后arr的长度
 ```
 
 ##### `slice splice`
 
-- `slice: 切片`    `splice: 剪接`
+- `slice: 切片` `splice: 剪接`
 
-- `slice`既可以操作字符串也可以操作数组    `splice`只能操作数组
-- `slice(start, end)  [start, end)`
+- `slice`既可以操作字符串也可以操作数组 `splice`只能操作数组
+- `slice(start, end) [start, end)`
   - 类似于`String的substring()`
 
 ```javascript
-const arr = [1, 2, 3, 4, 5]
+const arr = [1, 2, 3, 4, 5];
 
-console.log(arr.slice()) // [ 1, 2, 3, 4, 5 ]
-console.log(arr.slice(2, 3)) // [ 3 ]
-console.log(arr.slice(1)) // [ 2, 3, 4, 5 ]
-console.log(arr.slice(-2)) // [ 4, 5 ]
+console.log(arr.slice()); // [ 1, 2, 3, 4, 5 ]
+console.log(arr.slice(2, 3)); // [ 3 ]
+console.log(arr.slice(1)); // [ 2, 3, 4, 5 ]
+console.log(arr.slice(-2)); // [ 4, 5 ]
 ```
 
 - `arr.splice(start[, deleteCount[, item1[, item2[, ...]]]])`
@@ -604,7 +591,7 @@ console.log(arr.slice(-2)) // [ 4, 5 ]
 //deleteCount	可选。要删除的项目数量。如果设置为 0，则不会删除项目。如果不设置则从index开始全删
 //item1, ..., itemX	可选。向数组添加的新项目。
 
-console.log(arr.splice(1, 4, 'a', 'b', 'c'), arr) 
+console.log(arr.splice(1, 4, 'a', 'b', 'c'), arr);
 // [ 2, 3, 4, 5 ] [ 1, 'a', 'b', 'c' ]
 ```
 
@@ -623,22 +610,22 @@ arr.concat			//注意：concat()并没有修改数组，只是会返回一个新
 
 ##### `toString() valueOf()`
 
-- `valueOf()`  返回的还是数组本身。 
+- `valueOf()` 返回的还是数组本身。
 - `toString() ` 返回由数组中每个值的等效字符串拼接而成的一个逗号分隔的字符串
 
 ```js
-var arr = [1, 2, 3, 4]
+var arr = [1, 2, 3, 4];
 
-console.log(arr.toString()) // '1,2,3,4'
-console.log(arr.valueOf()) // [1, 2, 3, 4]
+console.log(arr.toString()); // '1,2,3,4'
+console.log(arr.valueOf()); // [1, 2, 3, 4]
 ```
 
 ##### `find findIndex indexOf includes`
 
-- `find() => return first value || undefined`  
+- `find() => return first value || undefined`
   - 只能在`Array`中使用
 - `findIndex() => return first index || -1`
-- `indexOf() => return first index || -1` 
+- `indexOf() => return first index || -1`
   - 可以不是单个字符
   - 可以接受第二个参数，确定查找的位置
   - `lastIndexOf()从后往前查找`
@@ -646,18 +633,18 @@ console.log(arr.valueOf()) // [1, 2, 3, 4]
   - 可以接受第二个参数，确定查找的位置
 
 ```javascript
-var arr = [1, 2, 3, 4, 5]
-var above5 = arr.find((ele) => ele > 5) // undefined
-var below5 = arr.find((ele) => ele < 5) // 1
+var arr = [1, 2, 3, 4, 5];
+var above5 = arr.find(ele => ele > 5); // undefined
+var below5 = arr.find(ele => ele < 5); // 1
 
-var above5 = arr.findIndex((ele) => ele > 5) // -1
-var below5 = arr.findIndex((ele) => ele < 5) // 0
+var above5 = arr.findIndex(ele => ele > 5); // -1
+var below5 = arr.findIndex(ele => ele < 5); // 0
 
-var above5 = arr.indexOf(6) // -1
-var below5 = arr.indexOf(3) // 2
+var above5 = arr.indexOf(6); // -1
+var below5 = arr.indexOf(3); // 2
 
-var above5 = arr.includes(6) // false
-var below5 = arr.includes(3) // true
+var above5 = arr.includes(6); // false
+var below5 = arr.includes(3); // true
 ```
 
 ##### `reverse sort`
@@ -665,15 +652,23 @@ var below5 = arr.includes(3) // true
 - `arr.sort()` 默认是按 `ASCII` 码排列的
 
 ```javascript
-let arr = [1,3,5,0,55,6,11];
-arr.sort()  //0,1,11,3,5,55,6
+let arr = [1, 3, 5, 0, 55, 6, 11];
+arr.sort(); //0,1,11,3,5,55,6
 
-arr.sort(function(a,b){if (a < b) return a - b});  //0,1,3,5,6,11,55
+arr.sort(function (a, b) {
+  if (a < b) return a - b;
+}); //0,1,3,5,6,11,55
 
-arr.sort(function(a,b){ return a-b });//0,1,3,5,6,11,55
-arr.sort((a,b) => { return b-a });//55,11,6,5,3,1,0
+arr.sort(function (a, b) {
+  return a - b;
+}); //0,1,3,5,6,11,55
+arr.sort((a, b) => {
+  return b - a;
+}); //55,11,6,5,3,1,0
 
-arr.sort(function(a,b){return Math.random()-0.5;})//随机
+arr.sort(function (a, b) {
+  return Math.random() - 0.5;
+}); //随机
 
 /*这个函数相当于一个委托(或许说谓词函数更为贴切一些)，因为要对数组排序，必然要涉及到两个数组成员的比较，这个函数为你提供一种选择，以改变默认的大小比较规则，排序结果根据这个规则进行比较(函数返回值小于0认为是第一个元素小于第二个元素，等于0是两个元素相等，大于0是第一个元素大于第二个元素)。简单的改变这个函数，你就可以实现倒序排序。也可以对一个具有多个属性的对象进行排序。*/
 ```
@@ -681,11 +676,11 @@ arr.sort(function(a,b){return Math.random()-0.5;})//随机
 - 会原地排序原数组并返回原数组
 
 ```javascript
-const arr1 = ["a", "b", "c"];
-const arr2 = ["b", "c", "a"];
-arr1.sort() === arr1 // true
-arr2.sort() === arr2 // true
-arr1.sort() === arr2.sort() // false
+const arr1 = ['a', 'b', 'c'];
+const arr2 = ['b', 'c', 'a'];
+arr1.sort() === arr1; // true
+arr2.sort() === arr2; // true
+arr1.sort() === arr2.sort(); // false
 ```
 
 ##### `every() some()`
@@ -694,18 +689,18 @@ arr1.sort() === arr2.sort() // false
 
 ```js
 function checkPositive(arr) {
-  return arr.every((value) => value > 0)
+  return arr.every(value => value > 0);
 }
-checkPositive([1, 2, 3, -4, 5]) //false
+checkPositive([1, 2, 3, -4, 5]); //false
 ```
 
 - `some()` 检测数组中是否有元素符合指定条件 满足返回布尔值`true`
 
 ```js
 function checkPositive(arr) {
-  return arr.some((value) => value > 0)
+  return arr.some(value => value > 0);
 }
-checkPositive([1, 2, 3, -4, 5]) //true
+checkPositive([1, 2, 3, -4, 5]); //true
 ```
 
 ##### `map()`
@@ -713,11 +708,11 @@ checkPositive([1, 2, 3, -4, 5]) //true
 - `array.map(function(currentValue, index, arr), thisValue)`
 
 ```javascript
-var newArr = [55,44,66,11].map(function(item,index,arr){
-	return item *10;
+var newArr = [55, 44, 66, 11].map(function (item, index, arr) {
+  return item * 10;
 });
 
-newArr = arr.map(item => item * 10) //[550, 440, 660, 110]
+newArr = arr.map(item => item * 10); //[550, 440, 660, 110]
 ```
 
 ##### `filter() `
@@ -725,14 +720,20 @@ newArr = arr.map(item => item * 10) //[550, 440, 660, 110]
 `array.filter(function(currentValue, index, arr), thisValue)`
 
 ```javascript
-var newArr = [32, 33, 12, 40].filter(function(item){
-	return item > 32;
+var newArr = [32, 33, 12, 40].filter(function (item) {
+  return item > 32;
 });
 
-newArr = arr.filter(item => item > 32) // [33, 40]
+newArr = arr.filter(item => item > 32); // [33, 40]
 
-
-const words = ['spray', 'limit', 'elite', 'exuberant', 'destruction', 'present'];
+const words = [
+  'spray',
+  'limit',
+  'elite',
+  'exuberant',
+  'destruction',
+  'present',
+];
 
 const result = words.filter(word => word.length > 6);
 // Array ["exuberant", "destruction", "present"]
@@ -740,8 +741,8 @@ const result = words.filter(word => word.length > 6);
 const result = words.map(word => word.length > 6);
 //Array [false, false, false, true, true, true]
 
-arr = ['',null,'undefined',1]
-arr.filter(Boolean)// 移除所有的 ”false“ 类型元素
+arr = ['', null, 'undefined', 1];
+arr.filter(Boolean); // 移除所有的 ”false“ 类型元素
 // =>["undefined", 1]
 ```
 
@@ -764,7 +765,7 @@ return arr.reduce((a, b) => a + b)
 console.log(newArr);//24
 ```
 
-##### `Spread rest` 
+##### `Spread rest`
 
 - `Spread Operator and Rest Parameters`
 - 两者都是 `... +` 变量/参数的形式
@@ -778,14 +779,14 @@ console.log(newArr);//24
 var post = {
   title: 'biaoti',
   content: 'neirong',
-}
+};
 // 构造字面量对象时 使用展开语法
-var postClone = { ...post } //内容与post相同  浅拷贝
+var postClone = { ...post }; //内容与post相同  浅拷贝
 
-console.log(post === postClone) 
+console.log(post === postClone);
 // false		对象是引用类型 两者内存地址不一样
 
-var post2 = { ...post, author: 'admin' } //添加属性
+var post2 = { ...post, author: 'admin' }; //添加属性
 ```
 
 - 操作数组 函数
@@ -793,30 +794,29 @@ var post2 = { ...post, author: 'admin' } //添加属性
 ```javascript
 //还可以在函数中使用。
 function savePost(id, title, content) {
-  console.log('save article ', id, title, content)
+  console.log('save article ', id, title, content);
 }
 //可以将数组spread(展开)为三个单独的变量
-savePost(...[2, 'Title', 'Content']) 
+savePost(...[2, 'Title', 'Content']);
 //==>save article 2 Title Content
 
-
 //同样可以在数组中操作
-var arr = [1, 2, 3]
-let arr2 = [...arr] // [1, 2, 3] 
-var arrClone = [...arr, 4, 5, 6] //[1,2,3,4,5,6]
+var arr = [1, 2, 3];
+let arr2 = [...arr]; // [1, 2, 3]
+var arrClone = [...arr, 4, 5, 6]; //[1,2,3,4,5,6]
 
 //使用 spread 运算符展开数组项
 //从ES5的
-var arr = [6, 89, 3, 45]
-var maximus = Math.max.apply(null, arr) // 返回 89
+var arr = [6, 89, 3, 45];
+var maximus = Math.max.apply(null, arr); // 返回 89
 //变成ES6 的
-const maximus = Math.max(...arr) // 返回 89
+const maximus = Math.max(...arr); // 返回 89
 ```
 
 `rest`
 
-- 主要是在函数的参数位置对于多个参数的转化成数组形式		
-- 而且只能把rest参数放在函数的最后一个位置
+- 主要是在函数的参数位置对于多个参数的转化成数组形式
+- 而且只能把 rest 参数放在函数的最后一个位置
 
 ```js
 function howMany(...args) {
@@ -839,17 +839,17 @@ Array.prototype.slice.call(xxx) ==>  [...xxx]
 //可以通过如下方法转换为数组
 
 // Array.prototype.slice.call()
-var args = Array.prototype.slice.call(arguments)
-var args = [].slice.call(arguments, 1) //相当于从第二项开始
+var args = Array.prototype.slice.call(arguments);
+var args = [].slice.call(arguments, 1); //相当于从第二项开始
 
 // Array.from()  ES2015
-const args = Array.from(arguments)
+const args = Array.from(arguments);
 
 // 扩展运算符
-const args = [...arguments] 
+const args = [...arguments];
 
 // concat
-Array.prototype.concat.apply([], arguments)
+Array.prototype.concat.apply([], arguments);
 ```
 
 ##### `FlatMap()`
@@ -857,31 +857,29 @@ Array.prototype.concat.apply([], arguments)
 - `FlatMap` 和 `map` 的作用几乎是相同的，但是对于多维数组来说，会将原数组降维。可以将 `FlatMap` 看成是 `map` + `flatten` ，但是目前该函数在浏览器中还不支持。
 
 ```js
-;[1, [2], 3].flatMap((v) => v + 1)
+[1, [2], 3].flatMap(v => v + 1);
 // -> [2, 3, 4]
 ```
 
 如果想将一个多维数组彻底的降维，可以这样实现
 
 ```js
-const flattenDeep = (arr) =>
+const flattenDeep = arr =>
   Array.isArray(arr)
     ? arr.reduce((a, b) => [...a, ...flattenDeep(b)], [])
-    : [arr]
+    : [arr];
 
-flattenDeep([1, [[2], [3, [4]], 5]])
+flattenDeep([1, [[2], [3, [4]], 5]]);
 ```
 
-
-
-#### 循环 遍历  迭代
+#### 循环 遍历 迭代
 
 `forEach`
 
 ```js
 arr.forEach((val, index, arr) => {
-  console.log(val, index, arr)
-})
+  console.log(val, index, arr);
+});
 ```
 
 - 除了抛出异常以外，没有办法中止或跳出 `forEach()` 循环
@@ -896,7 +894,7 @@ arr.forEach((val, index, arr) => {
 
 ```js
 const list = [1, 2, 3];
-const square = (num) => {
+const square = num => {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
       resolve(num * num);
@@ -905,7 +903,7 @@ const square = (num) => {
 };
 
 (function test() {
-  list.forEach(async (x) => {
+  list.forEach(async x => {
     const res = await square(x);
     console.log(res);
   });
@@ -922,46 +920,42 @@ const square = (num) => {
 // for of 、 for in  普通for 都可以异步循环
 ```
 
-
-
 `for in`
 
-- `for...in`语句以任意顺序遍历一个对象的除Symbol以外的可枚举属性
+- `for...in`语句以任意顺序遍历一个对象的除 Symbol 以外的可枚举属性
 - `for-in`是为普通对象设计的，遍历得到字符串类型的键
 - 不建议 `for in` 遍历数组
 
 ```js
-let arr = [1, 2, 3]
+let arr = [1, 2, 3];
 
 for (let i in arr) {
-  console.log(i, typeof i, arr[i], typeof arr[i], arr[i + 1])
+  console.log(i, typeof i, arr[i], typeof arr[i], arr[i + 1]);
 }
 // 0 string 1 number undefined
 
 // 因为 typeof i 是 string 这样就会导致 arr[i + 1] 发生字符串拼接
 ```
 
-
-
 ```js
-var arr = [1, 2, 3, 4]
+var arr = [1, 2, 3, 4];
 
 arr.forEach(function (item, index, array) {
-  console.log(item, index, array)
-})
+  console.log(item, index, array);
+});
 
-var obj = { a: 1, b: 2, c: 3, d: 4 }
+var obj = { a: 1, b: 2, c: 3, d: 4 };
 
 for (let key in obj) {
   // key 找的是对象的属性键名
-  console.log(key, obj[key])
+  console.log(key, obj[key]);
 }
 // 数组 -> 特殊的对象
 for (let key in arr) {
-  console.log(key, arr[key])
+  console.log(key, arr[key]);
 }
 
-// 
+//
 
 // 原型上有 Symbol(Symbol.iterator): ƒ values()
 
@@ -976,75 +970,76 @@ for (let key in arr) {
 - 调用 `Generator` 函数，会返回一个内部指针（即迭代器/遍历器 ），即执行它不会返回结果，返回的是指针对象
 
 ```js
-const arr = [1, 2, 3]
+const arr = [1, 2, 3];
 function* generator() {
   for (let v of arr) {
-    yield v
+    yield v;
   }
 }
 
-const iterator = generator(arr)
-console.log(iterator.next()) // {value: 1, done: false}
-console.log(iterator.next().value, iterator.next().done) // 2 false
-console.log(iterator.next()) // {value: 3, done: false}
-console.log(iterator.next()) // {value: undefined, done: true}
+const iterator = generator(arr);
+console.log(iterator.next()); // {value: 1, done: false}
+console.log(iterator.next().value, iterator.next().done); // 2 false
+console.log(iterator.next()); // {value: 3, done: false}
+console.log(iterator.next()); // {value: undefined, done: true}
 ```
 
 自己编写 `generator`
 
 ```js
 function generator(arr) {
-  let nextIndex = 0
-  return { // 这里返回的是对象
+  let nextIndex = 0;
+  return {
+    // 这里返回的是对象
     next() {
       return nextIndex < arr.length
         ? { value: arr[nextIndex++], done: false }
-        : { value: undefined, done: true }
+        : { value: undefined, done: true };
     },
-  }
+  };
 }
 ```
-
-
 
 ## Object
 
 #### 创建对象
 
 ```js
-let obj1 = { name: 'obj1' } // 字面量
-let obj2 = new Object({ name: 'obj2' })
+let obj1 = { name: 'obj1' }; // 字面量
+let obj2 = new Object({ name: 'obj2' });
 
-let M = function (name) { this.name = name } // 构造函数
-let obj3 = new M('obj3')
+let M = function (name) {
+  this.name = name;
+}; // 构造函数
+let obj3 = new M('obj3');
 
-let p = { name: 'p' } // Object.create
-let obj4 = Object.create(p)
+let p = { name: 'p' }; // Object.create
+let obj4 = Object.create(p);
 ```
 
 - 使用字面量 `{}` 创建的对象 形式上和 `new Object()` 没有区别，但并不相等
 
 ```js
-const obj1 = { a: 10 }
+const obj1 = { a: 10 };
 
-const obj2 = new Object({ a: 10 })
-const obj3 = new Object(obj1)
+const obj2 = new Object({ a: 10 });
+const obj3 = new Object(obj1);
 
-console.log(obj1 === obj2) // false 引用类型
-console.log(obj1 === obj3) // true
+console.log(obj1 === obj2); // false 引用类型
+console.log(obj1 === obj3); // true
 ```
 
 - `Object.create(null)` 创建的对象没有原型
 - `Object.create({..})`可以指定原型
 
 ```js
-const obj1 = { a: 10 }
+const obj1 = { a: 10 };
 
-const obj2 = Object.create({ a: 10 })
-const obj3 = Object.create(obj1)
+const obj2 = Object.create({ a: 10 });
+const obj3 = Object.create(obj1);
 
-console.log(obj2.__proto__ === obj1) // false
-console.log(obj3.__proto__ === obj1) // true
+console.log(obj2.__proto__ === obj1); // false
+console.log(obj3.__proto__ === obj1); // true
 ```
 
 #### 对象基本操作
@@ -1057,24 +1052,24 @@ console.log(obj3.__proto__ === obj1) // true
 var person = {
   name: 'hello',
   age: 3,
-}
+};
 ```
 
 - 对象赋值
 
 ```js
-person.name = 'Honjay' // person['name'] = 'Honjay'
+person.name = 'Honjay'; // person['name'] = 'Honjay'
 // . 和 [''] 的区别
-// 中括号运算符总是能代替点运算符，反之不行 
-	// 如：属性名为 数字 含有空格 js关键字等等
+// 中括号运算符总是能代替点运算符，反之不行
+// 如：属性名为 数字 含有空格 js关键字等等
 ```
 
 - 动态添加 删除属性
 
 ```js
-person.love = 'Fortnite'
+person.love = 'Fortnite';
 
-delete person.love // true
+delete person.love; // true
 ```
 
 - 遍历对象属性
@@ -1100,7 +1095,7 @@ person.hasOwnProperty('age') // true
 isPrototypeOf(object) 允许你检查一个对象是否存在于另一个对象的原型链上
 
 instanceof
-  
+
 Object.getPrototypeOf() 获取对象原型属性
 ```
 
@@ -1109,7 +1104,7 @@ Object.getPrototypeOf() 获取对象原型属性
   - 返回目标对象
 
 ```js
-Object.assign(target, ...sources)
+Object.assign(target, ...sources);
 ```
 
 - `Object.freeze(obj)`
@@ -1129,9 +1124,7 @@ Object.is(-0, +0) -> false (-0 === +0 //true)
 - `JSON.stringify(data) === '{}'`
 - `Object.keys(obj).length` 遍历属性、直接查看长度
 
-
-
-> ECMAScript 委员会 对象操作 14种
+> ECMAScript 委员会 对象操作 14 种
 
 ```js
 // 1、获取原型 [[GetPrototypeOf]]
@@ -1231,10 +1224,6 @@ for (var k in obj) {
 console.log(Object.keys(obj)); // [ 'a', 'b' ]
 ```
 
-
-
-
-
 #### 解构赋值
 
 - 使用解构赋值从对象中分配变量
@@ -1245,27 +1234,25 @@ var post = {
   data: {
     result: true,
   },
-}
+};
 
-const { status, data } = post
-console.log(status, data) // 200 { result: true }
+const { status, data } = post;
+console.log(status, data); // 200 { result: true }
 
 //利用别名
-const { data: res } = post
-console.log(res) // { result: true }
+const { data: res } = post;
+console.log(res); // { result: true }
 
 //默认值
-var [a, b = 2] = [1]
-console.log(a, b) //1 2
+var [a, b = 2] = [1];
+console.log(a, b); //1 2
 
 //解构赋值+rest操作符实现重新分配数组元素
-const [a, b, ...arr] = [1, 2, 3, 4, 5, 7]
-console.log(a, b) // 1, 2
-console.log(arr) // [3, 4, 5, 7]
+const [a, b, ...arr] = [1, 2, 3, 4, 5, 7];
+console.log(a, b); // 1, 2
+console.log(arr); // [3, 4, 5, 7]
 //等同于  Array.prototype.slice()
 ```
-
-
 
 ## 进阶
 
@@ -1275,9 +1262,9 @@ console.log(arr) // [3, 4, 5, 7]
 - 更加具体的去描述或设置一个对象内部属性的操作性
 
 ```js
-var obj = {}
-var newObj = Object.defineProperty(obj, 'a', { value: 1 })
-console.log(newObj === obj) // true
+var obj = {};
+var newObj = Object.defineProperty(obj, 'a', { value: 1 });
+console.log(newObj === obj); // true
 ```
 
 - 默认情况下 使用`Object.defineProperty()`添加的属性是不可修改的
@@ -1293,20 +1280,20 @@ console.log(newObj === obj) // true
 // }
 ```
 
-- `Object.defineProperty(obj, prop, descriptor)` 
+- `Object.defineProperty(obj, prop, descriptor)`
 
 关于`descriptor`
 
 - 如果一个描述符不具有 `value`、`writable`、`get` 和 `set` 中的任意一个键，那么它将被认为是一个数据描述符。如果一个描述符同时拥有 `value` 或 `writable` 和 `get` 或 `set` 键，则会产生一个异常。
 
 ```js
-var obj = {}
+var obj = {};
 Object.defineProperty(obj, 'a', {
   value: 1,
   configurable: true,
   enumerable: true,
   writable: true,
-})
+});
 
 // descriptor
 /**
@@ -1328,23 +1315,20 @@ Object.defineProperty(obj, 'a', {
 // obj.a = 2
 // console.log(obj)
 
-
 // getter setter 数据劫持
-var obj = {}
+var obj = {};
 Object.defineProperty(obj, 'a', {
   // value: 1
   get() {
-    console.log('get obj.a:', 1)
+    console.log('get obj.a:', 1);
   },
   set(newValue) {
-    console.log('set obj.a:', newValue)
+    console.log('set obj.a:', newValue);
   },
-})
-obj.a
-obj.a = 2
+});
+obj.a;
+obj.a = 2;
 ```
-
-
 
 #### 深浅拷贝
 
@@ -1360,19 +1344,19 @@ obj.a = 2
 - 使用原生的 `Object.assign()`
 
 ```js
-let a = { age: 1 }
-let b = Object.assign({}, a)
-a.age = 2
-console.log(b.age) // 1
+let a = { age: 1 };
+let b = Object.assign({}, a);
+a.age = 2;
+console.log(b.age); // 1
 ```
 
 - 通过展开运算符`Array.from() ==> ...`来解决
 
 ```js
-let a = { age: 1 }
-let b = { ...a }
-a.age = 2
-console.log(b.age) // 1
+let a = { age: 1 };
+let b = { ...a };
+a.age = 2;
+console.log(b.age); // 1
 ```
 
 - 由于浅拷贝只拷贝一层，所以当遇到第二层为对象时又会出现引用类型 拷贝内存地址的问题
@@ -1382,10 +1366,10 @@ console.log(b.age) // 1
 - 使用原生的 `JSON.parse(JSON.stringify(object))`
 
 ```js
-let a = { age: 1, jobs: { first: 'FE' } }
-let b = JSON.parse(JSON.stringify(a))
-a.jobs.first = 'native'
-console.log(b.jobs.first) // FE
+let a = { age: 1, jobs: { first: 'FE' } };
+let b = JSON.parse(JSON.stringify(a));
+a.jobs.first = 'native';
+console.log(b.jobs.first); // FE
 ```
 
 但是该方法也是有局限性的：
@@ -1398,61 +1382,59 @@ console.log(b.jobs.first) // FE
 ##### 递归
 
 ```js
-// null undefined Date RegExp 
+// null undefined Date RegExp
 function deepClone(obj = {}) {
   if (typeof obj !== 'object' || obj == null) {
     // 如果obj是null 或者 obj不是对象和数组 就直接返回
-    return obj
+    return obj;
   }
-  if (obj instanceof Date){
-    return new Date(obj)
+  if (obj instanceof Date) {
+    return new Date(obj);
   }
-  if (obj instanceof RegExp){
-    return new RegExp(obj)
+  if (obj instanceof RegExp) {
+    return new RegExp(obj);
   }
   // 初始化返回结果
-  let res = obj instanceof Array ? [] : {}
+  let res = obj instanceof Array ? [] : {};
 
   for (let key in obj) {
     // 保证key不是原型的属性
     if (obj.hasOwnProperty(key)) {
       // 递归调用
-      res[key] = deepClone(obj[key])
+      res[key] = deepClone(obj[key]);
     }
   }
-  return res
+  return res;
 }
 ```
 
-由于`xxx.constructor()` 的隐式原型指向 `Object/Array.prototype`  那么我们就可以通过`new xxx.constructor()`的方法来创建对应的数据类型
+由于`xxx.constructor()` 的隐式原型指向 `Object/Array.prototype` 那么我们就可以通过`new xxx.constructor()`的方法来创建对应的数据类型
 
 ```js
-const obj = {}
-const newObj = new obj.constructor()
-newObj.a = 1
-console.log(obj, newObj) // {} {a: 1}
+const obj = {};
+const newObj = new obj.constructor();
+newObj.a = 1;
+console.log(obj, newObj); // {} {a: 1}
 
-const arr = []
-const newArr = new arr.constructor()
-newArr.push(1)
-console.log(arr, newArr) // [] [1]
+const arr = [];
+const newArr = new arr.constructor();
+newArr.push(1);
+console.log(arr, newArr); // [] [1]
 
-obj.constructor().__proto__ === Object.prototype // true
-arr.constructor().__proto__ === Array.prototype // true
+obj.constructor().__proto__ === Object.prototype; // true
+arr.constructor().__proto__ === Array.prototype; // true
 
-let res = new obj.constructor() // 根据当前的constructor来决定生成数组还是对象
+let res = new obj.constructor(); // 根据当前的constructor来决定生成数组还是对象
 for (let key in obj) {
-  res[key] = deepClone(obj[key])
+  res[key] = deepClone(obj[key]);
 }
 ```
-
-
 
 ##### WeakMap
 
 ```js
 Map 键名 -> 任意类型 {} []
-WeakMap 键名 -> 对象  
+WeakMap 键名 -> 对象
 
 弱引用   方便垃圾回收机制
 ```
@@ -1465,39 +1447,37 @@ WeakMap 键名 -> 对象
 function deepClone(obj = {}, hashMap = new WeakMap()) {
   if (typeof obj !== 'object' || obj == null) {
     // 如果obj是null 或者 obj不是对象和数组 就直接返回
-    return obj
+    return obj;
   }
   if (obj instanceof Date) {
-    return new Date(obj)
+    return new Date(obj);
   }
   if (obj instanceof RegExp) {
-    return new RegExp(obj)
+    return new RegExp(obj);
   }
 
-  const hashKey = hashMap.get(obj)
+  const hashKey = hashMap.get(obj);
 
-  if (hashKey) return hashKey
+  if (hashKey) return hashKey;
 
-  let res = new obj.constructor() // 根据当前的constructor来决定生成数组还是对象
-  hashMap.set(obj, res)
+  let res = new obj.constructor(); // 根据当前的constructor来决定生成数组还是对象
+  hashMap.set(obj, res);
   for (let key in obj) {
-    res[key] = deepClone(obj[key], hashMap)
+    res[key] = deepClone(obj[key], hashMap);
   }
-  return res
+  return res;
 }
 
-let test1 = {}
-let test2 = {}
-test2.test1 = test1
-test1.test2 = test2
-console.log(deepClone(test2))
+let test1 = {};
+let test2 = {};
+test2.test1 = test1;
+test1.test2 = test2;
+console.log(deepClone(test2));
 ```
 
 `Ref`
 
 - [ES6 系列之 WeakMap](https://segmentfault.com/a/1190000015774465)
-
-
 
 ## 单例内置对象
 
@@ -1511,12 +1491,10 @@ console.log(deepClone(test2))
 ```js
 console.log(eval('2 + 2')); // expected output: 4
 
-console.log(eval(new String('2 + 2')));// 2 + 2
+console.log(eval(new String('2 + 2'))); // 2 + 2
 
-console.log(eval('2 + 2') === eval('4'));//  true
+console.log(eval('2 + 2') === eval('4')); //  true
 ```
-
-
 
 ##### Global 对象属性
 
@@ -1525,65 +1503,59 @@ console.log(eval('2 + 2') === eval('4'));//  true
 #### `Math`
 
 ```javascript
-Math.PI
-Math.abs(-1) //1
-Math.sin(Math.PI / 2) //1
-Math.floor(3.98) //3	向下取整
-Math.ceil(5.01) //6	向上取整
-Math.pow(10, 3) //1000
-Math.trunc(10.78) //10	舍弃小数
-Math.random() //[0,1)
-Math.round() //四舍五入	//特例 Math.round(-20.5)==>-20
-Math.min() // Math.min(...arr)
-Math.max()
+Math.PI;
+Math.abs(-1); //1
+Math.sin(Math.PI / 2); //1
+Math.floor(3.98); //3	向下取整
+Math.ceil(5.01); //6	向上取整
+Math.pow(10, 3); //1000
+Math.trunc(10.78); //10	舍弃小数
+Math.random(); //[0,1)
+Math.round(); //四舍五入	//特例 Math.round(-20.5)==>-20
+Math.min(); // Math.min(...arr)
+Math.max();
 ```
-
-
 
 ```js
 Math.max.apply(null, [1, 2, 10]); //10
 
-Math.max( ...[1, 2, 10]); //10
+Math.max(...[1, 2, 10]); //10
 ```
-
-
-
-
 
 #### `Date`
 
 ```javascript
-Date.now() // 获取当前时间毫秒数
+Date.now(); // 获取当前时间毫秒数
 
-var date = new Date()
-console.log(date) //Wed Feb 26 2020 17:16:37 GMT+0800 (中国标准时间)
+var date = new Date();
+console.log(date); //Wed Feb 26 2020 17:16:37 GMT+0800 (中国标准时间)
 //一些属性
-date.getFullYear() //年
-date.getMonth() //月  0~11
-date.getDate() //日
-date.getDay() //星期几
-date.getHours() //时
-date.getMinutes() //分
-date.getSeconds() //秒
-date.getTime() //时间戳 1599442084987  以1970.1.1 0：00：00为基准
-console.log(new Date(1582708597011)) //时间戳转为时间
+date.getFullYear(); //年
+date.getMonth(); //月  0~11
+date.getDate(); //日
+date.getDay(); //星期几
+date.getHours(); //时
+date.getMinutes(); //分
+date.getSeconds(); //秒
+date.getTime(); //时间戳 1599442084987  以1970.1.1 0：00：00为基准
+console.log(new Date(1582708597011)); //时间戳转为时间
 
-date.toLocaleString() //注意：此处为方法 不是属性  "2020/2/26 下午5:28:38"
-date.toLocalDateString() //2020/2/26
-date.toLocalTimeString() //下午5:28:38
+date.toLocaleString(); //注意：此处为方法 不是属性  "2020/2/26 下午5:28:38"
+date.toLocalDateString(); //2020/2/26
+date.toLocalTimeString(); //下午5:28:38
 
-date.setFullYear(2022)
-date.setTime() //时间戳
+date.setFullYear(2022);
+date.setTime(); //时间戳
 
-Date.parse()
-let someDate = new Date(Date.parse('May 23, 2019'))
-let someDate = new Date('May 23, 2019')
+Date.parse();
+let someDate = new Date(Date.parse('May 23, 2019'));
+let someDate = new Date('May 23, 2019');
 
-Date.UTC()
+Date.UTC();
 // GMT时间2005年5月5日下午5点55分55秒
-let allFives = new Date(Date.UTC(2005, 4, 5, 17, 55, 55))
+let allFives = new Date(Date.UTC(2005, 4, 5, 17, 55, 55));
 
-return new Date().toLocaleDateString().split('/').join('-') // 2021-3-14
+return new Date().toLocaleDateString().split('/').join('-'); // 2021-3-14
 ```
 
 #### `Json`
@@ -1592,38 +1564,36 @@ return new Date().toLocaleDateString().split('/').join('-') // 2021-3-14
 - `JSON.parse()`方法用于将 `JSON` 字符串转换成对应的值
 
 ```javascript
-var user = { name: 'A', age: 20 }
+var user = { name: 'A', age: 20 };
 
-JSON.stringify(user) // {"name":"A","age":20}
+JSON.stringify(user); // {"name":"A","age":20}
 
-JSON.parse('{"name":"A","age":20}') // 要加引号
+JSON.parse('{"name":"A","age":20}'); // 要加引号
 
-JSON.parse(JSON.stringify(user))
+JSON.parse(JSON.stringify(user));
 // => { name: 'A', age: 20 }
 ```
 
 ##### `json`与`js对象`区别
 
 ```javascript
-var obj = { a: 'hello', b: 'world' }
-var json = '{"a":"hello","b":"world"}'
+var obj = { a: 'hello', b: 'world' };
+var json = '{"a":"hello","b":"world"}';
 ```
 
 - `JSON` 是对象，但对象不一定是 `JSON`
-- 对象：`key -> value`  
+- 对象：`key -> value`
   - 对象中的 `value` 可以是任意的数据类型，包括函数
   - ` JSON` 中的 `value` 不能为函数或日期对象
 
-
-
 #### `Map & Set`
 
-- 应用场景：Set用于数据重组，Map用于数据储存
+- 应用场景：Set 用于数据重组，Map 用于数据储存
 
-- Set：　
-  - 成员不能重复　　
+- Set：
+  - 成员不能重复
   - 只有键值没有键名，类似数组
-  - 可以遍历，方法有`add, delete, has`　　
+  - 可以遍历，方法有`add, delete, has`
 - Map:
   - 本质上是健值对的集合，类似集合
   - 可以遍历，可以跟各种数据格式转换
@@ -1631,13 +1601,13 @@ var json = '{"a":"hello","b":"world"}'
 ```javascript
 //MAP 键值对
 var map = new Map([
-  ["tom", 100],
-  ["jack", 90],
+  ['tom', 100],
+  ['jack', 90],
 ]);
 
-map.get("tom"); //通过key获得value
-map.set("john", 80);
-map.has("tom"); //true
+map.get('tom'); //通过key获得value
+map.set('john', 80);
+map.has('tom'); //true
 
 //遍历
 map.forEach((value, key) => {
@@ -1659,22 +1629,16 @@ set.delete(3); //{1,2}
 set.has(2); //是否包含某个元素
 
 //遍历
-set.forEach((value) => {
+set.forEach(value => {
   console.log(value);
 });
 ```
 
-
-
 ```javascript
-const arr = [...new Set([3, 1, 2, 3, 4])]
-console.log(arr.length, arr[2])
+const arr = [...new Set([3, 1, 2, 3, 4])];
+console.log(arr.length, arr[2]);
 // 4 2
 ```
-
-
-
-
 
 ## 异常
 
@@ -1685,15 +1649,15 @@ console.log(arr.length, arr[2])
 - `ReferenceError`(引用错误)： 引用的变量不存在
 
 ```js
-console.log(a)
+console.log(a);
 // Uncaught ReferenceError: a is not defined
 ```
 
 - `TypeError`(类型错误)： 数据类型不正确的错误
 
 ```js
-let a = null
-a.length
+let a = null;
+a.length;
 // Uncaught TypeError: Cannot read property 'length' of null
 ```
 
@@ -1701,9 +1665,9 @@ a.length
 
 ```js
 function Fn() {
-  Fn()
+  Fn();
 }
-Fn() // 递归调用
+Fn(); // 递归调用
 // Uncaught RangeError: Maximum call stack size exceeded
 ```
 
@@ -1721,9 +1685,9 @@ let a = '1"
 ```javascript
 try {
 } catch (err) {
-  console.error(err)
+  console.error(err);
 } finally {
-  console.log('go on')
+  console.log('go on');
 }
 ```
 
@@ -1733,7 +1697,7 @@ try {
 window.onerror = function (message, source, lineNum, colNum, error) {
   // 1、对于跨域的js如CDN 不会有详细的报错信息
   // 2、对于压缩的js 还要配合 sourceMap 反查到未压缩代码的行、列
-}
+};
 ```
 
 #### 抛出异常
@@ -1743,20 +1707,16 @@ window.onerror = function (message, source, lineNum, colNum, error) {
 ```javascript
 //throw抛出异常对象
 function fetchData() {
-  console.log('get Data')
-  throw new Error('404')
+  console.log('get Data');
+  throw new Error('404');
 }
 try {
-  fetchData()
+  fetchData();
 } catch (e) {
-  console.error(e) 
+  console.error(e);
   // e.name, e.message Error 404
 }
 ```
-
-
-
-
 
 ## 函数 `call` 和 `apply` 的区别
 
@@ -1775,26 +1735,21 @@ bind 多次绑定 只会生效一次（第一次
 当执行绑定函数时，this指向与形参在bind方法执行时已经确定了，无法改变
 ```
 
-
-
-
-
 - `call apply band`
 
 ```javascript
 var emp = {
   id: 1,
   name: 'honjay',
-}
+};
 
 function printInfo(dep1, dep2, dep3) {
-  console.log('info ' + this.name, dep1, dep2, dep3)
+  console.log('info ' + this.name, dep1, dep2, dep3);
 }
 //使用call可以更改this指向
-printInfo.call(emp, 'WEB', 'IT', 'Office')
-printInfo.apply(emp, ['WEB', 'IT', 'Office']) //可以作为数组传入
+printInfo.call(emp, 'WEB', 'IT', 'Office');
+printInfo.apply(emp, ['WEB', 'IT', 'Office']); //可以作为数组传入
 
-var empPrintInfo = printInfo.band(emp, 'WEB', 'IT', 'Office') //返回绑定参数的新函数 用于后续执行
-empPrintInfo()
+var empPrintInfo = printInfo.band(emp, 'WEB', 'IT', 'Office'); //返回绑定参数的新函数 用于后续执行
+empPrintInfo();
 ```
-
