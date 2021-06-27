@@ -9,7 +9,7 @@ module.exports = {
   baseUrl: '/',
   onBrokenLinks: 'ignore',
   onBrokenMarkdownLinks: 'warn',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/photo.ico',
   organizationName: 'Honjaychang',
   projectName: 'Honjaychang.github.io',
   themeConfig: {
@@ -17,7 +17,7 @@ module.exports = {
       title: 'Honjay',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        src: 'img/photo.jpg',
       },
       items: [
         {

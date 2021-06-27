@@ -15,6 +15,10 @@
   --ifm-color-primary-lighter: rgb(102, 212, 189);
   --ifm-color-primary-lightest: rgb(146, 224, 208);
   --ifm-code-font-size: 95%;
+  --ifm-h1-font-size: 2.2rem;
+  --ifm-spacing-horizontal: 2rem;
+  --ifm-blockquote-padding-vertical: 0.5rem;
+  --ifm-blockquote-padding-horizontal: 0.5rem;
 }
 
 .docusaurus-highlight-code-line {
@@ -26,4 +30,14 @@
 
 html[data-theme='dark'] .docusaurus-highlight-code-line {
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+code {
+  /* color: #476582; */
+  border: 0;
+  font-size: 0.85em;
+}
+
+.alert a {
+  text-decoration: none;
 }

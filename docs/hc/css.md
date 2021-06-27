@@ -86,11 +86,13 @@
 - 阻止 `margin` 发生重叠
 - 阻止元素被浮动的元素覆盖
 
-`Ref`：
+:::note Ref
 
 - [清除浮动的四种方式及其原理理解](https://blog.csdn.net/u012207345/article/details/78279961)
 - [什么是 BFC？看这一篇就够了](https://blog.csdn.net/sinat_36422236/article/details/88763187)
 - [史上最全面、最透彻的 BFC 原理剖析](https://juejin.cn/post/6844903496970420237)
+
+:::
 
 ## 元素隐藏方法 区别
 
@@ -127,7 +129,7 @@
 
 `flex`
 
-```js
+```css
 .wrap {
   display: flex;
 }
@@ -323,8 +325,12 @@ grid-template-rows: 50px 50px;/*添加两行*/
 grid-template-rows: repeat(100,50px);/*添加100个 行高为50px*/
 grid-template-rows: repeat(2,1fr 50px) 20px;/*5个*/
 
-grid-template-columns: auto 50px 10% 2fr 1fr;/*第一列的宽与它的内容宽度相等；第二列宽 50px；第三列宽是它容器的 10%；最后两列，将剩余的宽度平均分成三份，第四列占两份，第五列占一份。*/
-/*fr浮动宽度 grid布局专用单位 代表剩余空间*/
+grid-template-columns: auto 50px 10% 2fr 1fr;
+/*
+ * 第一列的宽与它的内容宽度相等；第二列宽 50px；
+ * 第三列宽是它容器的 10%；最后两列，将剩余的宽度平均分成三份，第四列占两份，第五列占一份。
+ * fr浮动宽度 grid布局专用单位 代表剩余空间
+ */
 
 column-gap:20px;/* 在创建的列之间添加20px宽度的空白间隙*/
 row-gap:20px;
@@ -347,7 +353,11 @@ align-content: ; /*垂直对齐 轨道*/
 grid-template-areas:
   "header header header"
   "advert . content"
-  "footer footer footer";/*代码将顶部三个单元格合并成一个名为header的区域，将底部三个单元格合并为一个名为footer的区域，并在中间行生成三个区域————advert和空单元格和content。*/
+  "footer footer footer";
+/*代码将顶部三个单元格合并成一个名为header的区域，
+ *将底部三个单元格合并为一个名为footer的区域，
+ *并在中间行生成三个区域————advert和空单元格和content。
+ */
 
 grid-area: footer;/*占底部所有空间*/
 grid-area: 起始水平线 / 起始垂直线 / 末尾水平线 / 终止垂直线 ;
