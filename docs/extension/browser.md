@@ -1,265 +1,65 @@
-# HTTP-Browser
-
-## HTTP[状态码](HTTPs://developer.mozilla.org/zh-CN/docs/Web/HTTP/Status)
-
-#### 分类
-
-| 分类  | 分类描述                                         |
-| :---- | :----------------------------------------------- |
-| 1\*\* | 信息响应，服务器收到请求，需要请求者继续执行操作 |
-| 2\*\* | 成功响应，操作被成功接收并处理                   |
-| 3\*\* | 重定向，需要进一步的操作以完成请求               |
-| 4\*\* | 客户端错误，请求包含语法错误或无法完成请求       |
-| 5\*\* | 服务器错误，服务器在处理请求的过程中发生了错误   |
-
-#### 常见状态码
-
-- 200 - 请求成功
-- 204 - 请求处理成功，但没有资源可返回
-- 206 - 对资源的某一部分进行请求
-- 301 - 资源被永久转移到其它 URL(永久重定向到新的 location)
-- 302 - 资源临时移动(临时重定向)
-- 304 - 所请求的资源未修改
-- 307 - 临时重定向
-- 400 - 请求报文存在语法错误
-- 403 - 没有权限
-- 404 - 请求的资源不存在
-- 500 - 内部服务器错误
-- 502 - 网关错误
-- 504 - 网关超时
-
-## HTTP Method
-
-#### 传统的 methods
-
-- `get` 获取服务器的数据
-- `post` 向服务器提交数据
-
-#### 现在的 methods
-
-- `get` 获取数据
-- `post` 新建数据
-- `patch/put` 更新数据
-- `delete` 删除数据
-
-#### Restful API
-
-- 传统 API 设计:把每个 url 当做一个功能
-
-- Restful API 设计:一种新的 API 设计方法，把每个 url 当做一个唯一的资源
-
-- 如何设计成一个资源？
-
-  - 尽量不用 url 参数
-
-  ```basic
-  传统API设计: /api/list?pageIndex=2
-  Restful API设计: /api/list/2
-  ```
-
-  - 用 method 表示操作类型
-
-  ```basic
-  传统API设计:
-  post请求	/api/create-blog
-  post请求	/api/update-blog?id=100
-  get请求	/api/get-blog?id=100
-
-  Restful API设计:
-  post请求	/api/blog
-  patch请求	 /api/blog/100
-  get请求	/api/blog/100
-  ```
-
-## Get 和 Post 的区别？
-
-- 缓存：`get`请求的数据是可以缓存的；`post`是不可缓存的。
-- 功能
-  - `get`请求类似于查找的过程，用户获取数据，可以不用每次都与数据库连接，所以可以使用缓存。
-  - `post`做的一般是修改和删除的工作，所以必须与数据库交互，所以不能使用缓存。
-- 传参：`get`传参，参数是在 url 中的；`post`传参，参数是在请求体中。
-- 安全性：`get`不安全，`post`较为安全：`post`易于防止`CSRF`。
-- 参数长度：`get`参数长度有限，是较小的；`post`传参长度不受限制。
-
-#### get 请求传参长度的误区
-
-**误区**：我们经常说 get 请求参数的大小存在限制，而 post 请求的参数大小是无限制的。
-
-- `HTTP`协议未规定`GET`和`POST`的请求长度限制
-
-- `GET`的最大长度显示是因为：浏览器和 web 服务器限制了 URL 的长度
-
-- 不同的浏览器和 WEB 服务器，限制的最大长度不一样
-
-- 要支持`IE`，则最大长度为`2083byte`，若只支持`Chrome`，则最大长度 `8182byte`
-
-## HTTP 首部
-
-- `HTTP` 请求报文：请求方法、`URI`、`HTTP`版本、`HTTP`首部字段
-
-- `HTTP` 响应报文：`HTTP`版本、状态码、`HTTP`首部字段
-
-#### `HTTP`首部字段
-
-- 首部字段名：字段值
-
-#### 通用首部字段
-
-- `Cache-Control` ：能够控制缓存的行为
-- `Connection`
-  - 控制不再转发给代理的首部字段
-  - 管理持久连接 `Connection: Keep-Alive / close` 一次 TCP 连接重复使用
-- `Date`：表明创建 HTTP 报文的日期和时间
-- `Warning`：会告知用户一些与缓存相关的问题的警告
-
-#### 请求首部字段
-
-- `Accept`：告知服务器，用户代理能够处理的媒体类型及媒体类型的相对优先级
-  - `Accept-Charset `：优先的字符集
-  - `Accept-Encoding`：可接收的压缩算法 `gzip`
-  - `Accept-Language`：`zh-cn`
-- `Authorization`：Web 认证信息
-- `Host`：请求的域名是什么
-- `User-Agent`：浏览器信息
-- `If-Match If-Modified-Since If-None-Match If-Range`
-- `Cookie`
-
-#### 响应首部字段
-
-- `ETag`：资源的匹配信息
-- `Location`：提供重定向`url`
-- `Server`：HTTP 服务器的安装信息
-- `Set-Cookie`
-
-#### 实体首部字段
-
-- 包含在请求报文和响应报文中的实体部分所使用的首部，用于补充内容的更新时间等与实体相关的信息
-
-- `Content-Type: text/html`
-- `Keep-Alive: timeout=15, max=100 `
-- `Allow`：请求资源允许使用的方法
-- `Content`
-  - `Content-Encoding`：返回数据的压缩算法，如 `gzip`
-  - `Content-Language`
-  - `Content-Length`
-  - `Content-Type`：返回 / 发送数据的格式，如`application/json`
-- `Expires Last-Modified`
-
-#### 缓存相关
-
-```text
-Cache-Control	Expires
-Last-Modified If-Modified-Since
-Etag	If-None-Match
-```
-
-## HTTP 缓存策略
-
-#### 浏览器的三级缓存
-
-- 内存 => 磁盘 => 网络请求
-
-#### 强制缓存
-
-- 在过期时间内，未被主动清除 都不会请求服务器 而使用强制缓存 => 协商缓存
-
-- `200 from disk cache` `200 from memory cache`
-
-##### `cache-control`
-
-- `max-age`：浏览器可以接收生存期不大于指定时间（秒）的响应
-- `no-cache`：不用强制缓存，让服务端缓存
-- `no-store`：不用强制缓存，也不让服务端缓存
-- `private`：允许终端用户
-- `public`：允许中间代理
-
-##### `Expires`
-
-- 同为控制缓存过期。如果 `cache-control` 与 `expires` 同时存在的话，`cache-control` 的优先级高于`expires`
-
-#### 协商缓存（对比缓存）
-
-- 浏览器和服务器协商，每次都需要和服务器通信
-- 第一次请求时，服务器会返回资源和一个资源的缓存标识
-- 第二次请求时，浏览器会先将缓存标识发给服务器 然后服务器对标识进行匹配
-  - 不匹配 => 资源有更新 => 服务器返回新资源和新的缓存标识
-  - 匹配 => 资源未更改 => 返回 304 状态码 读取本地浏览器缓存
-
-##### `Last-Modified`
-
-- 对应 `If-Modified-Since`
-- 响应资源的最后修改时间 只能精确到秒级
-
-##### `Etag`
-
-- 对应 `If-None-Match`
-- `Etag`是服务器响应请求时，返回当前资源文件的一个唯一标识(类似指纹 由服务器生成)
-- 同时存在 会优先使用 `Etag`
-- 如果资源被重复生成，而内容不变，则`Etag`更精确
-
-##### 浏览器加载`JS`文件有缓存
-
-- 浏览器加载 js 文件是根据路径加载，首先根据路径在缓存里查找
-- 解决办法：打包时加一些哈希值 or 版本号
-
-:::note Ref
-
-- [js 浏览器缓存机制](https://blog.csdn.net/i13738612458/article/details/80383390?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control)
-- [浏览器缓存带来的前端项目更新问题及解决方法](https://blog.csdn.net/feiyu_may/article/details/88376945)
-
-:::
-
-##### 刷新操作对缓存的影响
-
-- 正常操作:
-  - 地址栏输入`url`，跳转链接，前进后退等
-  - 强制缓存有效，协商缓存有效
-- 手动刷新:
-  - `F5`，点击刷新按钮，右击菜单刷新
-  - 强制缓存失效，协商缓存有效
-- 强制刷新:
-  - `ctrl + F5`
-  - 强制缓存失效，协商缓存失效
+# Browser
 
 ## 运行环境
 
-#### 网页加载过程
+### 页面渲染
 
-##### 渲染过程
+:::note Ref
+
+- [浏览器环境概述](https://wangdoc.com/javascript/bom/engine.html)
+- [css 加载会造成阻塞吗](https://segmentfault.com/a/1190000018130499)
+- [JS脚本异步加载浅析](https://juejin.cn/post/6844903661139656718)
+
+:::
+
+![Webkit渲染流程图](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/webkitflow.png)
+
+#### 构建DOM树
 
 - 根据 `HTML` 代码生成 `DOM Tree`
+
+```bash
+Bytes(字节) -> Characters(字符) -> Tokens(词) -> Nodes(节点) -> DOM(DOM树)
+```
+
+#### 构建CSSOM树
+
 - 根据 `CSS` 代码生成 `CSSOM`
   - `css` 不会阻塞`DOM`树的解析
   - `css` 加载会阻塞`DOM`树渲染
-- 将 `DOM Tree` 和 `CSSOM` 整合形成 `Render Tree`
-- 根据 `Render Tree` 渲染页面
-- 遇到 `<script>` 则暂停渲染，优先加载并执行`JS`代码，完成再继续
-- 直至把 `Render Tree` 渲染完成
 
-##### 为什么要将 `CSS <link href="#">` 放在 head 中
+```bash
+Bytes(字节) -> Characters(字符) -> Tokens(词) -> Nodes(节点) -> CSSOM(CSSOM树)
+```
+
+> 为什么要将 `CSS <link href="#">` 放在 head 中
 
 - 在`DOM`树生成前就将`CSS`规则加载完
 - 在`DOM`生成完成后直接和所有的`CSS`规则整合 => 一步渲染完成 `Render Tree`
 
-##### 为何建议将`JS`放在`body`最后
+#### 解析JS脚本
+
+- 遇到 `<script>` 则暂停渲染，优先加载并执行`JS`代码，完成再继续
+
+> 为何建议将`JS`放在`body`最后
 
 - 不放在最后的话，`JS` 代码会阻塞 `render tree` 的渲染，可能会导致页面渲染时间比较长
 
-:::note Ref
+##### `defer`
 
-- [css 加载会造成阻塞吗](https://segmentfault.com/a/1190000018130499)
+- `<script src="a.js" defer></script>`
+- `defer`的作用是延迟脚本的执行，等到 DOM 加载生成后，再执行脚本
+- 浏览器发现带有`defer`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本，等待网页解析完成再去执行脚本
 
-:::
+##### `async`
 
-##### 图片的加载不会阻塞 DOM 渲染过程
+- `<script src="a.js" async></script>`
+- `async`的作用是使用另一个进程下载脚本，下载时不会阻塞渲染
+- 浏览器发现带有`async`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本。当脚本下载完成会暂停 HTML 解析，先去执行脚本，执行完再来解析 HTML。 这与`defer`有点差异
+- `async`会无视脚本顺序，优先执行先下载完成的
+- 当同时存在`defer async`的时候 `defer`将会失效
 
-```js
-<p>111</p>
-<p><img src = "test.png"/></p> //图片的加载不会阻塞DOM渲染过程
-<p>222</p>
-```
-
-#### `window.onload` 和 `DOMContentLoaded`的区别
+> `window.onload` 和 `DOMContentLoaded`的区别
 
 - 建议使用`document.addEventListener('DOMContentLoaded', fn(){...})`
 
@@ -273,13 +73,20 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 ```
 
-#### 什么是回流 什么是重绘？
+#### 构建渲染树
+
+- 将 `DOM Tree` 和 `CSSOM` 整合形成 `Render Tree`
+- 根据 `Render Tree` 渲染页面
+
+- 直至把 `Render Tree` 渲染完成
+
+#### 回流 重绘
 
 - 回流`reflow`：`render`树中一部分或全部元素需要改变尺寸、布局、或着需要隐藏而需要重新构建
 - 重绘`repaint`：`render`树中一部分元素改变，而不影响布局的，只影响外观的，比如颜色
 - 回流必将引起重绘
 
-##### 优化方案
+> 优化方案
 
 - 缓存 DOM 操作 多次 DOM 变成插入一个`createDocumentFragment`
 - 使用`window.requestAnimationFrame()`，因为它可以把代码推迟到下一次重绘之前执行，而不是立即要求页面重绘。
@@ -327,49 +134,42 @@ function animate() {
 animate()
 ```
 
-#### JS 脚本的异步加载
+#### 总结
 
-:::note Ref
+- 调用 `GUI` 渲染线程 解析 `HTML CSS `
+- 调用 `JS` 引擎 解析 `JS`
 
-- [浏览器环境概述](https://wangdoc.com/javascript/bom/engine.html)
 
-:::
 
-如何使`JS`文件在顶部仍然稍后加载呢？
+- 解析代码：解析 `HTML` 构建 `DOM` 树 解析 `CSS` 构建 `CSSOM` 树
+  - 解析过程中碰到 `js` 代码会停止解析去请求
+- 对象合成：根据 `DOM CSSOM` 生成 `Render Tree`
+- 布局：计算出 `Render Tree` 的布局
+- 绘制：将 `Render Tree` 绘制到屏幕
 
-常应用在引用了广告和统计的页面中，不会影响、堵塞，更不会影响到到页面其他元素
 
-- 使用`defer`
-  - `<script src="a.js" defer></script>`
-  - `defer`的作用是延迟脚本的执行，等到 DOM 加载生成后，再执行脚本
-  - 浏览器发现带有`defer`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本，等待网页解析完成再去执行脚本
-- 使用`async`
 
-  - `<script src="a.js" async></script>`
-  - `async`的作用是使用另一个进程下载脚本，下载时不会阻塞渲染
-  - 浏览器发现带有`async`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本。当脚本下载完成会暂停 HTML 解析，先去执行脚本，执行完再来解析 HTML。 这与`defer`有点差异
-  - `async`会无视脚本顺序，优先执行先下载完成的
-  - 当同时存在`defer async`的时候 `defer`将会失效
+- `CSS` 的加载与解析不会阻塞 `HTML` 的解析，他们是并行的。
+  - 但会阻塞渲染树 `RenderTree` 的生成，也会阻塞界面的渲染！
+- 媒体资源 (如:图片音视频等) 的加载不会阻塞HTML的解析 所以他们可以并行加载
 
-- 动态插入 `script` 标签
-  - 动态生成的`script`标签不会阻塞页面渲染，但无法保证脚本的执行顺序
 
-```js
-['a.js', 'b.js'].forEach(function (src) {
-  var script = document.createElement('script');
-  script.src = src;
-  document.head.appendChild(script);
-});
-```
 
-- 通过 `ajax` 去获取 js 代码，然后通过 eval 执行
-- 创建并插入 `iframe`，让它异步执行 js
 
-:::note Ref
 
-- [`JS脚本异步加载浅析`](https://juejin.cn/post/6844903661139656718)
 
-:::
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 性能优化
 
@@ -380,7 +180,7 @@ animate()
 
 :::
 
-#### 性能优化原则
+### 性能优化原则
 
 - 多使用内存、缓存或其他方法
 - 减少 CPU 计算量，减少网络请求，减少网络加载耗时
@@ -419,9 +219,9 @@ animate()
   - 隐形加载图片
   - 替换真图片
 
-```js
-// 一张图片就是一个`<img>`标签，浏览器是否发起请求图片是根据`<img>`的`src`属性，所以实现懒加载的关键就是，在图片没有进入可视区域时，先不给`<img>`的`src`赋值，这样浏览器就不会发送请求了，等到图片进入可视区域再给`src`赋值
+一张图片就是一个`<img>`标签，浏览器是否发起请求图片是根据`<img>`的`src`属性，所以实现懒加载的关键就是，在图片没有进入可视区域时，先不给`<img>`的`src`赋值，这样浏览器就不会发送请求了，等到图片进入可视区域再给`src`赋值
 
+```js
 // 可以给img标签统-自定义属性data=src='default.png'，当检测到图片出现在窗口之后再补充src属性，此时才会进行图片资源加载
 function lazyload() {
   const imgs = document.getElementsByTagName('img');
@@ -471,7 +271,7 @@ for (let i = 0; i < length; i++) {
 - `document.addEventListener('DOMContentLoaded', function () {}`
 - 防抖节流
 
-##### 首屏优化
+### 首屏优化
 
 - 尽可能的缩小 webpack 或者其他打包工具生成的包的大小
 - 路由懒加载
@@ -480,7 +280,7 @@ for (let i = 0; i < length; i++) {
 - 服务端渲染 SSR
 - gzip
 
-##### CSR SSR
+#### CSR SSR
 
 - `CSR` 客户端渲染
 - `SSR` 服务端渲染
@@ -490,9 +290,9 @@ for (let i = 0; i < length; i++) {
 
 ## 安全
 
-#### `XSS` 跨站脚本攻击
+### `XSS` 跨站脚本攻击
 
-##### 攻击
+#### 攻击
 
 > 反射型`XSS`
 
@@ -502,7 +302,7 @@ for (let i = 0; i < length; i++) {
 
 一个博客网站，我发表一篇博客，其中嵌入`<script>`脚本，脚本内容：获取`cookie`，发送到我的服务器（服务器配合跨域）。发布这篇博客，有人查看它，我轻松收割访问者的`cookie`。
 
-##### 预防
+#### 预防
 
 > 转译字符
 
@@ -557,9 +357,9 @@ style-src cdn.example.org third-party.org; child-src https:
   - 框架 `(frame)`：必须使用`HTTPS`协议加载
   - 其他资源：没有限制
 
-#### `CSRF` 跨站请求伪造
+### `CSRF` 跨站请求伪造
 
-##### 攻击
+#### 攻击
 
 原理： 诱导用户打开黑客的网站，在黑客的网站中，利用用户登录状态发起跨站点请求。
 
@@ -582,7 +382,7 @@ style-src cdn.example.org third-party.org; child-src https:
 你一查看邮件，就帮我购买了id是200的商品
 ```
 
-##### 预防
+#### 预防
 
 > `SameSite`
 
@@ -616,7 +416,7 @@ Set-Cookie: widget_session=abc123; SameSite=None; Secure
 - 使用 `post` 接口
 - 增加验证，例如密码、短信验证码、指纹等
 
-#### `sql` 注入
+### `sql` 注入
 
 > 权限最小化
 
@@ -626,7 +426,7 @@ Set-Cookie: widget_session=abc123; SameSite=None; Secure
 
 - `const reg = /select|update|delete|exec|count|'|"|=|;|>|<|%/i;`
 
-#### 点击劫持
+### 点击劫持
 
 - 通过覆盖不可见的框架误导受害者点击
   - 使用一个透明的`iframe`，覆盖在一个网页上，诱使用户在该页面上进行操作
@@ -645,3 +445,81 @@ Set-Cookie: widget_session=abc123; SameSite=None; Secure
 - [一、web 安全（xss/csrf）简单攻击原理和防御方案（理论篇）](https://juejin.cn/post/6951571103953190925)
 
 :::
+
+
+
+## 存储
+
+### `cookie localStorage sessionStorage` 区别
+
+- 容量
+- API 易用性
+- 是否跟随`http`请求发送出去
+
+##### 比较`cookie、localStorage、sessionStorage`
+
+相同点：都是存储数据，存储在 web 端，并且都是同源
+
+不同点：
+
+- `cookie` 只有 4K 并且每一次 http 请求都会带上`cookie` ，增加请求数据量，浪费带宽
+- `sessionStorage`和`localStorage`直接存储在本地，请求不会携带，并且容量比`cookie`要大的多（5M？）
+- 生命周期：
+  - `sessionStorage` 是临时会话，当前窗口被关闭的时候就清除掉
+  - `localStorage` 永久存在，除非手动删除或用代码删除，一般用`localStorage` 会更多一些
+  - `cookie` 有过期时间
+- `cookie` 和`localStorage`都可以支持多窗口共享(同源策略)，而`session`不支持多窗口共享。但是都支持 a 链接跳转的新窗口
+
+##### API
+
+- `cookie:` 可用`document.cookie = '...'`来修改，但一次只能赋值一个且同一个 key 会覆盖，不同的 key 是追加的过程。
+- `localStorage sessionStorage:` API 简易使用`setItem getItem`
+
+#### 方法详解
+
+- `setItem(key, value)`设置存储内容
+
+- `getItem(key)`读取存储内容
+
+- `removeItem(key)`删除键值为`key`的存储内容
+
+- `clear()`清空所有存储内容
+
+- `key(n)` 以索引值来获取键名
+
+- `length`存储的数据的个数
+
+#### 关于`cookie`
+
+- `cookie`的编码方式：`encodeURI()`
+
+#### cookie 有哪些字段可以设置
+
+- [HTTP cookies 详解](https://www.kancloud.cn/kancloud/http-cookies-explained/48333)
+- `Set-Cookie: value[; expires=date][; domain=domain][; path=path][; secure]`
+- `Set-Cookie: name=Nicholas; expires=Sat, 02 May 2021 23:38:25 GMT domain=nczonline.net; path=/blog; secure`
+  - `secure`：只允许在 https 下传输
+  - `Max-age`: cookie 生成后失效的秒数
+  - `expire`: cookie 的最长有效时间，若不设置则 cookie 生命期与会话期相同
+- `document.cookie="name=Nicholas;domain=nczonline.net;path=/";`
+- 通过给`cookie`设置`http-only`属性，使得不能被客户端更改访问，无法通过`js`脚本读取到该`cookie`的信息。但还是能通过 `Application`中手动修改`cookie`，所以只是在一定程度上可以防止`xss`攻击，并不是绝对的安全。
+- `cookie`数据有路径`path`的概念，可以限制当前`cookie`只属于某个路径下
+
+#### cookie 与 session
+
+- `cookie`数据存放在客户的浏览器上，`session`数据放在服务器上
+- `cookie`在`http`下是明文传输的，不是很安全。别人可以分析存放在本地的`cookie`并进行`cookie`欺骗
+  考虑到安全应当使用`session`。
+- `session`的运行依赖`sessionId`，而`sessionId`又保存在`cookie`中，所以如果禁用的`cookie`，`session`也是不能用的，不过硬要用也可以，可以把`sessionId`保存在`url`中
+- `session`会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用`cookie`
+- 单个`cookie`保存的数据不能超过 4K，很多浏览器都限制一个站点最多保存 20 个`cookie`
+
+#### localstorage 存满了怎么办？
+
+- 划分域名：各域名下的存储空间由各业务组统一规划使用
+- 跨页面传数据：考虑单页应用、优先采用 url 传输数据
+- 最后兜底方案：清掉别人的存储
+
+- `cookie` 的跨域问题
+  - 存在，`cookie`是跟域名绑定的；可以通过二级域名来解决跨域问题
+

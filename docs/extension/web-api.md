@@ -4,7 +4,7 @@
 
 - JS Web API --> 网页操作的 API --> W3C 标准
 
-## 内存泄露、垃圾回收机制
+## 内存泄露
 
 ##### 什么是内存泄漏?
 
@@ -14,26 +14,63 @@
 
 - 内存泄漏指我们无法在通过`js`访问某个对象，而垃圾回收机制却认为该对象还在被引用，因此垃圾回收机制不会释放该对象，导致该块内存永远无法释放，积少成多，系统会越来越卡以至于崩溃。
 
-##### 垃圾回收机制的策略
+## 垃圾回收机制
 
-- 标记清除法
-  - 垃圾回收器获取根并**标记**它们。
-  - 然后它访问并“标记”所有来自它们的引用。
-  - 然后它访问标记的对象并标记它们的引用。所有被访问的对象都被记住，以便以后不再访问同一个对象两次。
-  - 以此类推，直到有未访问的引用(可以从根访问)为止。
-  - 除标记的对象外，所有对象都被删除。
-- 引用计数法
-  - 当声明一个变量并给该变量赋值一个引用类型的值时候，该值的计数+1
-  - 当该值赋值给另一个变量的时候，该计数+1
-  - 当该值被其他值取代的时候，该计数-1
-  - 当计数变为 0 的时候，说明无法访问该值了，垃圾回收机制清除该对象
-  - 但如果出现循环引用 引用计数就会出现问题 无法回收
+- `GC => Garbage Collection`
+- ♻️回收程序不用的内存或者是之前用过了，以后不会再用的内存空间
+
+> 可达性
+
+- 指那些以某种方式可访问或者说可用的值，它们被保证存储在内存中，反之不可访问则需回收
+
+#### 垃圾回收机制的策略
+
+##### 标记清除法
+
+> `Mark-Sweep`
+
+- 垃圾收集器在运行时会给内存中的所有变量都加上一个标记，假设内存中所有对象都是垃圾，全标记为0
+- 然后从各个根对象开始遍历，把不是垃圾的节点改成1
+- 清理所有标记为0的垃圾，销毁并回收它们所占用的内存空间
+- 最后，把所有内存中对象标记修改为0，等待下一轮垃圾回收
+
+> 优缺点
+
+- 优点：实现比较简单，只涉及打与不打标记的情况，通过01就可以实现
+- 缺点：
+  - 内存碎片：清除完之后会出现闲置内存不连续的情况
+  - 分配速度慢：`First-fit | Best-fit | Worst-fit` 
+
+> 标记整理 `Mark-Compact`
+
+- 它的标记阶段和标记清除算法没有什么不同，只是标记结束后，标记整理算法会将活着的对象（即不需要清理的对象）向内存的一端移动，最后清理掉边界的内存
+
+##### 引用计数法
+
+> `Reference Counting`
+
+- 当声明一个变量并给该变量赋值一个引用类型的值时候，该值的计数+1
+- 当该值赋值给另一个变量的时候，该计数+1
+- 当该值被其他值取代的时候，该计数-1
+- 当计数变为 0 的时候，说明无法访问该值了，垃圾回收机制清除该对象
+
+> 优缺点
+
+- 优点：当计数为0 就会直接清除
+- 缺点：如果出现循环引用 引用计数就会出现问题 无法回收 （将引用地址置为`null`
+
+#### V8下的优化
 
 :::note Ref
 
 - [前端面试：谈谈 JS 垃圾回收机制](https://segmentfault.com/a/1190000018605776)
+- [「硬核JS」你真的了解垃圾回收机制吗](https://juejin.cn/post/6981588276356317214)
 
 :::
+
+
+
+
 
 ## DOM
 
@@ -753,78 +790,3 @@ ws.addEventListener('error', function (event) {});
 ##### `window.postMessage`
 
 - `window.postMessage(data, origin, source)`
-
-## 存储
-
-#### `cookie localStorage sessionStorage` 区别
-
-- 容量
-- API 易用性
-- 是否跟随`http`请求发送出去
-
-##### 比较`cookie、localStorage、sessionStorage`
-
-相同点：都是存储数据，存储在 web 端，并且都是同源
-
-不同点：
-
-- `cookie` 只有 4K 并且每一次 http 请求都会带上`cookie` ，增加请求数据量，浪费带宽
-- `sessionStorage`和`localStorage`直接存储在本地，请求不会携带，并且容量比`cookie`要大的多（5M？）
-- 生命周期：
-  - `sessionStorage` 是临时会话，当前窗口被关闭的时候就清除掉
-  - `localStorage` 永久存在，除非手动删除或用代码删除，一般用`localStorage` 会更多一些
-  - `cookie` 有过期时间
-- `cookie` 和`localStorage`都可以支持多窗口共享(同源策略)，而`session`不支持多窗口共享。但是都支持 a 链接跳转的新窗口
-
-##### API
-
-- `cookie:` 可用`document.cookie = '...'`来修改，但一次只能赋值一个且同一个 key 会覆盖，不同的 key 是追加的过程。
-- `localStorage sessionStorage:` API 简易使用`setItem getItem`
-
-#### 方法详解
-
-- `setItem(key, value)`设置存储内容
-
-- `getItem(key)`读取存储内容
-
-- `removeItem(key)`删除键值为`key`的存储内容
-
-- `clear()`清空所有存储内容
-
-- `key(n)` 以索引值来获取键名
-
-- `length`存储的数据的个数
-
-#### 关于`cookie`
-
-- `cookie`的编码方式：`encodeURI()`
-
-#### cookie 有哪些字段可以设置
-
-- [HTTP cookies 详解](https://www.kancloud.cn/kancloud/http-cookies-explained/48333)
-- `Set-Cookie: value[; expires=date][; domain=domain][; path=path][; secure]`
-- `Set-Cookie: name=Nicholas; expires=Sat, 02 May 2021 23:38:25 GMT domain=nczonline.net; path=/blog; secure`
-  - `secure`：只允许在 https 下传输
-  - `Max-age`: cookie 生成后失效的秒数
-  - `expire`: cookie 的最长有效时间，若不设置则 cookie 生命期与会话期相同
-- `document.cookie="name=Nicholas;domain=nczonline.net;path=/";`
-- 通过给`cookie`设置`http-only`属性，使得不能被客户端更改访问，无法通过`js`脚本读取到该`cookie`的信息。但还是能通过 `Application`中手动修改`cookie`，所以只是在一定程度上可以防止`xss`攻击，并不是绝对的安全。
-- `cookie`数据有路径`path`的概念，可以限制当前`cookie`只属于某个路径下
-
-#### cookie 与 session
-
-- `cookie`数据存放在客户的浏览器上，`session`数据放在服务器上
-- `cookie`在`http`下是明文传输的，不是很安全。别人可以分析存放在本地的`cookie`并进行`cookie`欺骗
-  考虑到安全应当使用`session`。
-- `session`的运行依赖`sessionId`，而`sessionId`又保存在`cookie`中，所以如果禁用的`cookie`，`session`也是不能用的，不过硬要用也可以，可以把`sessionId`保存在`url`中
-- `session`会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用`cookie`
-- 单个`cookie`保存的数据不能超过 4K，很多浏览器都限制一个站点最多保存 20 个`cookie`
-
-#### localstorage 存满了怎么办？
-
-- 划分域名：各域名下的存储空间由各业务组统一规划使用
-- 跨页面传数据：考虑单页应用、优先采用 url 传输数据
-- 最后兜底方案：清掉别人的存储
-
-- `cookie` 的跨域问题
-  - 存在，`cookie`是跟域名绑定的；可以通过二级域名来解决跨域问题

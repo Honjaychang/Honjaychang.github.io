@@ -41,6 +41,8 @@ console.log(obj2);
 
 ## 手写防抖、节流
 
+- 若写为箭头函数 需要注意 箭头函数 没有 `arguments`
+
 #### 防抖
 
 - 原理
@@ -55,39 +57,40 @@ console.log(obj2);
  * 防抖: 用户输入结束或暂停时，才会触发 change事件
  */
 
-const input1 = document.getElementById('input1');
-let timer = null;
-input1.addEventListener('keyup', function () {
-  if (timer) clearTimeout(timer);
-  timer = setTimeout(function () {
-    console.log(input1.value); // 模拟触发change事件
-    // 清空定时器
-    timer = null;
-  }, 500);
-});
+const debounce = (fn, delay = 500) => {
+  let timer = null; // timer 是闭包中的
+  return (...args) => {
+    timer && clearTimeout(timer);
+    timer = setTimeout(() => {
+      // fn.apply(this, arguments);
+      // fn(args);
+      fn(...args);
+      timer = null; // 清空定时器
+    }, delay);
+  };
+};
 
-// 封装
-function debunce(fn, delay = 500) {
-  // timer 是闭包中的
+input1.addEventListener( 'keyup', debunce(() => { console.log(input1.value) }));
+```
+
+`immediate`
+
+```jsx
+const debounceImmediate = (fn, delay = 500, immediate = false) => {
   let timer = null;
-  return function () {
-    if (timer) {
-      clearTimeout(timer);
+  return (...args) => {
+    timer && clearTimeout(timer);
+    if (immediate) {
+      let runNow = !timer;
+      timer = setTimeout(() => (timer = null), delay);
+      runNow && fn.apply(this, args);
     }
     timer = setTimeout(() => {
-      // 下面用this这边必须要用箭头 历史遗留问题？
-      fn.apply(this, arguments); // fn() 也可以 但是不能用this了
+      fn.apply(this, args);
       timer = null;
     }, delay);
   };
-}
-input1.addEventListener(
-  'keyup',
-  debunce(function () {
-    console.log(this.value);
-  })
-  // debunce(() => { console.log(input1.value) })
-);
+};
 ```
 
 #### 节流
@@ -100,49 +103,83 @@ input1.addEventListener(
  * 节流throttle
  * 拖拽一个元素时，要随时拿到该元素被拖拽的位置
  * 直接用 drag 事件，则会频发触发，很容易导致卡顿
- * 节流:无论拖拽速度多快，都会每隔100ms触发一次
+ * 节流:无论拖拽速度多快，都会每隔1000ms触发一次
  */
-
-const div1 = document.getElementById('div1');
-let timer = null;
-div1.addEventListener('drag', function (e) {
-  if (timer) return;
-  timer = setTimeout(function () {
-    console.log(e.offsetX, e.offsetY);
-    timer = null;
-  }, 500);
-});
-// 封装
-function throttle(fn, delay = 100) {
+const throttle = (fn, delay = 1000) => {
   let timer = null;
-  return function () {
+  return (...args) => {
     if (timer) return;
     timer = setTimeout(() => {
-      fn.apply(this, arguments); // throttle 的 event事件对象 会传递给throttle返回的函数 若想console输出event相关的信息就要通过apply 传递this 单纯通过fn()是不行的
+      fn.apply(this, args);
       timer = null;
     }, delay);
   };
-}
-div1.addEventListener(
-  'drag',
-  throttle(function (e) {
-    console.log(e.offsetX, e.offsetY);
-  })
-);
+};
 ```
 
 #### 异同
 
-##### 同
+**同**
 
 - 目的都是：降低回调执行频率，节省计算资源
 
-##### 异
+**异**
 
 - 防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行。
 - 区别在于，假设一个用户一直触发这个函数，且每次触发函数的间隔小于 wait，防抖的情况下只会调用一次，而节流的情况会每隔一定时间（参数 wait）调用函数。
 - 防抖：在事件被触发 n 秒后再执行回调，如果在这 n 秒内又被触发，则重新计时。
 - 节流：规定在一个单位时间内，只能触发一次函数。
+
+#### Hook
+
+因为函数组件每次渲染结束之后，内部的变量都会被释放，重新渲染时所有的变量会被重新初始化，产生的结果就是每一次都注册和执行了`setTimeout` 函数。想要得到正确的运行结果，必须以某种方式存储那些本会被删除的变量和方法的引用 `eg: timer`。
+
+所以我们可以利用React组件的缓存机制，通过自定义 `Hook` 组件去解决这个问题
+
+- 防抖
+
+```jsx
+import { useRef, useEffect, useCallback } from 'react';
+
+const useDebounce = (fn, delay = 500, dep = []) => {
+  const { current } = useRef({ fn, timer: null });
+  console.log('debounce-', current);
+  useEffect(() => (current.fn = fn), [fn, current]);
+
+  return useCallback((...args) => {
+    current.timer && clearTimeout(current.timer);
+    current.timer = setTimeout(() => {
+      current.fn.apply(this, args);
+    }, delay);
+  }, dep);
+};
+```
+
+- 节流
+
+```jsx
+export function useThrottle(fn, delay = 500, dep = []) {
+  const { current } = useRef({ fn, timer: null });
+  console.log('throttle-', current);
+  useEffect(() => (current.fn = fn), [fn, current]);
+
+  return useCallback((...args) => {
+    if (current.timer) return;
+    current.timer = setTimeout(() => {
+      current.fn.apply(this, args);
+      current.timer = null;
+    }, delay);
+  }, dep);
+}
+```
+
+:::note Ref
+
+- [防抖节流以及React Hook中的防抖节流](https://blog.csdn.net/lovezhuer1/article/details/112681236?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-1.control)
+
+- [一起围观由React Hooks防抖引发的面试翻车现场](https://blog.csdn.net/qiwoo_weekly/article/details/105721412?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromMachineLearnPai2%7Edefault-4.control)
+
+:::
 
 ## 手写 ajax
 
@@ -806,60 +843,6 @@ Array.prototype.shuffle = function () {
 - [「前端进阶」数组乱序](https://juejin.cn/post/6844903863812620296)
 
 :::
-
-## 数组中出现次数大于 1/2
-
-```js
-let arr = [1, 2, 3, 2, 2, 2, 5, 4, 2]; // 2
-```
-
-- `sort`
-
-```js
-return arr.sort((a, b) => a - b)[Math.floor(arr.length / 2)];
-```
-
-- Map 存储遍历
-
-```js
-function fn(arr) {
-  let length = arr.length;
-  let map = new Map();
-  let count;
-  for (let i = 0; i < arr.length; i++) {
-    if (map.has(arr[i])) {
-      count = map.get(arr[i]);
-      map.set(arr[i], ++count);
-    } else {
-      map.set(arr[i], 1);
-    }
-  }
-
-  for (let [key, value] of map) {
-    if (value > Math.floor(length / 2)) return key;
-  }
-}
-```
-
-- 摩尔投票
-
-```js
-function moer(arr) {
-  let candiater = arr[0];
-  let count = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (count === 0) {
-      // 如果此时没有候选人 就让当前这人为候选人
-      candiater = arr[i];
-    }
-    if (arr[i] === candiater) {
-      // 如果此时有候选人 且与候选人相等 ++
-      count++;
-    } else count--; // 不一样 count--
-  }
-  return candiater;
-}
-```
 
 ## `node` 回调 `promise` 化
 

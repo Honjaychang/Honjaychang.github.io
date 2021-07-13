@@ -36,6 +36,11 @@ module.exports = {
     },
     footer: {
       style: 'dark',
+      logo: {
+        alt: 'Logo',
+        src: 'img/photo.jpg',
+        href: 'https://github.com/Honjaychang',
+      },
       copyright: `Copyright © ${new Date().getFullYear()} Honjaychang`,
     },
     prism: {

@@ -290,12 +290,9 @@ undefined === null //false
 !!null === false;
 !!undefined === false;
 !!false === false;
-
-// 空数组和空对象对应的bool值都是true
-{
-}
-[];
 ```
+
+- 空数组和空对象对应的`bool`值都是`true` `{} []`
 
 #### 类型转换
 
@@ -345,11 +342,9 @@ null == undefined;
 ```js
 // 除了 == null之外，其他都用 ===
 const obj = { x: 100 };
-if (obj.x == null) {
-}
+if (obj.x == null) { }
 
-if (obj.x === null || obj.x === undefined) {
-}
+if (obj.x === null || obj.x === undefined) { }
 ```
 
 - 四则运算符
@@ -588,7 +583,7 @@ console.log(arr.slice(-2)); // [ 4, 5 ]
 
 ```js
 //start	必需。整数，规定添加/删除项目的位置，使用负数可从数组结尾处规定位置。
-//deleteCount	可选。要删除的项目数量。如果设置为 0，则不会删除项目。如果不设置则从index开始全删
+//deleteCount	可选。要删除的项目数量。设置为 0，则不会删除项目。不设置则从index开始全删
 //item1, ..., itemX	可选。向数组添加的新项目。
 
 console.log(arr.splice(1, 4, 'a', 'b', 'c'), arr);
@@ -670,7 +665,12 @@ arr.sort(function (a, b) {
   return Math.random() - 0.5;
 }); //随机
 
-/*这个函数相当于一个委托(或许说谓词函数更为贴切一些)，因为要对数组排序，必然要涉及到两个数组成员的比较，这个函数为你提供一种选择，以改变默认的大小比较规则，排序结果根据这个规则进行比较(函数返回值小于0认为是第一个元素小于第二个元素，等于0是两个元素相等，大于0是第一个元素大于第二个元素)。简单的改变这个函数，你就可以实现倒序排序。也可以对一个具有多个属性的对象进行排序。*/
+/*
+ * 这个函数相当于一个委托(或许说谓词函数更为贴切一些)，因为要对数组排序，必然要涉及到两个数组成员的比较   
+ * 这个函数为你提供一种选择，以改变默认的大小比较规则，排序结果根据这个规则进行比较
+ * (函数返回值小于0认为是第一个元素小于第二个元素，等于0是两个元素相等，大于0则反之)。
+ * 简单的改变这个函数，你就可以实现倒序排序。也可以对一个具有多个属性的对象进行排序。
+ */
 ```
 
 - 会原地排序原数组并返回原数组
@@ -1164,7 +1164,9 @@ for (let key in obj) {
   console.log(key); // a b
 }
 
-但是 freeze() 不会冻结嵌套的子对象，它所执行的是浅冻结。 嵌套层还是可以修改删除和遍历的  Object.seal(obj) 也是
+但是 freeze() 不会冻结嵌套的子对象，它所执行的是浅冻结。 
+嵌套层还是可以修改删除和遍历的  
+Object.seal(obj) 也是
 
 复杂类型冻结的是指向堆内存存放数据的内存地址
 所以引用类型中的深层数据并不受影响
@@ -1442,7 +1444,8 @@ WeakMap 键名 -> 对象
 循环引用
 
 ```js
-// 用 WeakMap 记录 当前是否存在 hashkey 如果存在就不用进行深拷贝 直接返回就好 Map也可以 只是WeakMap 弱引用 方便垃圾回收
+// 用 WeakMap 记录 当前是否存在 hashkey 如果存在就不用进行深拷贝 直接返回就好 
+// Map也可以 只是WeakMap 弱引用 方便垃圾回收
 
 function deepClone(obj = {}, hashMap = new WeakMap()) {
   if (typeof obj !== 'object' || obj == null) {
@@ -1750,6 +1753,7 @@ function printInfo(dep1, dep2, dep3) {
 printInfo.call(emp, 'WEB', 'IT', 'Office');
 printInfo.apply(emp, ['WEB', 'IT', 'Office']); //可以作为数组传入
 
-var empPrintInfo = printInfo.band(emp, 'WEB', 'IT', 'Office'); //返回绑定参数的新函数 用于后续执行
+var empPrintInfo = printInfo.band(emp, 'WEB', 'IT', 'Office'); 
+//返回绑定参数的新函数 用于后续执行
 empPrintInfo();
 ```

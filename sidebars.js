@@ -17,9 +17,9 @@ module.exports = {
   docs: {
     HC: ['hc/html', 'hc/css'],
     JS: ['js/basic', 'js/advanced', 'js/dataStructure', 'js/module', 'js/reg'],
-    Extension: ['extension/web-api', 'extension/http-browser'],
+    Extension: ['extension/web-api', 'extension/browser'],
     TS: ['ts/basic'],
-    React: ['react/basic'],
+    React: ['react/basic', 'react/redux', 'react/hooks'],
     Dev: ['dev/git', 'dev/node', 'dev/os', 'dev/webpack'],
     Network: ['network/basic'],
     Algo: ['algo/basic', 'algo/sort', 'algo/sword', 'algo/tree'],

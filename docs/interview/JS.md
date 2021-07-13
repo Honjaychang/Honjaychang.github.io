@@ -594,7 +594,7 @@ const zhangsan = new Student('zhangsan', 1234);
 console.log(zhangsan.sayHi());
 ```
 
-![](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/image-20210309143110315-20210309143423470.png)
+![](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/prototype.png)
 
 - ##### `extends`
 
@@ -625,7 +625,7 @@ console.log(lisi.eat());
 console.log(lisi.sayHi());
 ```
 
-![](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/image-20210309144651134.png)
+![](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/prototypeLink.png)
 
 ##### 类型判断`instanceof`
 
@@ -689,7 +689,7 @@ ECMA只规定语法规则，即我们代码的书写规范，不规定如何实�
 
 [图源](https://clarkdo.js.org/javascript/2014/08/21/17/)
 
-![jsobj_full](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/jsobj_full.jpg)
+![jsobj_full](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/jsobj_full.jpg)
 
 ## 异步
 

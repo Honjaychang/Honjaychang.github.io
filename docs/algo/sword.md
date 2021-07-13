@@ -342,3 +342,335 @@ function coinChange(coins, amount) {
   return dp[amount] === Infinity ? -1 : dp[amount];
 }
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+## 接雨水
+
+```js
+var trap = function (height) {
+  let sum = 0
+  for (let i = 1; i < height.length - 1; i++) {
+    let leftMax = 0 //找左边最大高度
+    for (let j = i - 1; j >= 0; j--) {
+      leftMax = height[j] >= leftMax ? height[j] : leftMax
+    }
+    let rightMax = 0 //找右边最大高度
+    for (let j = i + 1; j < height.length; j++) {
+      rightMax = height[j] >= rightMax ? height[j] : rightMax
+    }
+    let min = Math.min(leftMax, rightMax) //得到左右两边最大高度中较矮的那个高度
+    if (min > height[i]) {
+      sum = sum + min - height[i] //接水量 = 左右两边最大高度中较矮的那个高度 - 当前项的高度
+    }
+    //console.log(leftMax, rightMax, sum)
+  }
+  return sum
+}
+```
+
+## 最大子序列和
+
+```js
+let arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]; // [4, -1, 2, 1] => 6
+```
+
+#### 暴力
+
+```js
+function fn(arr) {
+  let res = [];
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i; j < arr.length; j++) {
+      res.push(arr.slice(i, j + 1).reduce((a, b) => a + b));
+    }
+  }
+  return Math.max(...res);
+}
+```
+
+#### 动态规划
+
+- 时间复杂度：`O(n)`
+- 空间复杂度：`O(n)`
+
+```js
+/**
+ * 如果 sum > 0, sum对结果有增益效果 sum保留并加上当前值
+ * sum < 0, sum对结果无增益效果， 舍弃 => sum = 当前值
+ * 比较sum 和 res 将大的作为 res 返回
+ */
+function fn(nums) {
+  let sum = 0,
+      res = nums[0];
+  for (let i = 0; i < nums.length; i++) {
+    // if (sum > 0) sum += nums[i];
+    // else sum = nums[i];
+    sum = sum > 0 ? sum + nums[i] : nums[i]
+    res = Math.max(res, sum);
+  }
+  return res;
+}
+```
+
+#### 分治
+
+- 时间复杂度：`O(nlog(n))`
+- 空间复杂度：
+
+```js
+function fn(nums) {
+  return divide(nums, 0, nums.length - 1);
+}
+function divide(nums, left, right) {
+  if (left === right) return nums[left];
+
+  let mid = Math.floor(left + (right - left) / 2);
+
+  let leftMax = divide(nums, left, mid);
+  let rightMax = divide(nums, mid + 1, right);
+
+  let leftCrossMax = nums[mid];
+  let leftCrossSum = 0;
+  let rightCrossMax = nums[mid + 1];
+  let rightCrossSum = 0;
+  // 计算左边
+  for (let i = mid; i >= left; i--) {
+    leftCrossSum += nums[i];
+    leftCrossMax = Math.max(leftCrossMax, leftCrossSum);
+  }
+  // 计算右边
+  for (let i = mid + 1; i <= right; i++) {
+    rightCrossSum += nums[i];
+    rightCrossMax = Math.max(rightCrossMax, rightCrossSum);
+  }
+
+  let crossMax = leftCrossMax + rightCrossMax;
+  return Math.max(leftMax, rightMax, crossMax);
+}
+```
+
+## 打印螺旋矩阵
+
+出现次数大于一半
+
+
+
+
+
+### [45. 把数组排成最小的数](https://leetcode-cn.com/problems/ba-shu-zu-pai-cheng-zui-xiao-de-shu-lcof/solution/jian-zhi-offer-45-ba-shu-zu-pai-cheng-zu-580q/)
+
+
+
+
+
+
+
+
+
+
+
+## 数组中出现次数大于 1/2
+
+```js
+let arr = [1, 2, 3, 2, 2, 2, 5, 4, 2]; // 2
+```
+
+- `sort`
+
+```js
+return arr.sort((a, b) => a - b)[Math.floor(arr.length / 2)];
+```
+
+- Map 存储遍历
+
+```js
+function fn(arr) {
+  let length = arr.length;
+  let map = new Map();
+  let count;
+  for (let i = 0; i < arr.length; i++) {
+    if (map.has(arr[i])) {
+      count = map.get(arr[i]);
+      map.set(arr[i], ++count);
+    } else {
+      map.set(arr[i], 1);
+    }
+  }
+
+  for (let [key, value] of map) {
+    if (value > Math.floor(length / 2)) return key;
+  }
+}
+```
+
+- 摩尔投票
+
+```js
+function moer(arr) {
+  let candiater = arr[0];
+  let count = 0;
+  for (let i = 0; i < arr.length; i++) {
+    if (count === 0) {
+      // 如果此时没有候选人 就让当前这人为候选人
+      candiater = arr[i];
+    }
+    if (arr[i] === candiater) {
+      // 如果此时有候选人 且与候选人相等 ++
+      count++;
+    } else count--; // 不一样 count--
+  }
+  return candiater;
+}
+```
+
+## 
+
+
+
+```js
+/**
+ * Definition for singly-linked list.
+ * function ListNode(val) {
+ *     this.val = val;
+ *     this.next = null;
+ * }
+ */
+```
+
+
+
+
+
+
+
+#### [24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
+
+```js
+// 输入: 1->2->3->4->5->NULL
+// 输出: 5->4->3->2->1->NULL
+
+const reverseList = (head) => {
+  // 定义cur指向头部 pre指向头部前面的null
+  let [cur, pre] = [head, null];
+  // 遍历链表
+  while (cur) {
+    // 定义next为cur下一个
+    const next = cur.next;
+    // cur的指向改为pre
+    cur.next = pre;
+    // pre改为当前cur的指向
+    pre = cur;
+    // cur的指向改为next的指向
+    cur = next;
+  }
+  // 遍历结束，cur指向null，返回pre
+  return pre;
+};
+
+const reverseList = (head) => {
+  let [cur, pre] = [head, null];
+  while (cur) [pre, cur, cur.next] = [cur, cur.next, pre];
+  return pre;
+};
+```
+
+
+
+核心思路就是留一个前置指针，在游标移动K次之后前置指针开始移动，当游标到达最后一个元素时，前置指针刚好是要返回链表的头
+
+```js
+// 给定一个链表: 1->2->3->4->5, 和 k = 2.
+// 返回链表 4->5.
+
+const getKthFromEnd = (head, k) => {
+  let fast = head;
+  let slow = head;
+  let flag = 0;
+  while (fast) {
+    if (flag >= k) slow = slow.next;
+    fast = fast.next;
+    flag++;
+  }
+  return slow;
+};
+```
+
+
+
+```js
+// 递归
+var mergeTwoLists = function (l1, l2) {
+  // 当其中有null 则返回有效值
+  if (!l1 || !l2) return l1 || l2;
+  // 进行大小对比
+  if (l1.val < l2.val) {
+    l1.next = mergeTwoLists(l1.next, l2);
+    return l1;
+  } else {
+    l2.next = mergeTwoLists(l1, l2.next);
+    return l2;
+  }
+};
+
+var mergeTwoLists = function (l1, l2) {
+  if (!l1) return l2;
+  else if (!l2) return l1;
+
+  let preHead = new ListNode(-1);
+  let node = preHead;
+
+  while (l1 && l2) {
+    if (l1.val <= l2.val) {
+      node.next = l1;
+      l1 = l1.next;
+    } else {
+      node.next = l2;
+      l2 = l2.next;
+    }
+    node = node.next;
+  }
+
+  if (l1) node.next = l1;
+  else if (l2) node.next = l2;
+
+  return preHead.next;
+};
+```
+
+
+
+```js
+var reversePrint = function (head) {
+    let nums = []
+    const visitor = function (head) {
+        if (head !== null) {
+            visitor(head.next)
+            nums.push(head.val)
+        }
+    };
+    visitor(head)
+    return nums
+}
+
+var reversePrint = function (head) {
+  let cur = head;
+  let res = [];
+  while (cur) {
+    res.unshift(cur.val);
+    cur = cur.next;
+  }
+  return res;
+};
+```
+

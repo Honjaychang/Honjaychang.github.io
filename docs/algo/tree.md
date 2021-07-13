@@ -2,7 +2,7 @@
 
 ## 深度优先搜索 DFS
 
-![tree](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/tree.png)
+![tree](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/dfsTree.png)
 
 [在线绘图](http://mshang.ca/syntree/) `[1 [2  [4] [5 [6 [8][x]] [7] ] ] [3 ]`    `x 不存在 只是代表8 是左节点`
 

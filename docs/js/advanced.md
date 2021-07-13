@@ -92,13 +92,41 @@ function test(a) {
   console.log(b);
   function d() {}
 }
-test(2); // ƒ a(){} 1 1 ƒ (){}// AO activation object 活跃对象 函数上下文// 1、寻找形参和变量声明// 2、实参值赋值给形参// 3、找函数声明 赋值// 4、执行// AO = {//	a:undefined-->2-->function a(){}-->1//  b:undefined-->function(){}//  d:function d(){}// }
+test(2); // ƒ a(){} 1 1 ƒ (){}
+
+/*
+ * AO activation object 活跃对象 函数上下文
+ * 1、寻找形参和变量声明
+ * 2、实参值赋值给形参
+ * 3、找函数声明 赋值
+ * 4、执行
+ * AO = {
+ 		a:undefined-->2-->function a(){}-->1
+ 		b:undefined-->function(){}  
+ 		d:function d(){}
+ 	}
+ */
 ```
 
 >
 
 ```js
-console.log(a); //function a(){...}var a = 1;function a() {  console.log(2);}// GO global object 全局上下文// 1、寻找变量// 2、找函数声明// 3、执行// GO = {//	a:undefined-->function a(){}    -->1// }// GO === window
+console.log(a); //function a(){...}
+var a = 1;
+function a() {  
+  console.log(2);
+}
+
+/*
+ * GO global object 全局上下文
+ * 1、寻找变量
+ * 2、找函数声明
+ * 3、执行
+ * GO = {
+ 		a:undefined-->function a(){}-->1
+ 	}
+ * GO === window
+ */
 ```
 
 >
@@ -109,7 +137,16 @@ function test() {
   console.log(a);
 }
 test();
-console.log(a, b); //err 1 // b被挂载到全局变量window上了// GO = {// 	b:1// }// AO = {//	a:undefined-->1// }
+console.log(a, b); //err 1 // b被挂载到全局变量window上了
+
+/*
+ * GO = {
+ 		b:1
+ 	}
+ * AO = {
+ 		a:undefined-->1
+ 	}
+ */
 ```
 
 >
@@ -125,7 +162,23 @@ function a(a) {
   var b = 5;
   console.log(b);
 }
-a(1); //function a(a){...}	function a(){}	2	5// GO = {// 	b:undefined-->3//	a:function a(a){...}// }// AO = {//	a:undefined-->1-->function a(){}-->2//	b:undefined-->5// }// AO里面有值就不会去GO里面查找即使是undefined
+a(1); //function a(a){...}	function a(){}	2	5
+
+/*
+ * GO global object 全局上下文
+ * 1、寻找变量
+ * 2、找函数声明
+ * 3、执行
+ * GO = {
+ 		b:undefined-->3
+ 		a:function a(a){...}
+ 	}
+ * AO = {
+ 		a:undefined-->1-->function a(){}-->2
+ 		b:undefined-->5
+ 	}
+ * AO里面有值就不会去GO里面查找即使是undefined
+ */
 ```
 
 > 函数的作用域链上 永远都会挂载`GO` 当函数执行时（前一刻，预编译时） 函数的`AO`便会挂载在作用域链的首位
@@ -138,7 +191,24 @@ function a() {
   }
   b();
 }
-a(); // a定义 a.[[scope]] --> 0:GO// a执行 a.[[scope]] --> 0:a-->AO	1:GO//// b定义 b.[[scope]] --> 0:a-->AO	1:GO// b执行 b.[[scope]] --> 0:b-->AO	1:a-->AO	2:GO//// c定义 c.[[scope]] --> 0:b-->AO	1:a-->AO	2:GO// c执行 c.[[scope]] --> 0:c-->AO	1:b-->AO	2:a-->AO	3:GO//// c结束 c.[[scope]] --> 0:b-->AO	1:a-->AO	2:GO//// b结束 b.[[scope]] --> 0:a-->AO	1:GO	c.[[scope]]销毁//// a结束 a.[[scope]] --> 0:GO	b.[[scope]]销毁//
+a(); 
+
+/*
+ * a定义 a.[[scope]] --> 0:GO
+ * a执行 a.[[scope]] --> 0:a-->AO	1:GO
+ * 
+ * b定义 b.[[scope]] --> 0:a-->AO	1:GO
+ * b执行 b.[[scope]] --> 0:b-->AO	1:a-->AO 2:GO
+ * 
+ * c定义 c.[[scope]] --> 0:b-->AO	1:a-->AO	2:GO
+ * c执行 c.[[scope]] --> 0:c-->AO	1:b-->AO	2:a-->AO	3:GO
+ * 
+ * c结束 c.[[scope]] --> 0:b-->AO	1:a-->AO	2:GO
+ *
+ * b结束 b.[[scope]] --> 0:a-->AO	1:GO	c.[[scope]]销毁
+ * 
+ * a结束 a.[[scope]] --> 0:GO	b.[[scope]]销毁
+ */
 ```
 
 #### 闭包
@@ -173,20 +243,51 @@ a(); // a定义 a.[[scope]] --> 0:GO// a执行 a.[[scope]] --> 0:a-->AO	1:GO////
 - 封装
 
 ```js
-// 当内部函数被返回到外部并保存时，一定会产生闭包。闭包会产生原来的作用域链不释放，过度的闭包可能会导致内存泄漏，或加载过慢。function outer() {  var count = 0; //这个变量外部不可直接使用（可理解为受保护变量）  return function () {    count++; //通过内部函数操作受保护变量    console.log(count);  };}var inner = outer(); //调用外部函数获取内部函数inner(); //调用内部函数操作受保护变量
+// 当内部函数被返回到外部并保存时，一定会产生闭包。
+// 闭包会产生原来的作用域链不释放，过度的闭包可能会导致内存泄漏，或加载过慢。
+function outer() {  
+  var count = 0; //这个变量外部不可直接使用（可理解为受保护变量）  
+  return function () {    
+    count++; //通过内部函数操作受保护变量    
+    console.log(count);  
+  };
+}
+var inner = outer(); //调用外部函数获取内部函数inner(); //调用内部函数操作受保护变量
 ```
 
 - 函数作为返回值
 
 ```js
-function create() {  const a = 100;  return function () {    console.log(a); // a是自由变量  };}const fn = create();const a = 200;console.log(fn()); //100
+function create() {  
+  const a = 100;  
+  return function () {    
+    console.log(a); // a是自由变量  
+  };
+}
+const fn = create();
+const a = 200;
+
+console.log(fn()); //100
 ```
 
 - 函数作为参数被传递
 
 ```js
-function print(fn) {  const a = 200;  fn();}const a = 100;function fn() {  console.log(a); // a是自由变量}console.log(print(fn)); //100// 所有的自由变量的查找，是在函数定义的地方，向上级作用域查找  而不是在执行的地方！！！
+function print(fn) {  
+  const a = 200;  fn();
+}
+const a = 100;
+function fn() {  
+  console.log(a); // a是自由变量
+}
+console.log(print(fn)); //100
 ```
+
+:::danger 
+
+所有的自由变量的查找，是在函数定义的地方，向上级作用域查找  而不是在执行的地方！！！
+
+:::
 
 :::note Ref
 
@@ -379,7 +480,13 @@ test(1, 2, 3, 4); //2	4
 function greeting(name = 'honjay') {
   console.log('hello ' + name);
 }
-greeting(); //对于多个参数function greetingWeather(name = 'honjay', weather) {  console.log('hello ' + name + 'today weather: ' + weather);}greetingWeather(undefined, 'sunny'); //使用undefined 只修改第二个参数
+greeting(); 
+
+//对于多个参数
+function greetingWeather(name = 'honjay', weather) {  
+  console.log('hello ' + name + 'today weather: ' + weather);
+}
+greetingWeather(undefined, 'sunny'); //使用undefined 只修改第二个参数
 ```
 
 ##### 斐波那契数列
@@ -1102,7 +1209,7 @@ console.log(5); // 1 3 5 4 2
 
 图源：[MDN 官网](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise)
 
-![mdn](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/promises.png)
+![promises](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/promises.png)
 
 #### 关于`promise`
 
@@ -1519,11 +1626,14 @@ loadImage(url1)
 :::note Ref
 
 - [事件循环学习笔记](https://juejin.cn/post/6958460865905590285#comment)
+
+:::
+
 - 事件循环 事件轮询
 - `JS`是单线程运行的，异步要基于回调来实现
 - `event loop` 就是异步回调的实现原理
 
-:::
+
 
 ##### Event Loop 流程
 
@@ -1637,7 +1747,9 @@ try {
 // try catch 只能捕获同步代码的异常 因此答案就明了了。
 
 
-因为我们执行了一个未定义的函数，所以会报错 a is not defind，又因为是在 async 中，所以报错信息会显示 in promise。最后 try cathch 只能捕获同步代码的抛错，因为是 async，所以走不到 catch 里面。
+因为我们执行了一个未定义的函数，所以会报错 a is not defind，
+又因为是在 async 中，所以报错信息会显示 in promise。
+最后 try cathch 只能捕获同步代码的抛错，因为是 async，所以走不到 catch 里面。
 ```
 
 > Event Loop

@@ -6,14 +6,14 @@
 - [图源](https://my729.github.io/blog/algorithm/#%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F)
 - [前端面试必备之十大经典排序算法](https://segmentfault.com/a/1190000010413296)
 
-![](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/sort.png)
+![排序算法对比](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/compare.png)
 
 ## 冒泡
 
 - 时间复杂度：`O(n^2)`
 - 比较相邻两个数的大小 交换顺序
 
-![冒泡排序](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/冒泡排序.gif)
+![冒泡排序](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/bubbling.gif)
 
 ```js
 let arr = [3, 44, 38, 5, 47, 15, 36, 26, 27, 2, 46, 4, 19, 50, 48]
@@ -37,9 +37,9 @@ function bubbleSort(arr) {
 - 通过选择一个基准（如第一个数  `i=0 j=length-1` 将比基准小的放在左边 比基准大的放在右边
 - 从需要排序的数里面随便找出一个，然后，把**比这个数小的放在这个数左边，比这个数大的放在这个数右边，一样大的和这个数放在一起**，最后，**左右两边各自重复上述过程**，直到左边或右边只剩下一个数（或零个数）无法继续为止。
 
-![快速排序案例](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/快速排序案例.jpg)
+![快速排序案例](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/quickSortDemo.jpg)
 
-![](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/快速排序.gif)
+![快速排序](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/quickSort.gif)
 
 #### 阮一峰ES6
 
@@ -110,7 +110,7 @@ console.log(quickSort([46, 30, 82, 90, 56, 17, 95, 15]))
 
 - 类似于扑克牌的插入操作 和这个数据前面的数据对比确定位置
 
-![插入排序](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/插入排序.gif)
+![插入排序](https://cdn.jsdelivr.net/gh/honjaychang/bp/blog/insert.gif)
 
 ```js
 function insertSort(list = []) {
@@ -146,7 +146,7 @@ function insertSort(arr) {
 
 - 找出 数组中最小的数 交换位置 依次找出 替换位置
 
-![选择排序](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/选择排序.gif)
+![选择排序](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/select.gif)
 
 ```js
 function selectSort(arr) {

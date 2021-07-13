@@ -2,7 +2,7 @@
 
 :::note Ref
 
-- [HOW TO ORGANIZE CSS @ 9ELEMENTS](https://9elements.com/css-rule-order/)
+- 编码规范：[HOW TO ORGANIZE CSS @ 9ELEMENTS](https://9elements.com/css-rule-order/)
 
 :::
 
@@ -666,7 +666,7 @@ box-shadow: 0 -1px #d9d9d9, 1px 0 #d9d9d9, 0 1px #d9d9d9, -1px 0 #d9d9d9;
 ##### `viewport` 缩放来解决
 
 ```js
-<meta name="viewport" content="initial-s	cale=0.5, maximum-scale=0.5, minimum-scale=0.5, user-scalable=no">
+<meta name="viewport" content="initial-s cale=0.5, maximum-scale=0.5, minimum-scale=0.5, user-scalable=no">
 
 
 const scale = 1 / window.devicePixelRatio;
@@ -676,10 +676,12 @@ metaEl.setAttribute('content', `width=device-width,user-scalable=no,initial-scal
 
 - 导致页面不需要缩放的元素也被缩放了
 
-`Ref`
+:::note Ref
 
 - [H5 常遇见的问题———移动端 1px 解决（完整版）](https://segmentfault.com/a/1190000037790305)
 - [总结一下各种 0.5px 的线](https://segmentfault.com/a/1190000015385024)
+
+:::
 
 ## 补充
 
@@ -796,7 +798,8 @@ MouseEvent.clientX
 表单	:required、:valid 和 :invalid
 :hover，:active，:focus，:visited，:link，:not，:first-child，:last-child等等。
 
-伪元素，不存在于DOM树中的虚拟元素，它们可以像正常的html元素一样定义css，但无法使用JavaScript获取。常见伪元素有 ::before，::after，::first-letter，::first-line等等。
+伪元素，不存在于DOM树中的虚拟元素，它们可以像正常的html元素一样定义css，但无法使用JS获取。
+常见伪元素有 ::before，::after，::first-letter，::first-line等等。
 ```
 
 ```js
@@ -827,27 +830,28 @@ if (
 }
 ```
 
-`Ref`
+:::note Ref
 
 - [杀了个回马枪，还是说说 position:sticky 吧](https://www.zhangxinxu.com/wordpress/2018/12/css-position-sticky/)
 - [JS 解决 position:sticky 的兼容性问题](https://segmentfault.com/a/1190000011589375)
 
+:::
+
+
+
+`css z-index` 过大导致被遮挡元素的点击跳转事件无法生效
+
+- `z-index = -1`
+- 
+
 ```css
-css
-  z-index
-  过大
-  导致被遮挡元素的点击跳转事件无法生效
-  1.
-  z-index
-  =
-  -1
-  2.
-  外层（被遮挡的层） {
-  pointer-events: none; // 元素永远不会成为鼠标事件的target
+外层（被遮挡的层） {
+  pointer-events: none; /* 元素永远不会成为鼠标事件的target */
 }
 
 内层（要发生事件的层） {
-  pointer-events: auto; // 与pointer-events属性未指定时的表现效果相同（即将元素恢复成为鼠标事件的target）
+  pointer-events: auto; 
+  /* 与pointer-events属性未指定时的表现效果相同（即将元素恢复成为鼠标事件的target）*/
 }
 ```
 

@@ -12,7 +12,7 @@ sidebar_position: 1
 
 :::
 
-![3d2VE9](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/3d2VE9.png)
+![git流程图](https://cdn.jsdelivr.net/gh/honjaychang/bp/dev/git.png)
 
 #### 工作流
 
@@ -142,6 +142,20 @@ git merge dev
 git push origin master
 ```
 
+
+
+```bash
+yarn cache clean --force
+```
+
+
+
+
+
+:::note Ref
+
 - [vsCode git 操作提示 Permission denied, please try again](https://blog.csdn.net/yang450712123/article/details/89504563?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-16.control&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-16.control)
+
+:::
 
 （随时更新...）

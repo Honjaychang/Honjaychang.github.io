@@ -28,7 +28,7 @@
 
 [图源](https://programmer.help/blogs/vue-personal-project-summary-knowledge-points-summary.html)
 
-![Vue生命周期](https://cdn.jsdelivr.net/gh/honjaychang/icopicture/blog/Vue%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.jpg)
+![Vue生命周期](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/vue.jpg)
 
 Vue 生命周期：Vue 实例从创建到销毁的过程。也就是从开始创建、初始化数据、编译模板、挂载 DOM-渲染、更新-渲染、卸载等一系列的过程。
 
@@ -158,7 +158,7 @@ console.log(proxy.a); // 3
 
 `Watcher` 原理：是先把自己设置到全局唯一的指定位置（例如`window.target`），然后读取数据。因为读取了数据，所以会触发这个数据的 `getter` 。接着，在 `getter` 中就会从全局唯一的那个位置读取当前正在读取数据的 `Watcher` ，并把这个 `Watcher` 收集到 `Dep` 中去。通过这样的方式，`Watcher` 可以主动去订阅任意一个数据的变化。
 
-![observer](https://cdn.jsdelivr.net/gh/honjaychang/icoPicture/blog/observer.png)
+![observer](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/observer.png)
 
 - `Data` 通过 `Observer` 转换成了 `getter/setter` 的形式来追踪变化。
 - 当外界通过 `Watcher` 读取数据时，会触发 `getter` 从而将 `Watcher` 添加到依赖中。
@@ -513,7 +513,7 @@ Vue.nextTick(function () {
 
   ```js
   this.letters[0] = 'bbb'; // 不行
-
+  
   this.letters.splice(0, 1, 'bbb');
   Vue.set(this.letters, 0, 'bbb'); //要修改的对象 索引值 修改后的值
   ```
