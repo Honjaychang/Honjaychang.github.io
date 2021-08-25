@@ -797,10 +797,12 @@ this.setState(
 import {Fragment} from 'react'
 
 <></>
-
-Fragment 可以指定key
-空标签 什么都不能传
 ```
+
+- `Fragment` 可以指定 `key`
+- 空标签 什么都不能传
+
+
 
 `React.Fragment`
 
@@ -982,8 +984,7 @@ export default React.memo(MyComponent, areEqual)
 
 
 
-HOC
-接收一个组件并返回一个新的组件
+
 
 
 
@@ -996,3 +997,60 @@ props
 context
 
 redux
+
+
+
+
+
+useEffect会在commit阶段执行完以后异步的调用回调函数
+
+componentDidMount 在layout阶段同步的调用
+
+所以 useLayoutEffect 在layout阶段同步的调用
+
+
+
+
+
+
+
+
+
+Hoc
+
+高阶组件
+
+- 高阶组件就是接受一个组件作为参数，在函数中对组件做一系列的处理，随后返回一个新的组件作为返回值
+
+高阶函数
+
+- 接受一个或多个函数作为输入
+- 输出一个函数
+
+HOC
+接收一个组件并返回一个新的组件
+
+##### 高阶组件的缺点
+
+高阶组件也有一系列的缺点，首先是被包裹组件的静态方法会消失，这其实也是很好理解的，我们将组件当做参数传入函数中，返回的已经不是原来的组件，而是一个新的组件，原来的静态方法自然就不存在了。如果需要保留，我们可以手动将原组件的方法拷贝给新的组件，或者使用hoist-non-react-statics之类的库来进行拷贝。
+
+a 文档
+
+
+
+
+
+
+
+Fiber是React16中的协调引擎，主要目的是使Virtual DOM可以进行增量式渲染：能够将渲染工作分割成块，并将其分散到过个帧中
+
+
+
+
+
+
+
+
+
+
+

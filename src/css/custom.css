@@ -16,8 +16,6 @@
   --ifm-color-primary-lightest: rgb(146, 224, 208);
   --ifm-code-font-size: 95%;
   --ifm-h1-font-size: 2.2rem;
-  --ifm-blockquote-padding-vertical: 0.5rem;
-  --ifm-blockquote-padding-horizontal: 0.5rem;
   --ifm-code-border-radius: 0.3rem;
 }
 
@@ -32,10 +30,20 @@ html[data-theme='dark'] .docusaurus-highlight-code-line {
   background-color: rgba(0, 0, 0, 0.3);
 }
 
+html[data-theme='dark'] {
+  color: #b8bfc6;
+}
+
 code {
-  /* color: #476582; */
   border: 0;
-  font-size: 0.85em;
+  font-size: 0.875em;
+  padding: 2px 5px;
+}
+
+code,
+pre,
+blockquote {
+  font-family: Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
 }
 
 .alert a {
@@ -45,8 +53,4 @@ code {
 
 .row .col {
   padding: 0 0.5rem 0 2rem;
-}
-
-blockquote {
-  padding: 0.25rem 0.5rem;
 }

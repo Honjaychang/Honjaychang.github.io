@@ -150,116 +150,7 @@ function pop() {
 
 #### [11. 旋转数组的最小数字](https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
 
-## 链表
 
-#### [06. 从尾到头打印链表](https://leetcode-cn.com/problems/cong-wei-dao-tou-da-yin-lian-biao-lcof/)
-
-- 遍历 头部插入
-- 递归 栈思路（从最后一个开始保存到数组 实现倒序打印
-
-```js
-/**
- * function ListNode(val) {
- *     this.val = val;
- *     this.next = null;
- * }
- */
-
-var reversePrint = function (head) {
-  let res = [];
-  // while(head){
-  //     res.unshift(head.val)
-  //     head = head.next
-  // }
-  const fn = function (head) {
-    if (head) {
-      fn(head.next);
-      res.push(head.val);
-    }
-  };
-  fn(head);
-  return res;
-};
-```
-
-## 二叉树
-
-#### [07. 重建二叉树](https://leetcode-cn.com/problems/zhong-jian-er-cha-shu-lcof/)
-
-> 输入某二叉树的前序遍历和中序遍历的结果，请重建该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
-
-```js
-function TreeNode(val) {
-  this.val = val;
-  this.left = this.right = null;
-}
-var buildTree = function (preorder, inorder) {
-  if (!preorder.length || !inorder.length) return null;
-
-  let rootVal = preorder[0];
-  let rootIndex = inorder.indexOf(rootVal);
-  const node = new TreeNode(rootVal);
-
-  node.left = buildTree(
-    preorder.slice(1, rootIndex + 1),
-    inorder.slice(0, rootIndex)
-  );
-  node.right = buildTree(
-    preorder.slice(rootIndex + 1),
-    inorder.slice(rootIndex + 1)
-  );
-  return node;
-};
-```
-
-#### [27. 二叉树的镜像](https://leetcode-cn.com/problems/er-cha-shu-de-jing-xiang-lcof/)
-
-递归
-
-```js
-/**
- * function TreeNode(val) {
- *     this.val = val;
- *     this.left = this.right = null;
- * }
- */
-
-var mirrorTree = function (root) {
-  if (!root) return null;
-  // 交换当前左右节点
-  let temp = root.left;
-  root.left = root.right;
-  root.right = temp;
-  // 递归操作左右子树
-  mirrorTree(root.left);
-  mirrorTree(root.right);
-  return root;
-};
-```
-
-辅助栈
-
-- 特例化：针对 `root`为`null`的情况，直接返回`root`
-- 初始化：定义一个辅助栈，将根节点入栈
-- 递归：判断栈不为空，则逐步出栈，将节点的左右节点互换，实现镜像
-
-```js
-var mirrorTree = function (root) {
-  if (root) {
-    let stack = [];
-    stack.push(root);
-    while (stack.length > 0) {
-      let node = stack.pop();
-      let temp = node.left;
-      node.left = node.right;
-      node.right = temp;
-      if (node.left) stack.push(node.left);
-      if (node.right) stack.push(node.right);
-    }
-  }
-  return root;
-};
-```
 
 ## 动态规划
 
@@ -357,26 +248,59 @@ function coinChange(coins, amount) {
 
 ## 接雨水
 
+![](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/dp-trap-rain.png)
+
 ```js
-var trap = function (height) {
-  let sum = 0
+let arr = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]; // 6
+```
+
+#### 暴力破解
+
+```js
+const bfTrap = (height) => {
+  let sum = 0;
   for (let i = 1; i < height.length - 1; i++) {
-    let leftMax = 0 //找左边最大高度
+    // 分别寻找左右 最大高度
+    let leftMax = 0;
     for (let j = i - 1; j >= 0; j--) {
-      leftMax = height[j] >= leftMax ? height[j] : leftMax
+      leftMax = Math.max(leftMax, height[j]);
+      // leftMax = height[j] >= leftMax ? height[j] : leftMax
     }
-    let rightMax = 0 //找右边最大高度
+    let rightMax = 0;
     for (let j = i + 1; j < height.length; j++) {
-      rightMax = height[j] >= rightMax ? height[j] : rightMax
+      rightMax = Math.max(rightMax, height[j]);
     }
-    let min = Math.min(leftMax, rightMax) //得到左右两边最大高度中较矮的那个高度
+    const min = Math.min(leftMax, rightMax); // 得到左右两边最大高度中较矮的那个高度
     if (min > height[i]) {
-      sum = sum + min - height[i] //接水量 = 左右两边最大高度中较矮的那个高度 - 当前项的高度
+      sum += min - height[i]; // 接水量 = 左右两边最大高度中较矮的那个高度 - 当前项的高度
     }
-    //console.log(leftMax, rightMax, sum)
   }
-  return sum
-}
+  return sum;
+};
+```
+
+#### 动态规划
+
+```js
+const dpTrap = (height) => {
+  let sum = 0;
+  const len = height.length;
+  const leftMaxLevels = new Array(len).fill(0);
+  const rightMaxLevels = new Array(len).fill(0);
+  [leftMaxLevels[0]] = height;
+  for (let i = 1; i < len; i++) {
+    leftMaxLevels[i] = Math.max(height[i], leftMaxLevels[i - 1]);
+  }
+  rightMaxLevels[len - 1] = height[len - 1];
+  for (let i = len - 2; i > 0; i--) {
+    rightMaxLevels[i] = Math.max(height[i], rightMaxLevels[i + 1]);
+  }
+  for (let i = 0; i < len; i++) {
+    const min = Math.min(leftMaxLevels[i], rightMaxLevels[i]);
+    if (min > height[i]) sum += min - height[i];
+  }
+  return sum;
+};
 ```
 
 ## 最大子序列和
