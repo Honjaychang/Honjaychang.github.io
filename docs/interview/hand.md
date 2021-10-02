@@ -186,7 +186,7 @@ export function useThrottle(fn, delay = 500, dep = []) {
 ```js
 // XMLHttpRequest get 请求
 const xhr = new XMLHttpRequest();
-xhr.open('GET', 'data.json', false); // 是否异步 false
+xhr.open('GET', 'data.json', false); // 是否异步 -> false 同步
 xhr.onreadystatechange = function () {
   if (xhr.readyState === 4) {
     if (xhr.status === 200) {
@@ -208,17 +208,6 @@ xhr.send(null);
 #### `Function.prototype.call()`
 
 ```js
-const person = {
-  age: 18,
-};
-
-function getVal(a, b, c) {
-  console.log(a, b, c);
-  console.log(this.age);
-}
-
-const arr = [1, 2, 3];
-
 // myCall
 Function.prototype.myCall = function (ctx, ...args) {
   // Object(null) {}
@@ -230,6 +219,18 @@ Function.prototype.myCall = function (ctx, ...args) {
   delete _this.originFn;
   return res;
 };
+
+
+const person = {
+  age: 18,
+};
+
+function getVal(a, b, c) {
+  console.log(a, b, c);
+  console.log(this.age);
+}
+
+const arr = [1, 2, 3];
 
 getVal.call(person, ...arr); // 1 2 3   18
 getVal.call(person); // undefined undefined undefined    18
@@ -775,7 +776,8 @@ function randomSortA(arr) {
 
 ```js
 function randSort(arr) {
-  for (var i = 0; i < arr.length; i++) {
+  const len = arr.length;
+  for (var i = 0; i < len; i++) {
     var rand = parseInt(Math.random() * len);
     [arr[i], arr[rand]] = [arr[rand], arr[i]];
   }

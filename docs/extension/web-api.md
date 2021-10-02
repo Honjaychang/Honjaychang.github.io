@@ -343,7 +343,9 @@ e = e || window.event;
 
 ##### 阻止默认行为
 
-- `event.stopPropagation()`：阻止事件冒泡
+- `event.stopPropagation()`：阻止事件冒泡 和 捕获
+- `event.stopImmediatePropagation()` 阻止绑定事件的其他处理函数
+- `event.cancelBubble = true` 做一些兼容性处理
 - `event.preventDefault()`：阻止事件默认行为
 
 #### 事件绑定
@@ -396,6 +398,17 @@ bindEvent(body, 'click', (e) => {
   console.log(e.target)
 })
 ```
+
+
+
+```js
+e.type
+e.target
+e.bubbles // true -> 可以冒泡
+// focus onblur scroll 不可以冒泡
+```
+
+
 
 #### 事件代理（委托）
 
@@ -477,29 +490,17 @@ function bindEvent(elem, type, selector, cb) {
 - 用 `e.target` 获取触发元素
 - 用 `matches` 来判断是否是触发元素
 
-## `AJAX`
 
-- `Asynchronous Javascript and XML`
-- 异步`JavaScrpt`和`xml`，用于在 Web 页面中实现异步数据交互，实现页面局部刷新
 
-优点：
+## `Xhr & Fetch`
 
-- 异步请求响应快，用户体验好（使用异步的方式与服务器通信，不打断用户的操作）
-- 页面无刷新、数据局部更新（在不刷新整个页面的情况下维持与服务器通信）
-- 按需取数据，减少了冗余请求和服务器的负担。前端和后端负载均衡（将一些后端的工作交给前端，减少服务器与宽度的负担）
-
-缺点：
-
-- 对搜索引擎不友好
-- `ajax`不支持返回上一次请求内容 不支持浏览器`back`按钮
-  - `location.hash`来解决`Ajax`过程中导致的浏览器前进后退按键失效
-- 可能造成请求数的增加 跨域问题限制
-
-#### `XMLHttpRequest`
+### `XMLHttpRequest`
 
 - 通过`XMLHttpRequest`向服务器发送异步请求，获得服务器返回的数据，利用`js`更新页面
 
-##### 实现 Get
+#### 实现
+
+##### Get
 
 - 创建`XMLHttpRequest`对象，也就是创建一个异步调用对象
 - 创建一个新的 HTTP 请求，并指定该 HTTP 请求的方法、URL 及验证信息
@@ -556,7 +557,7 @@ const postData = {
 xhr.send(JSON.stringify(postData));
 ```
 
-#### 状态码 `readyState` `status`
+#### 状态码
 
 ##### `xhr.readyState`
 
@@ -591,20 +592,51 @@ xhr.send(null);
 - 4xx - 客户端请求错误，如 404 403
 - 5xx - 服务器端错误
 
-##### `fetch` 和 `ajax` 区别
+### `AJAX`
 
-- `fetch` 直接返回 `promise`; 当请求错误时不会`reject`， 只有在网络故障时才会 `reject`。 默认情况下不接收`cookie`, 需要配置 `credentials` 选项。配合 `service worker`可以实现对请求的缓存等。
-
-- `fetch`: 是对`ajax`做了一层`promise`的封装,但是对于请求的拦截,响应的拦截还是需要手动代码实现,同时现在的谷歌浏览器已经支持`fetch`这个`api`了
+- `Asynchronous Javascript and XML`
+- 异步`JavaScrpt`和`xml`，用于在 Web 页面中实现异步数据交互，实现页面局部刷新
 - `ajax` 基于 `XMLHttpRequest`分别执行成功和失败的回调。
 
-##### 说说防止重复发送 ajax 请求的方法有哪些？
+优点：
 
-- 按钮置灰 => 无按钮咋办
+- 异步请求响应快，用户体验好（使用异步的方式与服务器通信，不打断用户的操作）
+- 页面无刷新、数据局部更新（在不刷新整个页面的情况下维持与服务器通信）
+- 按需取数据，减少了冗余请求和服务器的负担。前端和后端负载均衡（将一些后端的工作交给前端，减少服务器与宽度的负担）
 
-- 防抖法：在一段时间内重复请求，则取消本次请求 => timer 设置多少？
-- 节流法：在一段时间内只能请求一次，下次请求必须在前一次请求完成后
-- 请求拦截和请求取消
+缺点：
+
+- 对搜索引擎不友好
+- `ajax`不支持返回上一次请求内容 不支持浏览器`back`按钮
+  - `location.hash`来解决`Ajax`过程中导致的浏览器前进后退按键失效
+- 可能造成请求数的增加 跨域问题限制
+
+### `axios`
+
+- `Axios` 是一个基于 `promise` 的 `HTTP` 库，可以用在浏览器和 `node.js` 中。它本质也是对原生`XMLHttpRequest` 的封装，只不过它是 `Promise` 的实现版本，符合最新的ES规范。
+
+### `Fetch`
+
+`Fetch API`提供了一个 `JavaScript` 接口，用于访问和操作`HTTP`管道的部分，例如请求和响应。它还提供了一个全局`fetch()`方法，该方法提供了一种简单，合理的方式来跨网络异步获取资源。
+
+`fetch`是低层次的API，代替`XHR`，可以轻松处理各种格式，非文本化格式。可以很容易的被其他技术使用，例如`Service Workers`。但是想要很好的使用`fetch`，需要做一些封装处理。
+
+```js
+fetch(url, {
+  method: 'POST', 
+  mode: 'no-cors', // 跨域
+  body: JSON.stringify(data), // data can be `string` or {object}!
+  headers:{
+    'Content-Type': 'application/json'
+  }
+}).then(res => res.json())
+.catch(error => console.error('Error:', error))
+```
+
+- `fetch` 请求默认是不带 `cookie` 的，需要设置 `fetch(url, {credentials: 'include'})`
+- `fetch`只对网络请求报错，对`400`，`500`都当做成功的请求，需要封装去处理
+- `fetch`不支持`abort`，不支持超时控制，使用`setTimeout`及`Promise.reject`的实现超时控制并不能阻止请求过程继续在后台运行，造成了流量的浪费
+- `fetch`没有办法原生监测请求的进度，而`XHR`可以
 
 ## 跨域
 

@@ -27,8 +27,16 @@ module.exports = {
       ],
       Extension: ['extension/web-api', 'extension/browser'],
       TS: ['ts/basic'],
-      React: ['react/basic', 'react/redux', 'react/hooks', 'react/core'],
-      Dev: ['dev/git', 'dev/node', 'dev/os', 'dev/webpack'],
+      React: ['react/basic', 'react/redux', 'react/hooks'],
+      ReactCore: [
+        'reactCore/basic',
+        'reactCore/ds',
+        'reactCore/createUpdate',
+        'reactCore/schedule',
+        'reactCore/render',
+        'reactCore/diff',
+      ],
+      Dev: ['dev/basic', 'dev/git', 'dev/node', 'dev/os', 'dev/webpack'],
       Network: ['network/basic'],
       Algo: [
         'algo/basic',
@@ -40,7 +48,8 @@ module.exports = {
       ],
       Interview: ['interview/hand', 'interview/scene'],
       Vue: ['vue/basic'],
-      // Fe  todo  downloads
+      // TODO:  Fe  todo  downloads
+      // FIXME:
     },
   ],
 };

@@ -21,7 +21,7 @@
 <script type="text/babel">
   const VDOM = ()
   // 渲染虚拟DOM到页面
-  ReactDOM.render(VDOM,document.getElementById('root'))
+  ReactDOM.render(VDOM, document.getElementById('root'))
   // VDOM 将会通过babel转译为 React.createElement(xxx)
   // 相当于官方提供了jsx语法糖去便捷书写js代码
 </script>
@@ -438,7 +438,7 @@ ReactDOM.render(<Count />, document.getElementById('app'));
 
 > `forceUpdate => componentWillUpdate -> render -> componentDidUpdate`
 
-> `mount => componentWillUnmount`
+> `unmount => componentWillUnmount`
 
 
 
@@ -787,11 +787,7 @@ this.setState(
 
 
 
-
-
-
-
-`Fragment`
+#### `React.Fragment`
 
 ```jsx
 import {Fragment} from 'react'
@@ -802,27 +798,9 @@ import {Fragment} from 'react'
 - `Fragment` 可以指定 `key`
 - 空标签 什么都不能传
 
-
-
-`React.Fragment`
-
-`Context`
-
-组件间通信 祖组件 与 后代组件 间的值传递
-
-`PureComponent`
-
-`renderProps`
-
-Dom diffing
-
-
-
-
-
 #### `Context`
 
-- 使用 context, 我们可以避免通过中间元素传递 props：
+- 使用 `context`, 我们可以避免通过中间元素传递 `props`：
 
 ```jsx
 const MyContext = React.createContext(defaultValue)
@@ -843,15 +821,100 @@ static contextType = MyContext
 </MyContext.Consumer>
 ```
 
-当 React 渲染一个订阅了这个 Context 对象的组件，这个组件会从组件树中离自身最近的那个匹配的 `Provider` 中读取到当前的 context 值
+当 `React` 渲染一个订阅了这个 `Context` 对象的组件，这个组件会从组件树中离自身最近的那个匹配的 `Provider` 中读取到当前的 `context` 值
 
-**只有**当组件所处的树中没有匹配到 Provider 时，其 `defaultValue` 参数才会生效。
+**只有**当组件所处的树中没有匹配到 `Provider` 时，其 `defaultValue` 参数才会生效。
 
-当 Provider 的 `value` 值发生变化时，它内部的所有消费组件都会重新渲染。Provider 及其内部 consumer 组件都不受制于 `shouldComponentUpdate` 函数，因此当 consumer 组件在其祖先组件退出更新的情况下也能更新。
+当 `Provider` 的 `value` 值发生变化时，它内部的所有消费组件都会重新渲染。`Provider` 及其内部 `consumer` 组件都不受制于 `shouldComponentUpdate` 函数，因此当 `consumer `组件在其祖先组件退出更新的情况下也能更新。
 
 
 
-`renderProps`
+
+
+
+
+
+
+
+
+```jsx
+函数绑定的性能 差异
+
+
+<Child handleClick={this.handleClick} />
+<Child handleClick={() => this.handleClick()} />
+  // 会导致每次父组件render方法被调用时，一个新的函数被创建，已将其传入handleClick。这会有一个改变每个子组件props的副作用，它将会造成他们全部重新渲染，即使数据本身没有发生变化。
+<Child handleClick={this.handleClick.bind(this)} />
+  
+  
+  将父组件的原型方法的引用传递给子组件。子组件的handleClick属性将总是有相同的引用，这样就不会造成不必要的重新渲染。
+```
+
+
+
+
+
+#### `pureComponent`
+
+`PureComponent` 通过 `prop` 和 `state` 的浅比较来实现 `shouldComponentUpdate`，当 `prop` 或 `state` 的值或者引用地址发生改变时，组件就会发生更新。
+
+而 `Component` 只要 `state` 发生改变， 不论值是否与之前的相等，都会触发更新。
+
+
+
+`shouldComponentUpdate(nextProps, nextState)`
+
+```jsx
+// 对子组件应用 避免不必要的渲染
+
+shouldComponentUpdate(nextProps, nextState) {
+  // console.log(nextProps, nextState);
+  if (nextProps.xxx === this.props.xxx) return false;
+  return true;
+}
+
+// 也可以对子组件采用 PureComponent
+```
+
+`classComponent` 中使用 `PureComponent`  无状态组件 `FuncComponent`使用 `React.memo`
+
+
+
+`React.memo`
+
+`export default React.memo(Child);`
+
+如果你的函数组件在给定相同 props 的情况下渲染相同的结果，那么你可以通过将其包装在 `React.memo` 中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React 将跳过渲染组件的操作并直接复用最近一次渲染的结果。
+
+```jsx
+function areEqual(prevProps, nextProps) {
+  if (prevProps.seconds===nextProps.seconds) return true
+  else return false
+}
+
+// 默认浅层对比 可以传第二个参数
+export default React.memo(MyComponent, areEqual)
+```
+
+
+
+#### Hoc
+
+高阶组件
+
+- 接收一个组件并返回一个新的组件
+- 高阶组件就是接受一个组件作为参数，在函数中对组件做一系列的处理，随后返回一个新的组件作为返回值
+
+高阶函数
+
+- 接受一个或多个函数作为输入
+- 输出一个函数
+
+高阶组件的缺点
+
+高阶组件也有一系列的缺点，首先是被包裹组件的静态方法会消失，这其实也是很好理解的，我们将组件当做参数传入函数中，返回的已经不是原来的组件，而是一个新的组件，原来的静态方法自然就不存在了。如果需要保留，我们可以手动将原组件的方法拷贝给新的组件，或者使用hoist-non-react-statics之类的库来进行拷贝。
+
+#### `renderProps`
 
 ```jsx
 import React, { Component } from 'react';
@@ -881,176 +944,16 @@ class Child2 extends Component {
 
 ```
 
-
-
-
-
-`React.PureComponent` 中以  浅层  对比 prop 和 state 的方式来实现了 `shouldComponentUpdate()`
-
-```
-如果你在`render`方法中创建一个新的函数，对象或者是数组那么你的做法（可能）是错误的。
-```
-
-
-
-`PureComponent` 通过 `prop` 和 `state` 的浅比较来实现 `shouldComponentUpdate`，当 prop 或 state 的值或者引用地址发生改变时，组件就会发生更新。
-
-而 `Component` 只要 state 发生改变， 不论值是否与之前的相等，都会触发更新。
-
-
-
-
-
-```jsx
-函数绑定的性能 差异
-
-
-<Child handleClick={this.handleClick} />
-<Child handleClick={() => this.handleClick()} />
-  // 会导致每次父组件render方法被调用时，一个新的函数被创建，已将其传入handleClick。这会有一个改变每个子组件props的副作用，它将会造成他们全部重新渲染，即使数据本身没有发生变化。
-<Child handleClick={this.handleClick.bind(this)} />
-  
-  
-  将父组件的原型方法的引用传递给子组件。子组件的handleClick属性将总是有相同的引用，这样就不会造成不必要的重新渲染。
-```
-
-
-
-
-
-`componentDidUpdate`
-
-- 
-
-传入两个参数：`prevProps`, `prevState`
-
-这个两个参数的值就是在方法调用之前的`this.props`和`this.state`。
-
-`componentDidUpdate`在所有的子组件都更新之后被调用
-
-- [componentDidUpdate之后的绘制](https://www.jianshu.com/p/fec90599ec2a)
-
-
-
-`shouldComponentUpdate(nextProps, nextState)`
-
-```jsx
-// 对子组件应用 避免不必要的渲染
-
-shouldComponentUpdate(nextProps, nextState) {
-  // console.log(nextProps, nextState);
-  if (nextProps.xxx === this.props.xxx) return false;
-  return true;
-}
-
-// 也可以对子组件采用 PureComponent
-```
-
-
-
-
-
-- 在深层数据结构发生变化时调用`forceUpdate()`来确保组件被正确地更新（不推荐使用）；
-- 使用`immutable`对象加速嵌套数据的比较（不同于深拷贝）；
-
-
-
-class 中使用 PureComponent  无状态组件使用memo
-
-
-
-`React.memo`
-
-`export default React.memo(Child);`
-
-如果你的函数组件在给定相同 props 的情况下渲染相同的结果，那么你可以通过将其包装在 `React.memo` 中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React 将跳过渲染组件的操作并直接复用最近一次渲染的结果。
-
-```jsx
-function areEqual(prevProps, nextProps) {
-  if (prevProps.seconds===nextProps.seconds) return true
-  else return false
-}
-
-export default React.memo(MyComponent, areEqual)
-
-默认浅层对比 可以传第二个参数
-```
-
-
-
-- [【译】什么时候使用 useMemo 和 useCallback](https://jancat.github.io/post/2019/translation-usememo-and-usecallback/)
-
-
-
-
-
-
-
-
-
+#### Todo
 
 
 通讯
 
-props
+- props
 
-context
+- context
 
-redux
+- redux
 
-
-
-
-
-useEffect会在commit阶段执行完以后异步的调用回调函数
-
-componentDidMount 在layout阶段同步的调用
-
-所以 useLayoutEffect 在layout阶段同步的调用
-
-
-
-
-
-
-
-
-
-Hoc
-
-高阶组件
-
-- 高阶组件就是接受一个组件作为参数，在函数中对组件做一系列的处理，随后返回一个新的组件作为返回值
-
-高阶函数
-
-- 接受一个或多个函数作为输入
-- 输出一个函数
-
-HOC
-接收一个组件并返回一个新的组件
-
-##### 高阶组件的缺点
-
-高阶组件也有一系列的缺点，首先是被包裹组件的静态方法会消失，这其实也是很好理解的，我们将组件当做参数传入函数中，返回的已经不是原来的组件，而是一个新的组件，原来的静态方法自然就不存在了。如果需要保留，我们可以手动将原组件的方法拷贝给新的组件，或者使用hoist-non-react-statics之类的库来进行拷贝。
-
-a 文档
-
-
-
-
-
-
-
-Fiber是React16中的协调引擎，主要目的是使Virtual DOM可以进行增量式渲染：能够将渲染工作分割成块，并将其分散到过个帧中
-
-
-
-
-
-
-
-
-
-
+组件间通信 祖组件 与 后代组件 间的值传递
 

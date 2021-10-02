@@ -394,6 +394,24 @@ console.log(doubleLinkedList.join('<->'));
 
 ## 常见题型
 
+:::note Note
+
+链表中常用操作
+
+- 虚拟节点
+
+```js
+var head = new ListNode();
+var cur = head;
+return head.next;
+```
+
+- 快慢指针
+
+:::
+
+> 以下题型中节点结构如下所示
+
 ```js
 const Node = function (data) {
   this.data = data;
@@ -423,32 +441,45 @@ nodeD.next = nodeE;
 nodeE.next = nodeC;
 ```
 
+#### 标志法
+
+- 给每个已遍历过的节点加标志位，遍历链表，当出现下一个节点已被标志时，则证明单链表有环
+
 ```js
-function isCircularLinkedList(head) {
-  if (head === null || head.next === null) return false;
-
-  let point1 = head;
-  let point2 = head;
-
-  do {
-    point1 = point1.next;
-    point2 = point2.next && point2.next.next; // 怪怪的 // 怪你自己没掌握好 1&&2 -> 2
-    // console.log(point1.data, point2.data);
-  } while (point1 && point2 && point1 !== point2);
-
-  if (point1 === point2) return true;
-
+const hasCycle = (head) => {
+  while (head) {
+    if (head.flag) return true;
+    head.flag = true;
+    head = head.next;
+  }
   return false;
-}
-
-console.log(isCircularLinkedList(nodeA)); // true
+};
 ```
 
-### 判断链表是否有交点
+#### 快慢指针
+
+- 如果单链表中存在环，则快慢指针终会指向同一个节点，否则直到快指针指向 `null` 时，快慢指针都不可能相遇
+
+```js
+const hasCycle = (head) => {
+  if (!head || !head.next) return false;
+
+  let slow = head,
+    fast = head;
+  while (slow && fast) {
+    slow = slow.next;
+    fast = fast.next && fast.next.next;
+    if (slow === fast) return true;
+  }
+  return false;
+};
+
+console.log(hasCycle(nodeA)); // true
+```
 
 ### [52. 两个链表的第一个公共节点](https://leetcode-cn.com/problems/liang-ge-lian-biao-de-di-yi-ge-gong-gong-jie-dian-lcof/)
 
-![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/8076ba33c8b14c99b35271436251e627~tplv-k3u1fbpfcp-zoom-1.image)
+![Link-First-SharedNode](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/Link-First-SharedNode.image)
 
 - 如果两个链表相交 相交结点后面都是共有的 => 两个链表的尾结点的地址也是一样的
 - 程序实现：分别遍历两个单链表，直到尾结点 => 判断尾结点地址是否相等即可
@@ -476,6 +507,8 @@ node2.next = node3;
 node3.next = nodeD4;
 nodeD4.next = nodeE5;
 ```
+
+#### 正常方法
 
 ```js
 function intersectNode(head1, head2) {
@@ -523,7 +556,7 @@ console.log(intersectNode(nodeA, node1));
 // Node { data: 'D4', next: Node { data: 'E5', next: null } }
 ```
 
-
+#### 双指针法
 
 ```js
 如果链表一样长且有交点，则第一次遍历就能找到交点，返回
@@ -531,17 +564,7 @@ console.log(intersectNode(nodeA, node1));
 如果没有交点，则第二次遍历结束都是null，遍历结束，返回null
 
 
-const getIntersectionNode = (A, B) => {
-    let pA = A,
-        pB = B;
-    while (pA !== pB) {
-        pA = pA === null ? B : pA.next;
-        pB = pB === null ? A : pB.next;
-    }
-    return pA;
-};
-
-var getIntersectionNode = function(headA, headB) {
+var getIntersectionNode = function (headA, headB) {
   /* 
       双指针法，浪漫相遇 遍历完自己的节点后 交换位置继续遍历 最后二者的总步数是一样 相遇时即为所求第一个祖先节点
       《你的名字》
@@ -549,16 +572,16 @@ var getIntersectionNode = function(headA, headB) {
       我变成你，走过你走过的路。
       然后我们便相遇了      
   */
-      if(!headA||!headB) return null;
-  let a = headA, b = headB
+  if (!headA || !headB) return null;
+  let a = headA,
+    b = headB;
 
   while (a !== b) {
-      a = a ? a.next : headB
-      b = b ? b.next : headA
+    a = a ? a.next : headB;
+    b = b ? b.next : headA;
   }
 
-  return a
-
+  return a;
 };
 ```
 
@@ -566,7 +589,7 @@ var getIntersectionNode = function(headA, headB) {
 
 ### 回文链表
 
-![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/075ce9683fe340199b4d2dc0a5ee20bc~tplv-k3u1fbpfcp-zoom-1.image)
+![Link-Palindrome](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/Link-Palindrome.image)
 
 - 从头遍历链表，同时正向和反向拼接每个链表的数据，最后比对正向和反向得到的字符串是否相等。如果相等则是回文链表；否则不是。
 
@@ -649,32 +672,33 @@ var reversePrint = function (head) {
 输出：1->1->2->3->4->4
 ```
 
-- head 创建新的链表节点， h 保存新链表的头节点
-- 若l1与l2都未遍历完毕，将较小的节点接在新链表上
+- `head` 创建新的链表节点， `cur` 保存新链表的头节点
+- 若`l1`与`l2`都未遍历完毕，将较小的节点接在新链表上
 - 若一方遍历完毕则将另一方接上
-- 返回新链表头节点的next
+- 返回新链表头节点的`next`
 
 
 
-- 循环依次对比
+- 循环依次对比  (虚拟节点+ 迭代
 
 ```js
 var mergeTwoLists = function (l1, l2) {
     var head = new ListNode();
-    var h = head;
+    var cur = head;
     while (l1 && l2) {
         if (l1.val < l2.val) {
-            head.next = l1;
+            cur.next = l1;
             l1 = l1.next;
         } else {
-            head.next = l2;
+            cur.next = l2;
             l2 = l2.next;
         }
-        head = head.next;
+        cur = cur.next;
     }
-    if (l1) head.next = l1;
-    if (l2) head.next = l2;
-    return h.next;
+  	// 处理l1或者l2还未遍历完的场景
+    if (l1) cur.next = l1;
+    if (l2) cur.next = l2;
+    return head.next;
 };
 ```
 
@@ -735,23 +759,25 @@ const getKthFromEnd = (head, k) => {
 输出: 5->4->3->2->1->NULL
 ```
 
+#### 迭代法
 
+- 将单链表中的每个节点的后继指针指向它的前驱节点即可
 
 ```js
-var reverseList = function (head) {
-  let a = null;
-  let b = head;
-  while (b) {
-    let temp = b.next;
-    b.next = a;
-    a = b;
-    b = temp;
+const reverseList = (head) => {
+  let prev = null,
+    cur = head;
+  while (cur) {
+    let temp = cur.next;
+    cur.next = prev;
+    prev = cur;
+    cur = temp;
   }
-  return a;
+  return prev;
 };
 ```
 
-ES6
+#### ES6
 
 ```js
 var reverseList = function (head) {
@@ -879,43 +905,63 @@ function deleteNode(head, val) {
   return dummy.next;
 }
 
-//双指针
-function deleteNode(head, val) {
-  if (head.val == val) return head.next;
-  let pre = head,
-    cur = head.next;
-  while (cur) {
-    if (cur.val == val) {
-      pre.next = cur.next;
-      return head;
-    }
-    pre = cur;
-    cur = cur.next;
-  }
-  return head;
-}
 
-//dummy 双指针
-function deleteNode(head, val) {
-  let dummy = new ListNode(-1, head);
-  let pre = dummy,
-    cur = head;
-  while (cur) {
-    if (cur.val == val) {
-      pre.next = cur.next;
-      return dummy.next;
-    }
-    pre = cur;
-    cur = cur.next;
-  }
-  return dummy.next;
-}
 
 //递归
 var deleteNode = function (head, val) {
   if (head.val == val) return head.next;
   head.next = deleteNode(head.next, val);
   return head;
+};
+```
+
+#### [19. 删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+
+```
+给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
+输入：head = [1,2,3,4,5], n = 2
+输出：[1,2,3,5]
+```
+
+
+
+```js
+const removeNthFromEnd = (head, n) => {
+  // 哨兵节点
+  let dump = new ListNode();
+  dump.next = head;
+  // 快慢指针
+  let slow = dump, fast = dump;
+  // 快指针先走n步
+  while (n-- > 0) {
+    fast = fast.next;
+  }
+  // 快指针走到最后，当前slow为倒数第n+1个节点
+  while (fast && fast.next) {
+    slow = slow.next;
+    fast = fast.next;
+  }
+  slow.next = slow.next.next;
+  return dump.next;
+};
+```
+
+
+
+
+#### [876. 链表的中间结点](https://leetcode-cn.com/problems/middle-of-the-linked-list/)
+
+- 利用双指针，快指针走两步，慢指针走一步，快指针走完，慢指针则为中间值
+
+```js
+var middleNode = function (head) {
+  if (!head) return []
+  var fast = slow = head
+  while (fast && fast.next) {
+    slow = slow.next
+    fast = fast.next.next
+  }
+  return slow
 };
 ```
 

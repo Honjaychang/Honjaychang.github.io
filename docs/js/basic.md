@@ -233,7 +233,7 @@ arr2.map(Number); // [1, 2, 3, 4, 5]
 
 #### `null & undefined &NaN`
 
-- `null` 空对象指针
+- `null` 空对象指针 对象的初始值 空对象的引用
 
 ```js
 typeof null ==> 'object'
@@ -243,7 +243,7 @@ null + '123' => 'null123'
 null + 123 => 123
 ```
 
-- `undefined` 未初始化变量
+- `undefined` 未初始化变量 原始值的初始值 未定义
 - `NaN` `not a number`
 
 ```js
@@ -644,7 +644,8 @@ var below5 = arr.includes(3); // true
 
 ##### `reverse sort`
 
-- `arr.sort()` 默认是按 `ASCII` 码排列的
+- `sort()` 方法用**原地算法**对数组的元素进行排序，并返回数组
+- `arr.sort([compareFunction])  =>  用来指定按某种顺序进行排列的函数` 默认是按 `ASCII` 码排列的
 
 ```javascript
 let arr = [1, 3, 5, 0, 55, 6, 11];
@@ -751,18 +752,15 @@ arr.filter(Boolean); // 移除所有的 ”false“ 类型元素
 - 对于空数组是不会执行回调函数
 
 ```javascript
-array.reduce(function(previousValue, currentValue, currentIndex, arr), initialValue)
+array.reduce(function(accumulator, currentValue, currentIndex, array), initialValue)
 
-//initialValue：传递给函数的初始值；
-var newArr = [15.5, 2.3, 1.1, 4.7].reduce(function(total,num){
-	return total + Math.round(num);//对数组元素进行四舍五入并计算总和
+// initialValue：传递给函数的初始值  没有初始值 第一项作为初始值
+// initialValue 可以是 [] {} 来做一些次数统计 二维数组展开等操作
+var newArr = [1, 2, 3, 4].reduce(function(acc, cur){
+	return acc + cur;//对数组元素进行四舍五入并计算总和
 }, 0);
 
-newArr = arr.reduce((total, num) => total + Math.round(num),0)
-
-return arr.reduce((a, b) => a + b)
-
-console.log(newArr);//24
+newArr = arr.reduce((acc, cur) => acc + cur, 0)
 ```
 
 ##### `Spread rest`
@@ -1602,15 +1600,20 @@ var json = '{"a":"hello","b":"world"}';
   - 可以遍历，可以跟各种数据格式转换
 
 ```javascript
-//MAP 键值对
+//Map 键值对
 var map = new Map([
   ['tom', 100],
   ['jack', 90],
 ]);
 
-map.get('tom'); //通过key获得value
+map.get('tom'); // 100 通过key获得value
 map.set('john', 80);
 map.has('tom'); //true
+map.delete('john'); //true
+map.size //2
+[...map.keys()] // ["tom", "jack"]
+Array.from(map.values()); // [100, 90]
+map.clear()
 
 //遍历
 map.forEach((value, key) => {
@@ -1625,11 +1628,15 @@ for (let item of map.entries()) {
   console.log(item[0], item[1]);
 }
 
-//SET无序不重复的集合
+
+
+//Set无序不重复的集合
 var set = new Set([3, 1, 1, 1]);
 set.add(2); //{3,1,2}
-set.delete(3); //{1,2}
+set.delete(3); // true {1,2}
 set.has(2); //是否包含某个元素
+set.size // 2
+set.clear()
 
 //遍历
 set.forEach(value => {

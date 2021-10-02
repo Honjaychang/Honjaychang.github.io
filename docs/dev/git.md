@@ -88,13 +88,13 @@ git add xxx
 
 # 添加当前工作区修改的所有文件到暂存区
 git add .
+
+git restore --staged <file>... // to unstagexs
 ```
 
-
-
 - `git init` 创建新仓库
-
 - `git push origin --delete <name>` 删除远程分支
+- `git remote add origin <server>` 将你的改动推送到所添加的服务器
 
 
 
@@ -108,20 +108,6 @@ git add .
 - `git commit -m "xxx"` 提交代码到本地仓库
 - `git push origin <master>` 将本地代码推送到远程`master`分支
   - `git push origin 本地分支:远端希望创建的分支`
-- `git remote add origin <server>` 将你的改动推送到所添加的服务器
-
-
-
-#### 记录日常开发`push`流程
-
-- `git add .`
-
-- `git pull` 拉取代码查看是否有冲突没有冲突跳到
-- `git stash` 先将本地修改存储起来
-- `git pull` 再次拉取就不会有冲突了
-- `git stash pop` 将本地代码合并到最新拉取的代码上，手动解决冲突
-- `git commit -m ''`
-- `git push`
 
 #### 关于`git stash`
 
@@ -150,8 +136,6 @@ git add .
 - 前者会还原后会`stash list`中删除对应的编号
 - 后者还原后还会保存
 
-
-
 ### `git merge`
 
 自动创建一个新的合并提交点`merge-commit`，且包含两个分支记录。
@@ -164,7 +148,9 @@ git add .
 - `git merge --squash`
   - 把多次分支commit历史压缩为一次
 
-![image.png](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/70ab71b89bb74c248b8b7098383a04e0~tplv-k3u1fbpfcp-zoom-1.image)
+
+
+![image.png](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/GitMerge.image)
 
 
 
@@ -188,16 +174,8 @@ git add .
   - `git pull --rebase => git fetch + git rebase`
   - `merge` 合并操作 会生成一个新的节点，之前的提交分开显示
   - `rebase` 复位基底 不会生成新的节点，是将两个分支融合成一个线性的提交
-
-
-
-```bash
-yarn cache clean --force
-```
-
-
-
-
+  
+  
 
 ## 代码回退
 
@@ -242,15 +220,6 @@ git push -f
 
 
 
-
-
-```js
-git commit <fileName>
-
-git commit .
-git restore --staged <file>... // to unstagexs
-```
-
 记录自己 MAC 上同时配置 `github` 以及公司的 `gitlab`
 
 ```bash
@@ -282,7 +251,7 @@ npm config set registry http://npm-registry.qunhequnhe.com/
 npm config set registry https://registry.npmjs.org/
 ```
 
-- `DOMAIN-SUFFIX,qunhequnhe.com,DIRECT` 配置 `clash` 使得公司的域名走直连
+
 
 ```bash
 //直接拉取并合并最新代码
@@ -299,13 +268,14 @@ git push origin master
 
 
 
-<details>
-  <summary>点击时的区域标题</summary>
+```bash
+yarn start
+rm -rf 
+rimraf
+
+yarn cache clean --force
 ```
-这是折叠的代码1
-这是折叠的代码2
-```
-</details>
+
 
 
 

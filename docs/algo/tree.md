@@ -567,3 +567,74 @@ const formatDataTree3 = (data) => {
 
 - [树形数据 转 扁平数据](http://bugshouji.com/shareweb/t1402)
 
+## 其他案例
+
+
+
+:::note ref
+
+- 第一个回答很赞 [一道JS树状对象遍历算法题，求解？](https://segmentfault.com/q/1010000020304356)
+
+:::
+
+`递归下去，回溯上来`，这就是`DFS`的简单逻辑。而`BFS`则是`层层递进`的逻辑。
+
+```js
+var nodes = {
+  value: 1,
+  children: [
+    {
+      value: 2,
+      children: [
+        {
+          value: 4,
+          children: [{ value: 6 }],
+        },
+        {
+          value: 3,
+          children: [{ value: 7 }],
+        },
+        // ...
+      ],
+    },
+    {
+      value: 5,
+      children: [{ value: 8 }],
+    },
+    // ...
+  ],
+};
+```
+
+`DFS`
+
+```js
+const dfs = ({ value = 0, children = [] }) => {
+  return children.reduce((result, node) => result + dfs(node), value);
+};
+console.log(dfs(nodes));
+```
+
+`BFS`
+
+```js
+const bfs = (nodes, result = 0) => {
+  const stack = [nodes];
+  while (stack.length) {
+    const { value = 0, children } = stack.pop();
+    result += value;
+    if (children) stack.push(...children);
+  }
+  return result;
+};
+```
+
+`JSON 序列化`
+
+```js
+JSON.stringify(nodes)
+  .replace(/\D+/g, '-')
+  .split('-')
+  .reduce((a, b) => Number(a) + Number(b), 0)
+```
+

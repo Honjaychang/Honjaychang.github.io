@@ -3,6 +3,9 @@
 :::note Ref
 
 - [React Hooks 详解 【近 1W 字】+ 项目实战](https://juejin.cn/post/6844903985338400782)
+- [【译】什么时候使用 useMemo 和 useCallback](https://jancat.github.io/post/2019/translation-usememo-and-usecallback/)
+
+
 
 :::
 
@@ -14,13 +17,16 @@ import React, { useState, useEffect } from 'react';
 const [xxx, setXxx] = useState(initValue);
 ```
 
+- 自变量
 - `useState`
-- `useEffect`
-- `useRef`
-- `useCallback`
-- `useMemo`
 - `useReducer`
 - `useContext`
+- 应变量
+- `useEffect`
+- `useCallback`
+- `useMemo`
+- 
+- `useRef`
 
 ## `useState()`
 
@@ -58,6 +64,82 @@ let [counter,setCounter] = useState(getInitState);
   - 如果相等则不会像类组件重新渲染
 - 不同于 `setState` 的合并操作, `setCount` 是直接替换原来的状态值
 
+## `useReducer`
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState, init)
+
+
+
+
+
+const countReducer = (state, action) => {
+  switch (action.type) {
+    case 'add':
+      return state + 1;
+    default:
+      return state;
+  }
+};
+const initialState = 0;
+
+const App = () => {
+  const [count, countDispatch] = useReducer(countReducer, initialState);
+
+  const add = () => {
+    countDispatch({ type: 'add' });
+  };
+
+  return (
+    <>
+      <span onClick={add}>{count}</span>
+    </>
+  );
+};
+```
+
+
+
+
+
+## `useContext`
+
+`createContext  useContext`
+
+```jsx
+// HelloContext
+const HelloContext = React.createContext(null)
+
+
+//
+const {Provider} = HelloContext
+
+const Desendants = () => {
+  const value = useContext(HelloContext)
+  return <div>{value}</div>
+  // 等价于 下面的👇
+  // return <HelloContext.Consumer>
+  //	{value => {
+  //    return <div>{value}</div>
+  //  }}
+  // </HelloContext.Consumer>
+  
+  // static contextType = HelloContext
+  // const value = this.context
+  // <div>{value}</div>
+}
+
+const Child = () => {
+  return <Desendants />
+}
+
+const Parent = () => {
+  return <Provider value='hello world'><Child /></Provider>
+}
+```
+
+
+
 ## `useEffect()`
 
 - `Effect Hook` 可以让你在函数组件中执行副作用操作(用于模拟类组件中的生命周期钩子)
@@ -86,12 +168,28 @@ useEffect(() => {
     clearTimeout(timer);
   };
 }, [count]);
+
+
+在每次useEffect之前调用清理函数  组件销毁时也会执行
+
+每次useEffect包裹的函数 都是新的
+
+render -> useEffect
+render -> clearEffect -> useEffect
 ```
 
 - 可以把 `useEffect Hook` 看做如下三个函数的组合
   - `componentDidMount()` 传入空数组
   - `componentDidUpdate()`
   - `componentWillUnmount()` `return () => {}` 返回的函数
+
+
+
+真实DOM构建以后才会执行 异步的。不会阻塞浏览器更新屏幕 特殊情况layoutEffect
+
+
+
+而cdp是在真实DOM之前
 
 ## `useRef()`
 
@@ -107,21 +205,48 @@ const myRef = useRef();
 myRef.current.value;
 ```
 
+
+
+`forwardRef` 对函数式组件`ref`的转发
+
 ## `useCallback`
+
+```js
+useCallback(
+  () => {
+    callback
+  },
+  [input],
+)
+保证函数是同一引用？
+```
+
+
+
+`memoized fun`?
 
 1. **useCallback**：接收一个内联回调函数参数和一个依赖项数组（子组件依赖父组件的状态，即子组件会使用到父组件的值） ，useCallback 会返回该回调函数的 memoized 版本，该回调函数仅在某个依赖项改变时才会更新
 
 ## `useMemo`
 
+`memoized value`?
+
+```js
+React.memo  固定组件
+React.pureComponent
 
 
-## `useReducer`
+useMemo(() => function, input)
+?
+```
 
 
 
+```js
+useCallback(fn, deps) => useMemo(() => fn, deps)
+```
 
 
-## `useContext`
 
 
 
