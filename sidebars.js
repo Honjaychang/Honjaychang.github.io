@@ -21,9 +21,12 @@ module.exports = {
       JS: [
         'js/basic',
         'js/advanced',
+        'js/object',
+        'js/async',
         'js/dataStructure',
         'js/module',
         'js/reg',
+        'js/request',
       ],
       Extension: ['extension/web-api', 'extension/browser'],
       TS: ['ts/basic'],
@@ -46,7 +49,7 @@ module.exports = {
         'algo/linkedList',
         'algo/tree',
       ],
-      Interview: ['interview/hand', 'interview/scene'],
+      Interview: ['interview/hand', 'interview/scene', 'interview/quize'],
       Vue: ['vue/basic'],
       // TODO:  Fe  todo  downloads
       // FIXME:

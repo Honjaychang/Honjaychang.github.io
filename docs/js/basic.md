@@ -382,6 +382,19 @@ a.onclick = function(e){
 }
 ```
 
+- `~~`
+
+```js
+双非按位取反运算符
+应该是截断吧，无论正数负数
+~~1.1 -> 1
+~~1.9 -> 1
+~~-1.1 -> -1
+~~-1.9 -> -1
+```
+
+
+
 #### `Symbol`
 
 - 表示独一无二的值 符号是原始值，且符号实例是唯一、不可变的
@@ -500,16 +513,31 @@ var arr = [1, 2, 3, 'hello', null, true];
 #### `创建数组`
 
 ```javascript
-//字面值
+// 字面值
 var arr1 = [1, 2, 3];
-//构造函数
+// 构造函数
 var arr2 = new Array(4, 5, 6);
-//数组object
+// 数组object
 var arr3 = Array(7, 8, 9);
-//Array.of
+// Array.of 	ES6 新增static方法 
+// 为了弥补 Array(n) -> 创建length 为 n 的数组
 var arr4 = Array.of(10, 11, 12);
 
 //如果创建的数组只有一个参数的时候用 arr1/arr4。其他两个代表的是数组的长度
+```
+
+#### 判断变量是否数组
+
+```js
+function isArray(arr) {
+  return arr instanceof Array;
+}
+
+arr.constructor === Array;
+
+Object.prototype.toString().call();
+
+Array.isArray();
 ```
 
 #### 方法
@@ -540,6 +568,13 @@ Array.isArray(arr); // true
 
 - `Array.from(arrayLike[, mapFn[, thisArg]])`
   - 从一个类似数组或可迭代对象创建一个新的，浅拷贝的数组实例
+
+```js
+Array.from( { length: 4 } ); 
+// [undefined, undefined, undefined, undefined]
+```
+
+`Array.from(..)` 检查第一个参数是否为 `iterable`，如果是的话，就使用迭代器 来产生值并“复制”进入返回的数组
 
 ##### `pop push unshift shift`
 
@@ -998,488 +1033,6 @@ function generator(arr) {
 }
 ```
 
-## Object
-
-#### 创建对象
-
-```js
-let obj1 = { name: 'obj1' }; // 字面量
-let obj2 = new Object({ name: 'obj2' });
-
-let M = function (name) {
-  this.name = name;
-}; // 构造函数
-let obj3 = new M('obj3');
-
-let p = { name: 'p' }; // Object.create
-let obj4 = Object.create(p);
-```
-
-- 使用字面量 `{}` 创建的对象 形式上和 `new Object()` 没有区别，但并不相等
-
-```js
-const obj1 = { a: 10 };
-
-const obj2 = new Object({ a: 10 });
-const obj3 = new Object(obj1);
-
-console.log(obj1 === obj2); // false 引用类型
-console.log(obj1 === obj3); // true
-```
-
-- `Object.create(null)` 创建的对象没有原型
-- `Object.create({..})`可以指定原型
-
-```js
-const obj1 = { a: 10 };
-
-const obj2 = Object.create({ a: 10 });
-const obj3 = Object.create(obj1);
-
-console.log(obj2.__proto__ === obj1); // false
-console.log(obj3.__proto__ === obj1); // true
-```
-
-#### 对象基本操作
-
-- `JS` 对象：若干个键值对
-- 创建
-
-```js
-// JS中所有的键都是字符串，值是任意对象！
-var person = {
-  name: 'hello',
-  age: 3,
-};
-```
-
-- 对象赋值
-
-```js
-person.name = 'Honjay'; // person['name'] = 'Honjay'
-// . 和 [''] 的区别
-// 中括号运算符总是能代替点运算符，反之不行
-// 如：属性名为 数字 含有空格 js关键字等等
-```
-
-- 动态添加 删除属性
-
-```js
-person.love = 'Fortnite';
-
-delete person.love; // true
-```
-
-- 遍历对象属性
-
-```js
-Object.keys(person) // ["name", "age"]
-Object.values(person) // [ 'hello', 3 ]
-Object.entries(person) // [ [ 'name', 'hello' ], [ 'age', 3 ] ]
-
-for in
-
-Object.getOwnPropertyNames(person) // [ 'name', 'age' ]
-```
-
-- 判断属性值是否在这个对象中
-
-```js
-person.hasOwnProperty('age') // true
-
-'age' in person // true
-'toString' in person // 继承  true
-
-isPrototypeOf(object) 允许你检查一个对象是否存在于另一个对象的原型链上
-
-instanceof
-
-Object.getPrototypeOf() 获取对象原型属性
-```
-
-- `Object.assign()`
-  - 方法用于将所有可枚举属性的值从一个或多个源对象分配到目标对象
-  - 返回目标对象
-
-```js
-Object.assign(target, ...sources);
-```
-
-- `Object.freeze(obj)`
-  - 冻结对象 使得属性无法被改变 浅冻结
-- `Object.is()`
-
-```js
-Object.is(val1, val2) // val1 === val2
-// 两个特例
-Object.is(NaN, NaN) -> true
-Object.is(-0, +0) -> false (-0 === +0 //true)
-```
-
-##### 判断空对象
-
-- `for in` 遍历属性
-- `JSON.stringify(data) === '{}'`
-- `Object.keys(obj).length` 遍历属性、直接查看长度
-
-> ECMAScript 委员会 对象操作 14 种
-
-```js
-// 1、获取原型 [[GetPrototypeOf]]
-var obj = { a: 1, b: 2 };
-console.log(obj.__proto__);
-console.log(Object.prototype);
-console.log(Object.getPrototypeOf(obj));
-// JS 很多命令 都是关键字 如 in instanceof  然而底层更多的是方法式
-
-// 2、设置原型 [[SetPrototypeOf]]
-
-Object.setPrototypeOf(obj, { c: 3, d: 4 });
-console.log(obj);
-/**
- * obj.__proto__:
- *    {c:3, d:4}
- *    {c:3, d:4}.__proto__:
- *        Object.prototype
- *            Object.prototype.__proto__ === null
- */
-
-// 3、获取对象的可拓展性 [[IsExtensible]]
-var obj = { a: 1, b: 2 };
-var extensible = Object.isExtensible(obj);
-console.log(extensible); // true
-
-Object.freeze(obj); // 冻结对象
-var extensible2 = Object.isExtensible(obj);
-console.log(extensible2); // false
-obj.c = 3; // 不可修改
-console.log(obj); // { a: 1, b: 2 }
-delete obj.a; // 不可删除
-console.log(obj); // { a: 1, b: 2 }
-obj.a = 3; // 不可写
-console.log(obj); // { a: 1, b: 2 }
-for (let key in obj) {
-  console.log(key); // a b
-}
-
-但是 freeze() 不会冻结嵌套的子对象，它所执行的是浅冻结。 
-嵌套层还是可以修改删除和遍历的  
-Object.seal(obj) 也是
-
-复杂类型冻结的是指向堆内存存放数据的内存地址
-所以引用类型中的深层数据并不受影响
-
-// Object.seal(obj); // 封闭对象
-// obj.c = 3; // 不可修改
-// console.log(obj); // { a: 1, b: 2 }
-// delete obj.a; // 不可删除
-// console.log(obj); // { a: 1, b: 2 }
-// obj.a = 3; // 可写
-// console.log(obj); // { a: 3, b: 2 }
-// for (let key in obj) {
-//   console.log(key); // a b
-// }
-
-// 4、获取自有属性 [[GetOwnProperty]]
-var obj = { a: 1, b: 2 };
-Object.getOwnPropertyNames(obj, { c: 3, d: 4 }); // ["a", "b"]
-
-// 5、禁止扩展对象[[ PreventExtensions]]
-var obj = { a: 1, b: 2 };
-Object.preventExtensions(obj);
-obj.c = 3; // 禁止增加属性
-console.log(obj); // { a: 1, b: 2 }
-
-delete obj.a;
-console.log(obj); // { b: 2 } 可以删除属性
-
-// 6、拦截对象[[ DefineOwnProperty]]
-Object.defineProperty();
-
-// 7、判断是否是自身属性 [[HasProperty]]
-var obj = { a: 1, b: 2 };
-obj.hasOwnProperty("a"); // true
-
-// 8、[[GET]]
-console.log("a" in obj); // true
-console.log(obj.a); // 1
-
-// 9、[[SET]]
-obj.a = 3;
-obj["b"] = 4;
-console.log(obj); // {a: 3, b: 4}
-
-// 10、[[DELETE]]
-delete obj.a;
-console.log(obj); // {b: 4}
-
-var obj = { a: 1, b: 2 };
-
-// 11、[[Enumerable]]
-for (var k in obj) {
-  console.log(obj[k]);
-} // 1 2
-
-// 12、获取键集合[[OwnPropertyKeys]]
-console.log(Object.keys(obj)); // [ 'a', 'b' ]
-```
-
-#### 解构赋值
-
-- 使用解构赋值从对象中分配变量
-
-```javascript
-var post = {
-  status: 200,
-  data: {
-    result: true,
-  },
-};
-
-const { status, data } = post;
-console.log(status, data); // 200 { result: true }
-
-//利用别名
-const { data: res } = post;
-console.log(res); // { result: true }
-
-//默认值
-var [a, b = 2] = [1];
-console.log(a, b); //1 2
-
-//解构赋值+rest操作符实现重新分配数组元素
-const [a, b, ...arr] = [1, 2, 3, 4, 5, 7];
-console.log(a, b); // 1, 2
-console.log(arr); // [3, 4, 5, 7]
-//等同于  Array.prototype.slice()
-```
-
-## 进阶
-
-#### `Object.defineProperty()`
-
-- `Object.defineProperty() `方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象。
-- 更加具体的去描述或设置一个对象内部属性的操作性
-
-```js
-var obj = {};
-var newObj = Object.defineProperty(obj, 'a', { value: 1 });
-console.log(newObj === obj); // true
-```
-
-- 默认情况下 使用`Object.defineProperty()`添加的属性是不可修改的
-
-```js
-// 如：对上述由Object.defineProperty添加的a属性 进行重新赋值 删除 遍历都是无法获取的
-// obj.a = 2
-
-// delete obj.a // false
-
-// for (let key in obj) {
-//   console.log(key, obj[key])
-// }
-```
-
-- `Object.defineProperty(obj, prop, descriptor)`
-
-关于`descriptor`
-
-- 如果一个描述符不具有 `value`、`writable`、`get` 和 `set` 中的任意一个键，那么它将被认为是一个数据描述符。如果一个描述符同时拥有 `value` 或 `writable` 和 `get` 或 `set` 键，则会产生一个异常。
-
-```js
-var obj = {};
-Object.defineProperty(obj, 'a', {
-  value: 1,
-  configurable: true,
-  enumerable: true,
-  writable: true,
-});
-
-// descriptor
-/**
- * configurable: 当且仅当该属性的configurable为true时，该属性的描述符才能被改变，同时该属性也能从对应的对象上删除
- * enumerable: 当且仅当该属性的enumerable为true时，该属性才会出现在对象的枚举属性中
- *
- * 数据描述符 or 存取描述符
- * writable: 当且仅当该属性的writable为true时，该属性(即value) 才能被赋值运算符改变
- *
- */
-
-// delete obj.a
-// console.log(obj) // 删除成功
-
-// for (let k in obj) {
-//   console.log(k) // a
-// }
-
-// obj.a = 2
-// console.log(obj)
-
-// getter setter 数据劫持
-var obj = {};
-Object.defineProperty(obj, 'a', {
-  // value: 1
-  get() {
-    console.log('get obj.a:', 1);
-  },
-  set(newValue) {
-    console.log('set obj.a:', newValue);
-  },
-});
-obj.a;
-obj.a = 2;
-```
-
-#### 深浅拷贝
-
-- 浅拷贝只是将数据中存放的引用拷贝下来，但还是指向同一个存放地址
-- 深拷贝将数据中所有的数据拷贝下来，而不是引用，修改拷贝下来的数据并不会影响原数据。
-
-##### 为什么要进行拷贝
-
-- 因为对象是引用类型，所以赋值时的操作仅是赋予相同的地址，当对其中一个对象进行操作时，就会影响另外一个对象。
-
-##### 浅拷贝
-
-- 使用原生的 `Object.assign()`
-
-```js
-let a = { age: 1 };
-let b = Object.assign({}, a);
-a.age = 2;
-console.log(b.age); // 1
-```
-
-- 通过展开运算符`Array.from() ==> ...`来解决
-
-```js
-let a = { age: 1 };
-let b = { ...a };
-a.age = 2;
-console.log(b.age); // 1
-```
-
-- 由于浅拷贝只拷贝一层，所以当遇到第二层为对象时又会出现引用类型 拷贝内存地址的问题
-
-##### 深拷贝
-
-- 使用原生的 `JSON.parse(JSON.stringify(object))`
-
-```js
-let a = { age: 1, jobs: { first: 'FE' } };
-let b = JSON.parse(JSON.stringify(a));
-a.jobs.first = 'native';
-console.log(b.jobs.first); // FE
-```
-
-但是该方法也是有局限性的：
-
-- 会忽略 `undefined`
-- 会忽略 `symbol`
-- 不能序列化函数
-- 不能解决循环引用的对象
-
-##### 递归
-
-```js
-// null undefined Date RegExp
-function deepClone(obj = {}) {
-  if (typeof obj !== 'object' || obj == null) {
-    // 如果obj是null 或者 obj不是对象和数组 就直接返回
-    return obj;
-  }
-  if (obj instanceof Date) {
-    return new Date(obj);
-  }
-  if (obj instanceof RegExp) {
-    return new RegExp(obj);
-  }
-  // 初始化返回结果
-  let res = obj instanceof Array ? [] : {};
-
-  for (let key in obj) {
-    // 保证key不是原型的属性
-    if (obj.hasOwnProperty(key)) {
-      // 递归调用
-      res[key] = deepClone(obj[key]);
-    }
-  }
-  return res;
-}
-```
-
-由于`xxx.constructor()` 的隐式原型指向 `Object/Array.prototype` 那么我们就可以通过`new xxx.constructor()`的方法来创建对应的数据类型
-
-```js
-const obj = {};
-const newObj = new obj.constructor();
-newObj.a = 1;
-console.log(obj, newObj); // {} {a: 1}
-
-const arr = [];
-const newArr = new arr.constructor();
-newArr.push(1);
-console.log(arr, newArr); // [] [1]
-
-obj.constructor().__proto__ === Object.prototype; // true
-arr.constructor().__proto__ === Array.prototype; // true
-
-let res = new obj.constructor(); // 根据当前的constructor来决定生成数组还是对象
-for (let key in obj) {
-  res[key] = deepClone(obj[key]);
-}
-```
-
-##### WeakMap
-
-```js
-Map 键名 -> 任意类型 {} []
-WeakMap 键名 -> 对象
-
-弱引用   方便垃圾回收机制
-```
-
-循环引用
-
-```js
-// 用 WeakMap 记录 当前是否存在 hashkey 如果存在就不用进行深拷贝 直接返回就好 
-// Map也可以 只是WeakMap 弱引用 方便垃圾回收
-
-function deepClone(obj = {}, hashMap = new WeakMap()) {
-  if (typeof obj !== 'object' || obj == null) {
-    // 如果obj是null 或者 obj不是对象和数组 就直接返回
-    return obj;
-  }
-  if (obj instanceof Date) {
-    return new Date(obj);
-  }
-  if (obj instanceof RegExp) {
-    return new RegExp(obj);
-  }
-
-  const hashKey = hashMap.get(obj);
-
-  if (hashKey) return hashKey;
-
-  let res = new obj.constructor(); // 根据当前的constructor来决定生成数组还是对象
-  hashMap.set(obj, res);
-  for (let key in obj) {
-    res[key] = deepClone(obj[key], hashMap);
-  }
-  return res;
-}
-
-let test1 = {};
-let test2 = {};
-test2.test1 = test1;
-test1.test2 = test2;
-console.log(deepClone(test2));
-```
-
-`Ref`
-
-- [ES6 系列之 WeakMap](https://segmentfault.com/a/1190000015774465)
-
 ## 单例内置对象
 
 #### Global
@@ -1728,24 +1281,12 @@ try {
 }
 ```
 
-## 函数 `call` 和 `apply` 的区别
+##  `call apply bind`
 
+- `call` 和 `apply` 都是为了解决改变 `this` 的指向 
 - 传参方式不一样
-
 - `fn.call(this, p1, p2, p3)`
 - `fn.apply(this, [...arguments])`
-
-```js
-call 和 apply 都是为了解决改变 this 的指向。作用都是相同的，只是传参的方式不同。
-
-除了第一个参数外，call 可以接收一个参数列表，apply 只接受一个参数数组。
-
-bind 多次绑定 只会生效一次（第一次
-
-当执行绑定函数时，this指向与形参在bind方法执行时已经确定了，无法改变
-```
-
-- `call apply band`
 
 ```javascript
 var emp = {
@@ -1760,7 +1301,10 @@ function printInfo(dep1, dep2, dep3) {
 printInfo.call(emp, 'WEB', 'IT', 'Office');
 printInfo.apply(emp, ['WEB', 'IT', 'Office']); //可以作为数组传入
 
-var empPrintInfo = printInfo.band(emp, 'WEB', 'IT', 'Office'); 
+var empPrintInfo = printInfo.bind(emp, 'WEB', 'IT', 'Office'); 
 //返回绑定参数的新函数 用于后续执行
 empPrintInfo();
 ```
+
+- `bind` 多次绑定 只会生效一次（第一次
+- 当执行绑定函数时，`this`指向与形参在`bind`方法执行时已经确定了，无法改变

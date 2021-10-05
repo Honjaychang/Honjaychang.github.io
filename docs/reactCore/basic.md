@@ -468,18 +468,9 @@ React 使用 state 为组件维护了自己的内部状态，使用 props 为组
 
 
 
-关于数据请求的位置
 
 
 
-
-
- class 作为构造函数的语法糖同时拥有 `__proto__`属 性和 prototype 属性，因此同时存在两条继承链:
-
-- 子类的 `__proto__` 属性表示构造函数的继承，总是指向父类。
-  - `Child.__proto__ === Parent`
-- 子类 prototype 属性的 `__proto__`属性表示方法的继承，总是指向父类的 prototype 属性
-  - `Child.prototype.__proto__ === Parent.prototype`
 
 ```jsx
 // 验证一下 再看下原文

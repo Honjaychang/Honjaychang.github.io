@@ -1,6 +1,15 @@
 # React 基础
 
+:::note Todo
 
+需要进一步系统完善
+
+- 合成事件
+- HOC
+
+:::
+
+## 基础
 
 ```html
 <div id="root"></div>
@@ -48,7 +57,7 @@
 - `jsx` 标签必须闭合
 - 标签首字母 若是小写，则转换味 `html` 中同名元素；若是大写，则当组件处理
 
-#### 函数式组件
+### 函数式组件
 
 - 适用于简单组件 无状态
 
@@ -65,7 +74,7 @@ ReactDOM.render(<MyComponent />, document.getElementById('root'));
 - 发现组件是使用函数定义的，随后调用该函数
 - 将返回的虚拟 `DOM` 转换为真实 `DOM` 然后呈现在页面上
 
-#### 类式组件
+### 类式组件
 
 - 适用于复杂组件 有状态
 
@@ -89,7 +98,7 @@ ReactDOM.render(<MyComponent />, document.getElementById('root'));
 
 ## 组件实例属性
 
-#### `state`
+### `state`
 
 ```jsx
 // 构造器调用1次  render调用1+n次
@@ -137,9 +146,7 @@ class Weather extends React.Component {
 ReactDOM.render(<Weather />, document.getElementById('root'));
 ```
 
-
-
-#### `props`
+### `props`
 
 - props 是只读的
 
@@ -234,7 +241,7 @@ ReactDOM.render(<Person {...p} />, document.getElementById('root2'));
 - 展开运算符 不能展开对象 `...` `iterator`
 - 构造器是否接收 `props` 是否传递 `super` 取决于 是否希望在构造器中通过 `this` 访问 `props` 日常开发几乎用不到
 
-#### `ref`
+### `ref`
 
 - 字符串形式 
 
@@ -264,7 +271,7 @@ myRef = React.createRef();
 <input type='text' ref={this.myRef} />
 ```
 
-#### 非受控 & 受控
+### 非受控 & 受控
 
 - 非受控组件 现用现取
 - 受控组件 页面中输入类的 DOM 维护到状态中去 从状态中去取
@@ -326,7 +333,7 @@ class Login extends React.Component {
 ReactDOM.render(<Login />, document.getElementById('app'));
 ```
 
-#### 事件处理
+### 事件处理
 
 ```jsx
 class Demo extends React.Component {
@@ -365,132 +372,15 @@ ReactDOM.render(<Demo />, document.getElementById('app'));
 
 ## 生命周期
 
-#### 旧
+> 红色的在React v16.3 被废弃			绿色的为新增的
 
-![react生命周期(旧)](<https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/oldLC.png>)
+![image-20210826154257258](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/LifeCycle.png)
 
-```jsx
-class Count extends React.Component {
-  constructor(props) {
-    console.log('Count-constructor');
-    super(props);
-    this.state = { count: 0 };
-  }
-  add = () => {
-    let { count } = this.state;
-    this.setState({ count: ++count });
-  };
-  // 卸载组件 回调
-  unmount = () => {
-    ReactDOM.unmountComponentAtNode(document.getElementById('app'));
-  };
-  // 强制更新 回调 不受阀门限制
-  force = () => {
-    this.forceUpdate();
-  };
+- 调用组件的生命周期函数前必须取得组件实例
+- 首次渲染会创建组件实例
+- 更新渲染会从fiber结点获取组件实例
 
-  // 组件将要挂载的钩子
-  componentWillMount() {
-    console.log('Count-componentWillMount');
-  }
-
-  // 组件挂载完毕的钩子
-  componentDidMount() {
-    console.log('Count-componentDidMount');
-  }
-  // 组件将要卸载的钩子
-  componentWillUnmount() {
-    console.log('Count-componentWillUnmount');
-  }
-  // 控制组件更新的阀门 默认返回true  自己写必须返回bool
-  shouldComponentUpdate() {
-    console.log('Count-shouldComponentUpdate');
-    return true;
-  }
-  // 组件将要更新的钩子
-  componentWillUpdate() {
-    console.log('Count-componentWillUpdate');
-  }
-  // 组件更新完毕的钩子
-  componentDidUpdate() {
-    console.log('Count-componentDidUpdate');
-  }
-  render() {
-    console.log('Count-render');
-    let { count } = this.state;
-    return (
-      <div>
-        <h5>Current Sum: {count}</h5>
-        <button onClick={this.add}>Click</button>
-        <button onClick={this.unmount}>Unmount</button>
-        <button onClick={this.force}>forceUpdate</button>
-      </div>
-    );
-  }
-}
-
-ReactDOM.render(<Count />, document.getElementById('app'));
-```
-
-> `mount => constructor -> componentWillMount -> render -> componentDidMount`
-
-> `click => shouldComponentUpdate -> componentWillUpdate -> render -> componentDidUpdate`
-
-> `forceUpdate => componentWillUpdate -> render -> componentDidUpdate`
-
-> `unmount => componentWillUnmount`
-
-
-
-```jsx
-// 父组件
-class A extends React.Component {
-  state = { car: 'BMW' }
-  change = () => {
-    this.setState({ car: 'BC' })
-  }
-  render() {
-    return (
-      <div>
-        <p>A</p>
-        <button onClick={this.change}>Change Car</button>
-        <B car={this.state.car} />
-      </div>
-    )
-  }
-}
-// 子组件
-class B extends React.Component {
-  // 组件将要接收新的props的钩子
-  componentWillReceiveProps(props) {
-    console.log('B-componentWillReceiveProps', props)
-  }
-  shouldComponentUpdate() {
-    console.log('B-shouldComponentUpdate')
-    return true
-  }
-  componentWillUpdate() {
-    console.log('B-componentWillUpdate')
-  }
-  componentDidUpdate() {
-    console.log('B-componentDidUpdate')
-  }
-  render() {
-    console.log('B-render')
-    const { car } = this.props
-    return <p>B: Receive Car: {car}</p>
-  }
-}
-
-ReactDOM.render(<A />, document.getElementById('app'))
-```
-
-
-> `mount => render`
-
-> `click => componentWillReceiveProps {car: "BC"} => shouldComponentUpdate => componentWillUpdate => render => componentDidUpdate`
-
-旧的生命周期
+### 旧的生命周期
 
 初始化阶段：由 `ReactDOM.render()` 触发 触发渲染
 
@@ -510,163 +400,440 @@ ReactDOM.render(<A />, document.getElementById('app'))
 卸载组件：由 `ReactDOM.unmountComponentAtNode()` 触发
 
 - `componentWillUnmount()`
-- 常用： 一般在这个钩子里面做一些收尾的事：关闭定时器、取消订阅消息
+- 一般在这个钩子里面做一些收尾的事：关闭定时器、取消订阅消息
 
-#### 新
+### V16.4
 
-![react生命周期(新)](<https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/newLC.png>)
+- [图片引自：  >=v16.4](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
 
-```jsx
- class Count extends React.Component {
-   constructor(props) {
-     console.log('Count-constructor')
-     super(props)
-     this.state = { count: 0 }
-   }
-   add = () => {
-     let { count } = this.state
-     this.setState({ count: ++count })
-   }
-   // 卸载组件 回调
-   unmount = () => {
-     ReactDOM.unmountComponentAtNode(document.getElementById('app'))
-   }
-   // 强制更新 回调 不受阀门限制
-   force = () => {
-     this.forceUpdate()
-   }
-   // 介于构造器和render之间  从props得到派生的状态
-   static getDerivedStateFromProps(props, state) {
-     console.log('Count-getDerivedStateFromProps', props, state)
-     // return props
-     return null
-     // return { count: 10 }
-   }
+![image-20211005140430672](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211005140430.png)
 
-  // 组件挂载完毕的钩子
-  componentDidMount() {
-    console.log('Count-componentDidMount')
-  }
-  // 组件将要卸载的钩子
-  componentWillUnmount() {
-    console.log('Count-componentWillUnmount')
-  }
-  // 控制组件更新的阀门 默认返回true  自己写必须返回bool
-  shouldComponentUpdate() {
-    console.log('Count-shouldComponentUpdate')
-    return true
-  }
+### 废弃
 
-  // 在最近一次渲染输出（提交到DOM节点）之前调用  使得组件在发生更改之前从DOM中捕获一些信息  此生命周期的任何返回值都将作为参数传递给componentDidUpdate
-  getSnapshotBeforeUpdate() {
-    console.log('Count-getSnapShotBeforeUpdate')
-    // return null
-    return 'snapshotValue'
-  }
+> 主要原因：React改为Fiber架构后，如果要开启 `async rendering`，在`render`函数之前的所有生命周期函数，都有可能被执行多次
 
-  // 组件更新完毕的钩子
-  componentDidUpdate(preProps, preState, snapshotValue) {
-    console.log(
-      'Count-componentDidUpdate',
-      preProps,
-      preState,
-      snapshotValue
-    )
+所以在`render`前除了`shouldComponentUpdate` 其他三个都被废弃了被`getDerivedStateFromProps`替代了
+
+#### `componentWillMount`
+
+#### `componentWillReceiveProps(nextProps)`
+
+#### `componentWillUpdate`
+
+
+### 新增
+
+#### `static getDerivedStateFromProps`
+
+- 在组件创建时和更新时的`render`方法之前调用，它应该返回一个对象来更新状态，或者返回`null`来不更新任何内容
+- 从 `props` 中获取 `state` ，换句话说就是将传入的`props` 映射到 `state` 中
+
+```js
+static getDerivedStateFromProps(nextProps, prevState) {
+  if(nextProps.xxx !== prevState.xxx){
+		return {xxx: nextProps.xxx}
   }
-  render() {
-    console.log('Count-render')
-    let { count } = this.state
-    return (
-      <div>
-        <h5>Current Sum: {count}</h5>
-        <button onClick={this.add}>Click</button>
-        <button onClick={this.unmount}>Unmount</button>
-        <button onClick={this.force}>forceUpdate</button>
-      </div>
-    )
-  }
+  return null； // 返回null则说明不需要更新state
 }
-
-ReactDOM.render(<Count count={199} />, document.getElementById('app'))
-
-首次
-Count-constructor
-Count-getDerivedStateFromProps {count: 199} {count: 0}
-Count-render
-Count-componentDidMount
-
-click
-Count-getDerivedStateFromProps {count: 199} {count: 1}
-Count-shouldComponentUpdate
-Count-render
-Count-getSnapShotBeforeUpdate
-Count-componentDidUpdate {count: 199} {count: 0} snapshotValue
-
-force
-Count-getDerivedStateFromProps {count: 199} {count: 1}
-Count-render
-Count-getSnapShotBeforeUpdate
-Count-componentDidUpdate {count: 199} {count: 1} snapshotValue
-
-unmount
-Count-componentWillUnmount
 ```
 
-异步渲染 废弃三个 提出 2 个
+- 第一个参数为即将更新的 `props`,
+- 第二个参数为上一个状态的 `state` 
+- 可以比较`props` 和 `state`来加一些限制条件，防止无用的state更新
+- `static`静态方法只能构造函数来调用，而实例是不能的
 
-- `componentWillMount => UNSAFE_componentWillMount`
-- `componentWillReceiveProps => UNSAFE_componentWillReceiveProps`
-- `componentWillUpdate => UNSAFE_componentWillUpdate`
+  - `App.staticMethod✅` ` (new App()).staticMethod ❌ `
+  - 因此静态方法里面的`this`为`undefined`
+  - 因此只能作一些无副作用的操作
 
-新的生命周期
+#### `getSnapshotBeforeUpdate`
 
-初始化阶段：由 `ReactDOM.render()` 触发 触发渲染
+- 被调用于`render`之后挂载之前，可以读取但无法使用DOM的时候
+- 它使您的组件可以在可能更改之前从DOM捕获一些信息（例如滚动位置）
+- 此生命周期返回的任何值都将作为参数传递给`componentDidUpdate()`
 
-- `constructor()`
-- `getDerivedStateFromProps()`
-- `render()`
-- `componentDidMount()`
-- 常用：做一些初始化的事情如：开启定时器、发送网络请求、订阅消息
+```js
+getSnapshotBeforeUpdate(prevProps, prevState) {
+  return 'snapshotValue'
+}
+```
 
-更新阶段：由组件内部 `this.setState()` 或父组件 `render` 触发
+> React 官网的例子
 
-- `getDerivedStateFromProps()`
-- `shouldComponentUpdate()`
-- `render()` => 必须使用
-- `getSnapshotBeforeUpdate()`
-- `componentDidUpdate()`
+```js
+class ScrollingList extends React.Component {
+  constructor(props) {
+    super(props);
+    this.listRef = React.createRef();
+  }
 
-卸载组件：由 `ReactDOM.unmountComponentAtNode()` 触发
+  getSnapshotBeforeUpdate(prevProps, prevState) {
+    //我们是否要添加新的 items 到列表?
+    // 捕捉滚动位置，以便我们可以稍后调整滚动.
+    if (prevProps.list.length < this.props.list.length) {
+      const list = this.listRef.current;
+      return list.scrollHeight - list.scrollTop;
+    }
+    return null;
+  }
 
-- `componentWillUnmount()`
-- 常用： 一般在这个钩子里面做一些收尾的事：关闭定时器、取消订阅消息
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    //如果我们有snapshot值, 我们已经添加了 新的items.
+    // 调整滚动以至于这些新的items 不会将旧items推出视图。
+    // (这边的snapshot是 getSnapshotBeforeUpdate方法的返回值)
+    if (snapshot !== null) {
+      const list = this.listRef.current;
+      list.scrollTop = list.scrollHeight - snapshot;
+    }
+  }
 
-` render()` 初始化渲染 or 更新渲染 调用
+  render() {
+    return (
+      <div ref={this.listRef}>{/* ...contents... */}</div>
+    );
+  }
+}
+```
 
-`componentDidMount()` 开启监听 发送 `ajax` 请求
+### 常用
 
-`componentWillUnmount()` 做一些收尾工作 如 清理定时器
+#### `constructor`
+
+- 来初始化函数内部 state
+- 为 事件处理函数 绑定实例
+
+#### `componentDidMount`
+
+- `componentDidMount()` 在组件挂载后 (插入DOM树后) 立即调用
+- `componentDidMount() `是发送网络请求、启用事件监听方法的好时机
+- 可以在此钩子函数里直接调用 `setState()`
+
+#### `shouldComponentUpdate`
+
+- 在组件更新之前调用，可以控制组件是否进行更新， 返回`true`时组件更新， 返回`false`则不更新
+- 可以使用内置 `PureComponent` 组件替代  浅比较
+
+```js
+// 默认返回true  自己写必须返回bool
+// 组件更新时会调用，react性能优化非常重要的一环，此处可阻止不必要的更新
+shouldComponentUpdate(nextProps, nextState) {
+	// ...
+  return true;
+}
+```
+
+#### `componentDidUpdate`
+
+- 在所有的子组件都更新之后被调用
+
+```js
+componentDidUpdate(prevProps, prevState, snapshotValue) {}
+```
+
+- 这两个参数的值就是在方法调用之前的`this.props`和`this.state`
+
+#### `componentWillUnmount`
+
+- 此方法在组件被卸载前调用，可以在这里执行一些清理工作，比如关闭定时器、取消订阅消息，清除`componentDidMount`中手动创建的DOM元素等，以免造成内存泄漏
+
+#### `this.forceUpdate()`
+
+- 强制更新 不受`shouldComponentUpdate`限制
+
+### 父子组件执行顺序
+
+- 当子组件自身状态改变时，不会对父组件产生副作用的情况下，父组件不会进行更新，即不会触发父组件的生命周期
+- 当父组件中状态发生变化（包括子组件的挂载以及卸载）时，会触发自身对应的生命周期以及子组件的更新
+  - `render  `以及 `render` 之前的生命周期，则 父组件先执行
+  - `render` 以及 `render`之后的声明周期，则子组件先执行，并且是与父组件交替执行
+- 当子组件进行卸载时，只会执行自身的 `componentWillUnmount` 生命周期，不会再触发别的生命周期
+
+:::note Ref
+
+- [深入详解React生命周期](https://juejin.cn/post/6914112105964634119)
+
+:::
+
+## React事件机制
+
+由于`fiber`机制的特点，生成一个`fiber`节点时，它对应的`dom`节点有可能还未挂载，`onClick`这样的事件处理函数作为`fiber`节点的`prop`，也就不能直接被绑定到真实的DOM节点上。
+
+为此，React提供了一种“顶层注册，事件收集，统一触发”的事件机制。
+
+React 合成事件 `SyntheticEvent` 是 React 模拟原生 DOM 事件所有能力的一个事件对象，即浏览器原生事件的跨浏览器包装器
+
+`React` 基于浏览器的事件机制自身实现了一套事件机制，包括事件注册、事件的合成、事件冒泡、事件派发等
+
+在`React17`之前，`React`是把事件委托在`document`上的，`React17`及以后版本不再把事件委托在`document`上，而是委托在挂载的容器上了。
+
+以`v16.8.4`版本的`React`为例来探寻`React`的合成事件。当真实的`dom`触发事件时，此时构造`React`合成事件对象，按照冒泡或者捕获的路径去收集真正的事件处理函数，在此过程中会先处理原生事件，然后当冒泡到`document`对象后，再处理`React`事件。
+
+- React 所有事件都挂载在 `document` 对象上；
+- 当真实 DOM 元素触发事件，会冒泡到 `document` 对象后，再处理 React 事件；
+- 所以会先执行原生事件，然后处理 React 事件；
+- 最后真正执行 `document` 上挂载的事件。
+
+### 同时绑定合成与原生事件
+
+- 原生事件阻止冒泡 肯定会阻止合成事件的触发
+- 合成事件阻止冒泡 不会影响原生事件的执行
+
+因为合成事件的触发是基于浏览器的事件机制来实现的，通过冒泡机制冒泡到最顶层元素，然后再由 `dispatchEvent`统一去处理。
+
+浏览器事件的执行需要经过三个阶段，捕获阶段-目标元素阶段-冒泡阶段。
+
+- 节点上的原生事件的执行是在目标阶段，然而合成事件的执行是在冒泡阶段，所以原生事件会先合成事件执行，然后再往父节点冒泡。
+- 在原生事件中，可以通过返回 `false` 方式来阻止默认行为，但是在 React 中，需要显式使用 `preventDefault()` 方法来阻止
+
+### 合成表现
+
+#### 对原生事件的封装
+
+- `e` 其实不是原生事件对象而是`react`包装过的对象
+- 可以通过 `e.nativeEvent` 来访问原生事件对象
+
+```js
+handleClick = (e) => console.log(e)
+```
+
+#### 对某些原生事件的升级和改造
+
+- 如：`react`在注册了`onchange`事件时，还注册了很多其他事件
+
+#### 不同浏览器事件兼容的处理
+
+```js
+addEventListener
+addchEvent
+```
+
+### 合成事件优点
+
+#### 更好的兼容性 跨平台
+
+`React` 采用的是顶层事件代理机制，能够保证冒泡一致性，可以跨浏览器执行。`React `提供的合成事件用来抹平不同浏览器事件对象之间的差异，将不同平台事件模拟合成事件。
+
+#### 避免垃圾回收
+
+事件对象可能会被频繁创建和回收，因此 React 引入**事件池**，在事件池中获取或释放事件对象。**即 React 事件对象不会被释放掉，而是存放进一个数组中，当事件触发，就从这个数组中弹出，避免频繁地去创建和销毁(垃圾回收)**
+
+#### 方便事件统一管理和事务机制
+
+:::note Ref
+
+- [探索 React 合成事件](https://juejin.cn/post/6897911576053940231)
+- [「react进阶」一文吃透react事件系统原理](https://juejin.cn/post/6955636911214067720#comment)
+
+:::
+
+它并不会把事件处理函数直接绑定到真实的节点上，而是把所有事件绑定到结构的最外层，使用一个统一的事件监听器，这个事件监听器上维持了一个映射来保存所有组件内部的事件监听和处理函数。
+
+当组件挂载或卸载时，只是在这个统一的事件监听器上插入或删除一些对象。当事件发生时，首先被这个统一的事件监听器处理，然后在映射里找到真正的事件处理函数并调用。这样做简化了事件处理和回收机制，效率也有很大提升。
+
+在 React 中使用 DOM 原生事件时，一定要在组件卸载时手动移除，否则很可能出现内存泄漏的问题。而使用合成事件系统时则不需要，因为 React 内部已经帮你妥善地处理了。
+
+图片引自：[Event flow](https://link.juejin.cn/?target=https%3A%2F%2Fwww.w3.org%2FTR%2FDOM-Level-3-Events%2F%23event-flow)
+
+![Graphical representation of an event dispatched in a DOM tree using the DOM event flow](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211005160805.svg)
+
+## HOC
+
+> 高阶函数
+
+- 接受一个或多个函数作为输入
+- 输出一个函数
+
+### 高阶组件
+
+- 接收一个组件并返回一个新的组件
+- 高阶组件就是接受一个组件作为参数，在函数中对组件做一系列的处理，随后返回一个新的组件作为返回值
+
+```js
+// 高阶组件 基本用法 函数嵌套类组件？
+const HOCFactory = (Component) => {
+    class HOC extends React.Component {
+        // 在此定义多个组件的公共逻辑
+        render () {
+            return <Component {...this.props} /> // 返回拼装的结果
+        }
+    }
+    return HOC
+}
+const MyComponent1 = HOCFactory(WrappedComponent1)
+const MyComponent2 = HOCFactory(WrappedComponent2)
+```
+
+- 属性代理 `props proxy`	
+  - 高阶组件通过被包裹的 `React` 组件来操作 `props`
+- 反向继承 `inheritance inversion`    
+  - 高阶组件继承于被包裹的 React 组件
+  - 高阶组件返回的组件继承于 WrappedComponent
+
+```js
+// 待完善 时间久了 记不清了
+import React, { Component } from 'React';
+const MyContainer = (WrappedComponent) => 
+	class extends Component {
+    render() {
+      return <WrappedComponent {...this.props} />;
+    } 
+  }
+
+类似于堆栈调用:
+didmount→HOC didmount→(HOCs didmount)→(HOCs will unmount)→HOC will unmount→unmount
+
+const MyContainer = (WrappedComponent) => 
+	class extends WrappedComponent {
+    render() {
+    	return super.render();
+    } 
+  }
+因为依赖于继承的机制，HOC 的调用顺序和队列是一样的
+didmount→HOC didmount→(HOCs didmount)→will unmount→HOC will unmount→(HOCs will unmount)
+```
+
+比较
+
+- 渲染劫持指的就是高阶组件可以控制 `WrappedComponent` 的渲染过程，并渲染各种各样的结果
+- 反向继承就不行
+
+### 高阶组件的缺点
+
+- 被包裹组件的静态方法会消失
+- 这其实也是很好理解的，我们将组件当做参数传入函数中，返回的已经不是原来的组件，而是一个新的组件，原来的静态方法自然就不存在了。如果需要保留，我们可以手动将原组件的方法拷贝给新的组件，或者使用hoist-non-react-statics之类的库来进行拷贝。
+
+## `renderProps`
+
+核心思想：通过一个函数将 `class` 组件的 `state` 作为 `props` 传递给纯函数组件
+
+```jsx
+class Factory extends React.Component {
+    constructor () {
+        this.state = {
+            /* 这里 state 即多个组件的公共逻辑的数据 */
+        }
+    }
+    /* 修改 state */
+    render () {
+        return <div>{this.props.render(this.state)}</div>
+    }
+}
+
+const App = () => {
+    /* render 是一个函数组件 */
+    <Factory render={
+        (props) => <p>{props.a} {props.b}...</p>
+    } />
+}
+```
+
+## 回调写法对比
+
+> 利用`proposal-class-public-fields` 直接绑定箭头函数
+
+- `fn`直接绑定在实例的属性上，并利用箭头函数继承父级`this`作用域达到了`this`绑定的效果
+
+```js
+fn = () => { }
+render() {
+  return <div onClick={this.fn}></div>;
+}
+```
+
+> `constructor`中使用 bind
+
+- `fn`函数在组件多次实例化过程中只生成一次（因为是用实例的`fn`属性直接指向了组件的原型，并绑定了`this`属性）
+
+```js
+constructor(props) {
+  super(props);
+  // this.fn = () => { }  // 上面babel转译
+  this.fn = this.fn.bind(this);
+}
+fn() { }
+return <div onClick={this.fn}></div>
+```
+
+> 在`render`中进行`bind`绑定
+
+- `fn`函数多次实例化只生成一次，存在类的属性上。
+- 缺点：`this.fn.bind(this)`会导致每次渲染都是一个全新的函数，在使用了组件依赖属性进行比较、`pureComponent`、函数组件`React.memo`的时候会失效。
+
+```js
+fn() { }
+return <div onClick={this.fn.bind(this)}></div>
+```
+
+> 箭头函数内联写法
+
+- 传参灵活
+- 缺点：每次渲染都是一个全新的函数
+
+```js
+fn() { }
+return <div onClick={() => fn()}></div>;
+```
+
+:::note Ref
+
+- [带你找出react中，回调函数绑定this最完美的写法！](https://cloud.tencent.com/developer/article/1596042)
+
+:::
 
 
 
+## React性能优化
+
+- `classComponent` 中使用 `PureComponent`  
+- 无状态组件 `FuncComponent`使用 `React.memo`
+
+### `pureComponent` 与 `Com`
+
+- `PureComponent` 通过 `prop` 和 `state` 的浅比较来实现 `shouldComponentUpdate`，当 `prop` 或 `state` 的值或者引用地址发生改变时，组件就会发生更新。
+- 而 `Component` 只要 `state` 发生改变， 不论值是否与之前的相等，都会触发更新。
+
+### `shouldComponentUpdate()`
+
+```jsx
+shouldComponentUpdate(nextProps, nextState) {
+  if (nextProps.xxx === this.props.xxx) return false;
+  return true;
+}
+
+// 也可以对子组件采用 PureComponent
+```
+
+### `React.memo`
+
+- `React.memo()` 接收一个组件作为参数并返回一个组件
+- 如果函数组件在给定相同 `props` 的情况下渲染相同的结果，那么就可以通过将其包装在 `React.memo` 中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，`React` 将跳过渲染组件的操作并直接复用最近一次渲染的结果。
+
+```jsx
+function areEqual(prevProps, nextProps) {
+  if (prevProps.seconds===nextProps.seconds) return true
+  return false
+}
+
+// 默认浅层对比 可以传第二个参数
+export default React.memo(MyComponent, areEqual)
+```
 
 
 
+## Todo 组件间通信
 
 
+通讯
+
+- props
+
+- context
+
+- redux
+
+组件间通信 祖组件 与 后代组件 间的值传递
 
 
-
-组件实例三大核心属性
-
-- `state`
-- `props`
-
-- `refs`
-
-函数式实例
-
-- 通过自己传递 `props`
 
 父子间值传递
 
@@ -680,56 +847,7 @@ Count-componentWillUnmount
 
 `PubSubJS`
 
-`pubsub-js`
 
-`yarn add nanoid`
-
-`yarn add prop-types`
-
-`yarn add axios`
-
-`hooks`
-
-```js
-// setUpProxy.js
-
-// commonJs 代码
-const proxy = require('http-proxy-middleware');
-
-module.exports = function (app) {
-  app.use(
-    // 遇见/api1前缀的请求 就会触发该代理配置
-    proxy('/api1', {
-      // 请求转发给谁
-      target: 'http://localhost:5000',
-      changeOrigin: true, // 控制服务器收到的响应头中Host字段的值
-      pathRewrite: { '^/api1': '' }, // 重写请求路径
-    })
-  );
-};
-```
-
-`jquery axios` 都是基于`xhr`的封装
-
-`fetch`
-
-单页面`WEB`应用 `SPA`
-
-整个应用只有一个完整的页面
-
-点击页面中的链接不会刷新页面。只会做页面的局部更新
-
-数据都需要通过`AJAX`请求获取 并在前端异步展现
-
-一个路由就是一个映射关系 `key:value`
-
-`key`为路径。`value`可能是`functon` 或者 `component`
-
-前端路由. `history`
-
-`react-router` `web native any`
-
-`react-router-dom`
 
 `redux` 专门用于做状态管理的 `JS` 库 不是 `react` 插件库
 
@@ -739,41 +857,43 @@ module.exports = function (app) {
 
 一个组件需要改变另一个组件的状态 通信
 
-
-
-
-
 ## 补充
 
-### setState 对象式 函数式
+## setState
 
-对象式 `setState(stateChange, [callback])`
+> 对象式 `setState(stateChange, [callback])`
 
 - `stateChange` 状态改变对象 (该对象可以体现出状态的更改)
 - `callback` 可选的回调函数, 它在状态更新完毕、界面也更新后( `render` 调用后)才被调用
 
 ```jsx
+const {count} = this.state;
 this.setState({ count: count + 1 });
 
-this.setState({ count: count + 1 }, () => console.log(this.state.count)); // 不是解构的
-  // 类比 Vue 的 $nextTick
+this.setState(
+  { count: count + 1 }, 
+  () => console.log(this.state.count)
+);
+
+// 类比 Vue 的 $nextTick ?
 ```
 
-函数式 `setState(updater, [callback])`
+> 函数式 `setState(updater, [callback])`
+
+- `updater`
+  - 为返回 `stateChange` 对象的函数	可以接收到 `state` 和 `props`
+- `callback` 是可选的回调函数, 它在状态更新、界面也更新后( `render` 调用后)才被调用
 
 ```jsx
-this.setState((state, props) => ({ count: state.count + 1 }));
+this.setState(
+  (state, props) => ({ count: state.count + 1 })
+);
 
 this.setState(
   (state, props) => ({ count: state.count + 1 }),
   () => console.log(this.state.count)
 );
 ```
-
-- `updater`
-  - 为返回 `stateChange` 对象的函数
-  - 可以接收到 `state` 和 `props`
-- `callback` 是可选的回调函数, 它在状态更新、界面也更新后( `render` 调用后)才被调用
 
 总结
 
@@ -783,11 +903,7 @@ this.setState(
   - 函数方式: 新状态依赖于原状态
   - 如果需要在 `setState()` 执行后获取最新的状态数据, 要在第二个 `callback` 函数中读取
 
-`lazyRouter`
-
-
-
-#### `React.Fragment`
+## `React.Fragment`
 
 ```jsx
 import {Fragment} from 'react'
@@ -798,7 +914,7 @@ import {Fragment} from 'react'
 - `Fragment` 可以指定 `key`
 - 空标签 什么都不能传
 
-#### `Context`
+## `Context`
 
 - 使用 `context`, 我们可以避免通过中间元素传递 `props`：
 
@@ -829,131 +945,4 @@ static contextType = MyContext
 
 
 
-
-
-
-
-
-
-
-
-```jsx
-函数绑定的性能 差异
-
-
-<Child handleClick={this.handleClick} />
-<Child handleClick={() => this.handleClick()} />
-  // 会导致每次父组件render方法被调用时，一个新的函数被创建，已将其传入handleClick。这会有一个改变每个子组件props的副作用，它将会造成他们全部重新渲染，即使数据本身没有发生变化。
-<Child handleClick={this.handleClick.bind(this)} />
-  
-  
-  将父组件的原型方法的引用传递给子组件。子组件的handleClick属性将总是有相同的引用，这样就不会造成不必要的重新渲染。
-```
-
-
-
-
-
-#### `pureComponent`
-
-`PureComponent` 通过 `prop` 和 `state` 的浅比较来实现 `shouldComponentUpdate`，当 `prop` 或 `state` 的值或者引用地址发生改变时，组件就会发生更新。
-
-而 `Component` 只要 `state` 发生改变， 不论值是否与之前的相等，都会触发更新。
-
-
-
-`shouldComponentUpdate(nextProps, nextState)`
-
-```jsx
-// 对子组件应用 避免不必要的渲染
-
-shouldComponentUpdate(nextProps, nextState) {
-  // console.log(nextProps, nextState);
-  if (nextProps.xxx === this.props.xxx) return false;
-  return true;
-}
-
-// 也可以对子组件采用 PureComponent
-```
-
-`classComponent` 中使用 `PureComponent`  无状态组件 `FuncComponent`使用 `React.memo`
-
-
-
-`React.memo`
-
-`export default React.memo(Child);`
-
-如果你的函数组件在给定相同 props 的情况下渲染相同的结果，那么你可以通过将其包装在 `React.memo` 中调用，以此通过记忆组件渲染结果的方式来提高组件的性能表现。这意味着在这种情况下，React 将跳过渲染组件的操作并直接复用最近一次渲染的结果。
-
-```jsx
-function areEqual(prevProps, nextProps) {
-  if (prevProps.seconds===nextProps.seconds) return true
-  else return false
-}
-
-// 默认浅层对比 可以传第二个参数
-export default React.memo(MyComponent, areEqual)
-```
-
-
-
-#### Hoc
-
-高阶组件
-
-- 接收一个组件并返回一个新的组件
-- 高阶组件就是接受一个组件作为参数，在函数中对组件做一系列的处理，随后返回一个新的组件作为返回值
-
-高阶函数
-
-- 接受一个或多个函数作为输入
-- 输出一个函数
-
-高阶组件的缺点
-
-高阶组件也有一系列的缺点，首先是被包裹组件的静态方法会消失，这其实也是很好理解的，我们将组件当做参数传入函数中，返回的已经不是原来的组件，而是一个新的组件，原来的静态方法自然就不存在了。如果需要保留，我们可以手动将原组件的方法拷贝给新的组件，或者使用hoist-non-react-statics之类的库来进行拷贝。
-
-#### `renderProps`
-
-```jsx
-import React, { Component } from 'react';
-
-export default class RenderProps extends Component {
-  render() {
-    return (
-      <div>
-        <Child1 render={(name) => <Child2 name={name} />} />
-      </div>
-    );
-  }
-}
-
-class Child1 extends Component {
-  state = { name: 'Tom' };
-  render() {
-    return <div>{this.props.render(this.state.name)}</div>;
-  }
-}
-
-class Child2 extends Component {
-  render() {
-    return <div>{this.props.name}</div>;
-  }
-}
-
-```
-
-#### Todo
-
-
-通讯
-
-- props
-
-- context
-
-- redux
-
-组件间通信 祖组件 与 后代组件 间的值传递
 

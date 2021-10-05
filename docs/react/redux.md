@@ -1,5 +1,43 @@
 # Redux
 
+> Redux 三大原则
+
+- 单一数据源
+- 状态是只读的
+- 状态修改均由纯函数完成
+
+> Redux 是一个可预测的 JavaScript 应用状态管理容器
+
+
+
+View **视图层**，就是展示给最终用户的效果 -> react
+
+在 Redux 中，这个状态将保存在 Store **状态容器**就是这里的 Store
+
+Reducers 是**负责更新 Store 中状态的 JavaScript 函数**
+
+
+
+## store
+
+跨级组件通信较为繁琐 -> store出现了
+
+## Action
+
+## Reducer
+
+
+
+
+
+
+
+
+
+
+
+![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211005192215.jpeg)
+
 ![redux原理图](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/redux.png)
 
 Model-State-View

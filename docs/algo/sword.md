@@ -306,7 +306,8 @@ const dpTrap = (height) => {
 ## 最大子序列和
 
 ```js
-let arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]; // [4, -1, 2, 1] => 6
+let arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]; 
+// [4, -1, 2, 1] => 6
 ```
 
 #### 暴力
@@ -345,6 +346,36 @@ function fn(nums) {
   }
   return res;
 }
+```
+
+```js
+// 待验证
+const dpMaxSubarray = (nums) => {
+  let maxSum = -Infinity;
+  let currentSum = 0;
+
+  let start = 0;
+  let end = nums.length - 1;
+  let currentIndex = 0;
+
+  nums.forEach((item, index) => {
+    currentSum += item;
+
+    if (currentSum > maxSum) {
+      maxSum = currentSum;
+      start = currentIndex;
+      end = index;
+    }
+    if (currentSum < 0) {
+      currentSum = 0;
+      currentIndex = index + 1;
+    }
+  });
+
+  return nums.slice(start, end + 1);
+};
+
+console.log(dpMaxSubarray(arr));
 ```
 
 #### 分治

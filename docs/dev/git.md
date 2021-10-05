@@ -278,5 +278,11 @@ yarn cache clean --force
 
 
 
+#### 工作流程
+
+在多人协作的分支管理中,我们定义了 `master(稳定) => sit(测试) => release(beta) => 流转release到线上 => 合并release到master `这样一个工作流
+
+
+
 
 （随时更新...）
