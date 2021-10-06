@@ -2,6 +2,8 @@
 
 :::note Todo
 
+- [阮一峰 - React 技术栈系列教程](https://www.ruanyifeng.com/blog/2016/09/react-technology-stack.html)
+
 需要进一步系统完善
 
 - 合成事件
@@ -835,13 +837,29 @@ export default React.memo(MyComponent, areEqual)
 
 
 
-父子间值传递
+### 父向子
 
-祖孙传递
+#### `props`
 
-兄弟组件值传递
+### 子向父
+
+回调函数
+
+### 兄弟组件
+
+### 跨级组件
+
+层层传递 `props`
+
+`context`
+
+> context是一个全局变量,像是一个大容器,在任何地方都可以访问到,我们可以把要通信的信息放在context上,然后在其他组件中可以随意取到; 但是React官方不建议使用大量context,尽管他可以减少逐层传递,但是当组件结构复杂的时候,我们并不知道context是从哪里传过来的;而且context是一个全局变量,全局变量正是导致应用走向混乱的罪魁祸首.
 
 消息订阅发布
+
+
+
+
 
 订阅消息 消息名
 
@@ -849,13 +867,7 @@ export default React.memo(MyComponent, areEqual)
 
 
 
-`redux` 专门用于做状态管理的 `JS` 库 不是 `react` 插件库
 
-作用：集中管理 react 应用中多个组件共享的状态
-
-某个组件的状态 需要让其他组件使用 共享
-
-一个组件需要改变另一个组件的状态 通信
 
 ## 补充
 
@@ -921,9 +933,10 @@ import {Fragment} from 'react'
 ```jsx
 const MyContext = React.createContext(defaultValue)
 
-// 通过 MyContext.Provider 传递prop
+// 通过 MyContext.Provider 传递 prop
+
 <MyContext.Provider value={{ name, age }}>
-  <C1 />
+  <Child />
 </MyContext.Provider>
   
 // 在对应的组件里 指定 contextType 读取当前的 MyContext
@@ -936,6 +949,14 @@ static contextType = MyContext
   {value => /* 基于 context 值进行渲染*/}
 </MyContext.Consumer>
 ```
+
+每个 `Context` 对象都会返回一个 `Provider` 组件，它允许消费组件订阅 `context` 的变化。
+
+`Provider` 接收一个 `value` 属性，传递给消费组件。一个 `Provider` 可以和多个消费组件有对应关系。多个 `Provider` 也可以嵌套使用，里层的会覆盖外层的数据。
+
+当 `Provider` 的 `value` 值发生变化时，它内部的所有消费组件都会重新渲染。`Provider` 及其内部 `consumer` 组件都不受制于 `shouldComponentUpdate` 函数。
+
+
 
 当 `React` 渲染一个订阅了这个 `Context` 对象的组件，这个组件会从组件树中离自身最近的那个匹配的 `Provider` 中读取到当前的 `context` 值
 

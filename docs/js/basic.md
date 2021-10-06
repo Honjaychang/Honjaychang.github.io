@@ -785,9 +785,10 @@ arr.filter(Boolean); // 移除所有的 ”false“ 类型元素
 ##### `reduce() `
 
 - 对于空数组是不会执行回调函数
+- 从左到右
 
 ```javascript
-array.reduce(function(accumulator, currentValue, currentIndex, array), initialValue)
+arr.reduce(callback(accumulator, currentValue[, index[, array]])[, initialValue])
 
 // initialValue：传递给函数的初始值  没有初始值 第一项作为初始值
 // initialValue 可以是 [] {} 来做一些次数统计 二维数组展开等操作
@@ -797,6 +798,16 @@ var newArr = [1, 2, 3, 4].reduce(function(acc, cur){
 
 newArr = arr.reduce((acc, cur) => acc + cur, 0)
 ```
+
+`reduceRight`
+
+- 从数组的末尾向前将数组中的数组项做累加
+
+```js
+arr.reduceRight(callback(accumulator, currentValue[, index[, array]])[, initialValue])
+```
+
+
 
 ##### `Spread rest`
 

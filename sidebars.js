@@ -30,7 +30,7 @@ module.exports = {
       ],
       Extension: ['extension/web-api', 'extension/browser'],
       TS: ['ts/basic'],
-      React: ['react/basic', 'react/redux', 'react/hooks'],
+      React: ['react/basic', 'react/redux', 'react/router', 'react/hooks'],
       ReactCore: [
         'reactCore/basic',
         'reactCore/ds',
