@@ -175,7 +175,7 @@ bar.call({ a: 4 }) //7 2
 new Promise((resolve) => {
   console.log(1);
   setTimeout(resolve, 0, "done"); // fn timer 传递给执行函数的其他参数
-}).then(console.log);
+}).then(console.log); // -> 这个的存在done才输出的
 
 console.log("start"); // 1 start done
 ```
@@ -231,7 +231,7 @@ var p = new Promise((resolve, reject) => {
     console.log(x) // false
 },()=>{
     console.log(4)
-})
+}) // 2 false
 
 var p = new Promise((resolve, reject) => {
     reject(1);
@@ -298,17 +298,12 @@ console.log(6)
 
 ```js
 var obj = {
-  _a: 1,
-  get a() {
-    return this._a;
+  a: 1,
+  get() {
+    return this.a;
   },
-  set a(val) {
-    if (val % 2 === 1) {
-      this._a = val;
-    } else {
-      // throw new Error("wrong");
-      this._a = this._a;
-    }
+  set(val) {
+    this.a = val % 2 === 1 ? val : this.a;
   },
 };
 

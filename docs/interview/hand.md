@@ -13,6 +13,7 @@ function deepClone(obj = {}) {
     return obj;
   }
   // 初始化返回结果
+  // let res = new obj.constructor();
   let res = obj instanceof Array ? [] : {};
 
   for (let key in obj) {
@@ -41,7 +42,14 @@ console.log(obj2);
 
 ## 手写防抖、节流
 
-- 若写为箭头函数 需要注意 箭头函数 没有 `arguments`
+:::
+
+- [JavaScript专题之跟着underscore学防抖](https://github.com/mqyqingfeng/Blog/issues/22)
+- [JavaScript专题之跟着 underscore 学节流](https://github.com/mqyqingfeng/Blog/issues/26)
+
+:::
+
+> 若写为箭头函数 需要注意 箭头函数 没有 `arguments`
 
 #### 防抖
 
@@ -50,27 +58,28 @@ console.log(obj2);
   - 也就是说，在这个时间内，无论你怎么触发事件，我都不会执行，只有这段时间无操作后才会执行！
 
 ```js
-/**
- * 手写防抖 debounce
- * 监听一个输入框的，文字变化后触发 change 事件
- * 直接用 keyup 事件，则会频发触发 change 事件
- * 防抖: 用户输入结束或暂停时，才会触发 change事件
- */
-
 const debounce = (fn, delay = 500) => {
-  let timer = null; // timer 是闭包中的
-  return (...args) => {
-    timer && clearTimeout(timer);
-    timer = setTimeout(() => {
-      // fn.apply(this, arguments);
-      // fn(args);
-      fn(...args);
-      timer = null; // 清空定时器
+  let timer = null;
+  return function (...args) {
+    // 取debounce执行作用域的this (div容器)
+    var ctx = this;
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(function () {
+      // 用apply指向调用debounce的对象，相当于ctx.fn(args);
+      fn.apply(ctx, args);
     }, delay);
   };
 };
 
-input1.addEventListener( 'keyup', debunce(() => { console.log(input1.value) }));
+const debounce = (fn, delay) => {
+  let timer;
+  return (...args) => {
+    timer && clearTimeout(timer);
+    timer = setTimeout(() => {
+      fn(...args);
+    }, delay);
+  };
+};
 ```
 
 `immediate`
@@ -78,17 +87,18 @@ input1.addEventListener( 'keyup', debunce(() => { console.log(input1.value) }));
 ```jsx
 const debounceImmediate = (fn, delay = 500, immediate = false) => {
   let timer = null;
-  return (...args) => {
+  return function (...args) {
+    let _this = this;
     timer && clearTimeout(timer);
     if (immediate) {
       let runNow = !timer;
       timer = setTimeout(() => (timer = null), delay);
-      runNow && fn.apply(this, args);
+      runNow && fn.apply(_this, args);
+    } else {
+      timer = setTimeout(function () {
+        fn.apply(_this, ...args);
+      }, delay);
     }
-    timer = setTimeout(() => {
-      fn.apply(this, args);
-      timer = null;
-    }, delay);
   };
 };
 ```
@@ -99,18 +109,13 @@ const debounceImmediate = (fn, delay = 500, immediate = false) => {
   - 规定一个单位时间，在这个单位时间内，只能有一次触发事件的回调函数执行，如果在同一个单位时间内某事件被触发多次，只有一次能生效。
 
 ```js
-/**
- * 节流throttle
- * 拖拽一个元素时，要随时拿到该元素被拖拽的位置
- * 直接用 drag 事件，则会频发触发，很容易导致卡顿
- * 节流:无论拖拽速度多快，都会每隔1000ms触发一次
- */
-const throttle = (fn, delay = 1000) => {
-  let timer = null;
-  return (...args) => {
+const throttle = (fn, delay) => {
+  let timer;
+  return function (...args) {
+    let ctx = this;
     if (timer) return;
-    timer = setTimeout(() => {
-      fn.apply(this, args);
+    timer = setTimeout(function () {
+      fn.apply(ctx, ...args);
       timer = null;
     }, delay);
   };
@@ -119,16 +124,9 @@ const throttle = (fn, delay = 1000) => {
 
 #### 异同
 
-**同**
+目的都是：降低回调执行频率，节省计算资源
 
-- 目的都是：降低回调执行频率，节省计算资源
-
-**异**
-
-- 防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行。
-- 区别在于，假设一个用户一直触发这个函数，且每次触发函数的间隔小于 wait，防抖的情况下只会调用一次，而节流的情况会每隔一定时间（参数 wait）调用函数。
-- 防抖：在事件被触发 n 秒后再执行回调，如果在这 n 秒内又被触发，则重新计时。
-- 节流：规定在一个单位时间内，只能触发一次函数。
+防抖动是将多次执行变为最后一次执行，节流是将多次执行变成每隔一段时间执行
 
 #### Hook
 
@@ -146,7 +144,7 @@ const useDebounce = (fn, delay = 500, dep = []) => {
   console.log('debounce-', current);
   useEffect(() => (current.fn = fn), [fn, current]);
 
-  return useCallback((...args) => {
+  return useCallback(function f(...args) {
     current.timer && clearTimeout(current.timer);
     current.timer = setTimeout(() => {
       current.fn.apply(this, args);
@@ -203,20 +201,40 @@ xhr.send(null);
 ## 手写 call、apply、bind
 
 - 不传入第一个参数，那么默认为 `window`
-- 改变 this 指向，让新的对象可以执行该函数 ==> 给新的对象添加一个函数，然后在执行完以后删除
+- 改变 `this` 指向，让新的对象可以执行该函数
+  - 将函数设为对象的属性	执行该函数	删除该函数
+
+```js
+var foo = {
+    value: 1
+};
+
+function bar() {
+    console.log(this.value);
+}
+
+bar.call(foo); // 1
+
+
+var foo = {
+    value: 1,
+    bar: function() {
+        console.log(this.value)
+    }
+};
+
+foo.bar(); // 1
+```
 
 #### `Function.prototype.call()`
 
 ```js
 // myCall
 Function.prototype.myCall = function (ctx, ...args) {
-  // Object(null) {}
-  // this -> fn -> ctx
-  let _this = ctx || window;
-  // originFn & fn 指向一个内存地址
-  _this.originFn = this; // 引用
-  let res = _this.originFn(...args);
-  delete _this.originFn;
+  let ctx = ctx || window;
+  ctx.fn = this;
+  let res = ctx.fn(...args);
+  delete ctx.fn;
   return res;
 };
 
@@ -242,59 +260,66 @@ getVal.myCall(person);
 #### `Function.prototype.apply()`
 
 ```js
-// myApply
-Function.prototype.myApply = function (ctx, arr) {
-  let _this = ctx || window;
-  _this.originFn = this;
+Function.prototype.myApply = function (ctx, ...args) {
+  let ctx = ctx || window;
+  ctx.fn = this;
   let res;
-  if (arr) _this.originFn(...arr);
-  else _this.originFn();
-  delete _this.originFn;
+  if (args) res = ctx.fn(...args);
+  else res = ctx.fn();
+  delete ctx.fn;
   return res;
 };
 ```
 
 #### `Function.prototype.bind()`
 
-- `bind` 和其他两个方法作用也是一致的，只是该方法会返回一个函数。
+- `bind` 和其他两个方法作用也是一致的，只是该方法会返回一个函数
+
+> 当 `bind` 返回的函数作为构造函数的时候，`bind` 时指定的 `this` 值会失效，但传入的参数依然生效
 
 ```js
-function fn1(a, b, c) {
-  console.log('this: ', this);
-  console.log(a, b, c);
-}
-
-// const fn2 = fn1.bind({ x: 100 }, 10, 20, 30)
-// console.log(fn2()) // this:  { x: 100 } 10 20 30
-console.log(fn1.__proto__ === Function.prototype);
-
-// bind 传参与call类似
-Function.prototype.myBind = function (ctx) {
-  let originFn = this,
-    // bind传递的test的参数
-    args = [].slice.call(arguments, 1);
-  // // 原型传递中介参数
-  // _tempFn = function () {}; // 圣杯模式
-  var newFn = function () {
-    // 返回的新函数t的参数列表
-    var newArgs = [].slice.call(arguments);
-    // 如果 new t,  this => newFn构造函数(即实例化了)
-    // this => newFn的实例 ||ctx
-    return originFn.apply(
-      this instanceof newFn ? this : ctx,
-      args.concat(newArgs)
-    );
-  };
-  newFn.prototype = this.prototype;
-  // // 将test.prototype => 中介函数的原型属性
-  // _tempFn.prototype = this.prototype;
-  // // 将中介函数的实例化对象 => newFn的原型属性
-  // newFn.prototype = new _tempFn();
-  return newFn;
+var foo = {
+  value: 1,
 };
 
-const fn2 = fn1.myBind({ x: 100 }, 10, 20, 30);
-console.log(fn2()); // this:  { x: 100 } 10 20 30
+function bar(name, age) {
+  console.log(this.value);
+  console.log(name);
+  console.log(age);
+}
+
+var bindFoo = bar.bind(foo, 'daisy');
+
+var obj = new bindFoo('18');
+// undefined daisy 18    (这时候this已经指向obj了)
+```
+
+> `bind`
+
+```js
+// 圣杯模式？
+Function.prototype.myBind = function (ctx, ...args) {
+  let self = this;
+
+  let fBound = function (...args2) {
+    // 此处根据this是否被实例话来动态绑定
+    return self.apply(this instanceof fBound ? this : ctx, args.concat(args2));
+  };
+  // 赋值为绑定函数的 prototype 使得实例可以继承绑定函数的原型中的值
+  // fBound.prototype = Object.create(this.prototype)
+  fBound.prototype = this.prototype;
+  return fBound;
+};
+```
+
+> `Object.create()`
+
+```js
+Object.create = function( o ) {
+    function f(){}
+    f.prototype = o;
+    return new f;
+};
 ```
 
 ## 手写 Promise
@@ -377,39 +402,37 @@ const p3 = new Promise((resolve, reject) => {
 
 #### `Promise.all`
 
-- 全部成功是按照传入顺序输出，当出现失败的时候会优先输出失败的那个（执行还是按 delay 执行的
+- 全部成功是按照传入顺序输出，当出现失败的时候会优先输出失败的那个（执行还是按 `delay` 执行的
 
 ```js
-function promiseAll(promise) {
-  let promises = Array.from(promise); //将iterator转换为数组
+Promise.all = (promises) => {
+  // let promises = Array.from(promises); //将iterator转换为数组
   if (!Array.isArray(promises)) {
     return reject(new TypeError('arguments muse be an array'));
   }
   return new Promise((resolve, reject) => {
-    //如果数组长度为0则返回空数组
-    if (promises.length === 0) resolve([]);
-    else {
-      let result = []; //存放已成功的异步操作
-      let count = 0; //记录已成功的操作数
-      let len = promises.length;
-      for (let i = 0; i < len; i++) {
-        Promise.resolve(promises[i]) //执行每一个promise
-          .then(
-            data => {
-              count++;
-              result[i] = data;
-              if (count === len) return resolve(result);
-            },
-            err => {
-              return reject(err);
-            }
-          );
-      }
+    let len = promises.length;
+    let res = new Array(len); // 存放已成功的异步操作
+    // 如果数组长度为0则返回空数组
+    if (len === 0) resolve(res);
+
+    let count = 0; // 记录已成功的操作数
+
+    for (let i = 0; i < len; i++) {
+      // 执行每一个promise
+      Promise.resolve(promises[i]).then(
+        (data) => {
+          count++;
+          res[i] = data;
+          if (count === len) resolve(res);
+        },
+        (err) => reject(err)
+      );
     }
   });
-}
+};
 
-promiseAll([p1, p2, p3])
+Promise.all([p1, p2, p3])
   .then(result => console.log(result))
   .catch(e => console.log(e));
 ```
@@ -417,10 +440,10 @@ promiseAll([p1, p2, p3])
 #### `Promise.race`
 
 ```js
-function promiseRace(promise) {
+Promise.race = (promises) => {
   let promises = Array.from(promise);
   return new Promise((resolve, reject) => {
-    for (var i = 0; i < promises.length; i++) {
+    for (let i = 0; i < promises.length; i++) {
       Promise.resolve(promises[i]).then(
         data => resolve(data),
         err => reject(err)
@@ -428,7 +451,8 @@ function promiseRace(promise) {
     }
   });
 }
-promiseRace([p1, p2, p3])
+
+Promise.race([p1, p2, p3])
   .then(result => console.log(result))
   .catch(e => console.log(e));
 ```
@@ -447,12 +471,12 @@ Promise.allSettled = function (promises) {
         data => {
           res[i] = data;
           count++;
-          if (count === len) return resolve(res);
+          if (count === len) resolve(res);
         },
         err => {
           res[i] = err;
           count++;
-          if (count === len) return resolve(res);
+          if (count === len) resolve(res);
         }
       );
     }
@@ -465,10 +489,11 @@ Promise.allSettled([p1, p2, p3])
 
 ## Jsonp
 
-```js
-// jsonp原理：因为jsonp发送的并不是ajax请求，其实是动态创建script标签
-// script标签是没有同源限制的，把script标签的src指向请求的服务端地址。
+> 原理：`jsonp`发送的并不是`ajax`请求，其实是动态创建`script`标签。
+>
+> `script`标签是没有同源限制的，把`script`标签的`src`指向请求的服务端地址
 
+```js
 function jsonp(url, data = {}, callback = 'callback') {
   //处理json对象，拼接url
   data.callback = callback;
@@ -490,7 +515,6 @@ function jsonp(url, data = {}, callback = 'callback') {
       } finally {
         //移除script元素
         script.parentNode.removeChild(script);
-        console.log(script);
       }
     };
   });
@@ -507,43 +531,6 @@ jsonp(
 ).then(data => {
   console.log(data);
 });
-```
-
-#### 手写一个简易的 jQuery ，考虑插件和扩展性
-
-```js
-// jquery demo  DOM 查询
-class JQuery {
-  constructor(selector) {
-    const result = document.querySelectorAll(selector);
-    const length = result.length;
-    for (let i = 0; i < length; i++) {
-      this[i] = result[i]; // 类数组
-    }
-    this.length = length;
-    this.selector = selector;
-  }
-  get(index) {
-    return this[index];
-  }
-  each(fn) {
-    for (let i = 0; i < this.length; i++) {
-      const elem = this[i];
-      fn(elem);
-    }
-  }
-  on(type, fn) {
-    return this.each(elem => {
-      elem.addEventListener(type, fn, false);
-    });
-  }
-}
-
-// const $p = new JQuery('p')
-// console.log($p)
-// console.log($p.get(1)) // <p>Text 2</p>
-// $p.each((elem) => console.log(elem.nodeName)) // P P P
-// $p.on('click', (e) => console.log(e.target))
 ```
 
 ## 编写一个通用的事件监听函数
@@ -571,7 +558,7 @@ function bindEvent(elem, type, selector, cb) {
 // 箭头函数的this 会绑定到全局  所以要改为普通的function
 ```
 
-## 手写深度比较，模拟`lodash.isEqual`
+## `lodash.isEqual`
 
 ```js
 const obj1 = { a: 10, b: { x: 100, y: { z: 200 } } };
@@ -611,36 +598,6 @@ function isEqual(obj1, obj2) {
 
 :::
 
-#### 写一个原型链继承的例子
-
-```js
-function Elem(id) {
-  this.elem = document.getElementById(id);
-}
-Elem.prototype.html = function (val) {
-  var elem = this.elem;
-  if (val) {
-    elem.innerHTML = val;
-    // return this // 方便链式调用
-  } else {
-    return elem.innerHTML;
-  }
-};
-Elem.prototype.on = function (type, fn) {
-  var elem = this.elem;
-  elem.addEventListener(type, fn);
-  // return this
-};
-
-let div1 = new Elem('div');
-div1.html();
-div1.html('hello');
-div1.on('click', function () {
-  console.log(this.innerHTML);
-});
-// div1.html('hello').on('click', function () { console.log(this.innerHTML) })
-```
-
 #### 写一个能遍历对象和数组的 forEach 函数
 
 ```js
@@ -676,15 +633,15 @@ const arr = [1, [2, [3, [4, 5]]], 6];
 // => [1, 2, 3, 4, 5, 6]
 ```
 
-##### 使用`flat()`
+### 使用`flat()`
 
 - `const res= arr.flat(Infinity);`
 
-##### 利用正则
+### 利用正则
 
 - `const res = JSON.parse('['+ JSON.stringify(arr).replace(/\[|\]/g,'')+']');`
 
-##### 递归
+### 递归
 
 - 1、判断`arr[i]`是不是数组，如果是数组则递归调用`flat()`
 - ~~2、判断`arr[i]`是不是数字，如果是就`push`，不是就调用~~ (感觉自己的方法不妥，数组又不一定只存放数字)
@@ -694,8 +651,6 @@ let newarr1 = [];
 
 function flat(arr) {
   for (let i = 0; i < arr.length; i++) {
-    // if (typeof arr[i] === 'number') newarr1.push(arr[i])
-    // else flat(arr[i])
     if (Array.isArray(arr[i])) flat(arr[i]);
     else newarr1.push(arr[i]);
   }
@@ -716,7 +671,7 @@ function unique(arr) {
 }
 ```
 
-##### 使用 reduce
+### 使用 reduce
 
 ```js
 function flatten(arr) {
@@ -733,13 +688,13 @@ const arr = [1, 1, '1', 17, true, true, false, false, 'true', 'a', {}, {}];
 // => [1, '1', 17, true, false,'true', 'a', {}, {}]
 ```
 
-##### 利用 Set
+### 利用 Set
 
 - `return Array.from(new Set(arr))`
 - `return [...new Set(arr)]`
 - `Array.from()` 方法从一个类似数组或可迭代对象创建一个新的，浅拷贝的数组实例
 
-##### `indexOf includes`
+### `indexOf includes`
 
 ```js
 const unique = arr => {
@@ -752,7 +707,7 @@ const unique = arr => {
 };
 ```
 
-##### `filter`
+### `filter`
 
 ```js
 const unique = arr => {
@@ -764,7 +719,7 @@ const unique = arr => {
 
 ## 随机数组
 
-##### 随机生成一个正负数，并返回给`sort`方法
+> 随机生成一个正负数，并返回给`sort`方法
 
 ```js
 function randomSortA(arr) {
@@ -772,7 +727,7 @@ function randomSortA(arr) {
 }
 ```
 
-##### 将当前遍历元素与一个随机位置元素互换
+> 将当前遍历元素与一个随机位置元素互换
 
 ```js
 function randSort(arr) {
@@ -785,7 +740,7 @@ function randSort(arr) {
 }
 ```
 
-##### 随机选中一个值，在原数组中删除它，并将它 push 到新数组中
+> 随机选中一个值，在原数组中删除它，并将它 push 到新数组中
 
 ```js
 function randSort(arr) {
@@ -798,7 +753,7 @@ function randSort(arr) {
 }
 ```
 
-##### 使用随机数映射到原数组，再排序
+> 使用随机数映射到原数组，再排序
 
 - 将原数组中的每个元素，都绑定一个随机数，然后对随机数做有序排序，再把随机数剔除，就实现了对原数组的随机排序。
 
@@ -810,7 +765,7 @@ function randomSort(arr) {
 }
 ```
 
-##### 洗牌算法
+### 洗牌算法
 
 - 原始方法 `O(n^2)` 上面第三种
   - 写下从 1 到 N 的数字
@@ -833,7 +788,7 @@ Array.prototype.shuffle = function () {
 };
 ```
 
-##### 关于`sort`
+### 关于`sort`
 
 - `v8`在处理`sort`方法时，使用了插入排序和快排两种方案
   - 当目标数组长度小于 10 时，使用插入排序；反之，使用快速排序
@@ -883,3 +838,71 @@ mySetInterval(() => {
 ```
 
 另外，还可以实现 `clearTimeInterval`（利用全局 `obj` 存储自增的 `id` 到 `timeId` 的映射） 和 `arguments` 自定义参数。
+
+## 发布订阅模式
+
+发布订阅模式就是通过在事件调度中心`subscribers`添加订阅者的事件`subscribe`，等到发布事件`publish`时执行相应的事件
+
+```js
+let pubSub = {
+  subscribers: {},
+  subscribe(key, fn) {
+    if (!this.subscribers[key]) this.subscribers[key] = [];
+    this.subscribers[key].push(fn);
+  },
+  unSubscribe(key) {
+    // if (!this.subscribes[key]) throw new Error('xxx');
+    delete this.subscribers[key];
+  },
+  publish(key, ...args) {
+    let listeners = this.subscribers[key];
+    listeners.forEach(fn => fn(...args)); // 通知所有订阅者
+  },
+};
+/* 为简化代码，省去了一些错误边界的处理，调试：*/
+pubSub.subscribe('event', () => {
+  console.log('first event');
+});
+pubSub.subscribe('event', () => {
+  console.log('second event');
+});
+
+pubSub.publish('event'); // second event
+```
+
+> 实现一个 EventEmitter
+
+- 创建一个 `EventEmitter`，承担全局事件总线功能 （事件中心）
+- 实现 `on` 事件监听方法
+- 实现 `emit` 事件订阅方法
+
+- 发布者 事件中心 订阅者
+
+```js
+class EventEmitter {
+  constructor() {
+    // handlers是一个map，用于存储事件与回调之间的对应关系
+    this.handlers = {};
+  }
+  // on方法用于安装事件监听器，它接受目标事件名和回调函数作为参数
+  on(eventName, cb) {
+    // 先检查一下目标事件名有没有对应的监听函数队列
+    if (!this.handlers[eventName]) {
+      // 如果没有，那么首先初始化一个监听函数队列
+      this.handlers[eventName] = [];
+    }
+    // 把回调函数推入目标事件的监听函数队列里去
+    this.handlers[eventName].push(cb);
+  }
+  // emit方法用于触发目标事件，它接受事件名和监听函数入参作为参数
+  emit(eventName, ...args) {
+    // 检查目标事件是否有监听函数队列
+    if (this.handlers[eventName]) {
+      // 如果有，则逐个调用队列里的回调函数
+      this.handlers[eventName].forEach(callback => {
+        callback(...args);
+      });
+    }
+  }
+}
+```

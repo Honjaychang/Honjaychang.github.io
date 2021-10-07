@@ -1,4 +1,4 @@
-# JS对象
+# JS 对象
 
 ## 对象
 
@@ -425,6 +425,7 @@ function deepClone(obj = {}) {
     return new RegExp(obj);
   }
   // 初始化返回结果
+  // let res = new obj.constructor();
   let res = obj instanceof Array ? [] : {};
 
   for (let key in obj) {
@@ -514,7 +515,19 @@ console.log(deepClone(test2));
 
 
 
-### `new` 的过程
+## `new` 
+
+```js
+// 只是一个函数
+function Person(name) {
+  this.name = name;
+}
+var fred = new Person('Fred'); // ✅ Person {name: 'Fred'}
+```
+
+**创建一个 `{}` 对象并把 `Person` 中的 `this` 指向那个对象，以便我可以通过类似 `this.name` 的形式去设置一些东西，然后把这个对象返回给我。**
+
+这就是 `new` 操作符所做的事。
 
 1. 创建一个空对象，作为将要返回的对象实例。
 2. 将这个空对象的原型，指向构造函数的`prototype`属性。
@@ -539,7 +552,9 @@ function _new(constructor, params) {
 var actor = _new(Person, '张三', 28);
 ```
 
-### `instanceof`
+## `instanceof`
+
+`x instanceof Y` 沿着 `x.__proto__` 链寻找 `Y.prototype` 是否在那儿
 
 `result = variable instanceof constructor ==> return boolean`
 
@@ -787,6 +802,8 @@ bob.__proto__ === Parent.prototype
 ```
 
 ## 原型和原型链
+
+> 函数和类的 `prototype` 属性 是用 `new` 调用那个类或函数生成的所有对象的 `__proto__`
 
 对应名称：`prototype 原型` `__proto__ 原型链（链接点）`
 

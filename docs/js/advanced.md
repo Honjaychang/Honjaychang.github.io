@@ -286,29 +286,16 @@ console.log(print(fn)); //100
 ##### 实现私有变量
 
 ```js
-var obj = function (initVal) {
-  var p_val = initVal;
+function Closure(init) {
+  var p_val = init;
   this.get = function () {
     return p_val;
   };
-  this.set = function (newValue) {
-    p_val = newValue;
+  this.set = function (val) {
+    p_val = val;
   };
-};
-const a = new obj(1)
-
-
-var obj = (function (initVal) {
-  var p_val = initVal;
-  return {
-    get: function () {
-      return p_val;
-    },
-    set: function (newValue) {
-      p_val = newValue;
-    },
-  };
-})(1);
+}
+const closure = new Closure(1);
 ```
 
 :::danger 

@@ -267,3 +267,16 @@ export default React.createClass({
 })
 ```
 
+单页面`WEB`应用 `SPA`
+
+整个应用只有一个完整的页面
+
+点击页面中的链接不会刷新页面。只会做页面的局部更新
+
+数据都需要通过`AJAX`请求获取 并在前端异步展现
+
+一个路由就是一个映射关系 `key:value`
+
+`key`为路径。`value`可能是`functon` 或者 `component`
+
+前端路由. `history`

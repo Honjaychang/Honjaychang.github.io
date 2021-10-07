@@ -9,6 +9,8 @@
 
 :::
 
+> 函数式组件捕获了渲染所使用的值
+
 - `Hook` 是 `React 16.8.0` 版本增加的新特性/新语法
 - 可以让你在函数组件中使用 `state` 以及其他的 `React` 特性
 
@@ -69,10 +71,6 @@ let [counter,setCounter] = useState(getInitState);
 ```jsx
 const [state, dispatch] = useReducer(reducer, initialState, init)
 
-
-
-
-
 const countReducer = (state, action) => {
   switch (action.type) {
     case 'add':
@@ -98,9 +96,31 @@ const App = () => {
 };
 ```
 
+```js
+function useReducer(reducer, initialState) {
+  const [state, setState] = useState(initialState);
+
+  function dispatch(action) {
+    const nextState = reducer(state, action);
+    setState(nextState);
+  }
+
+  return [state, dispatch];
+}
 
 
+function Todos() {
+  const [todos, dispatch] = useReducer(todosReducer, []);
 
+  function handleAddClick(text) {
+    dispatch({ type: 'add', text });
+  }
+
+  // ...
+}
+```
+
+### 异步处理
 
 ## `useContext`
 
@@ -183,6 +203,12 @@ render -> clearEffect -> useEffect
   - `componentDidUpdate()`
   - `componentWillUnmount()` `return () => {}` 返回的函数
 
+> `useEffect` 重新`render`之前会执行`return`里面 即 `componentWillUnmount`
+
+### 对比
+
+React 会等待浏览器完成画面渲染之后才会延迟调用 `useEffect`，因此会使得额外操作很方便。
+
 
 
 真实DOM构建以后才会执行 异步的。不会阻塞浏览器更新屏幕 特殊情况layoutEffect
@@ -195,7 +221,9 @@ render -> clearEffect -> useEffect
 
 - `Ref Hook` 可以在函数组件中存储/查找组件内的标签或任意其它数据
 - 语法: `const refContainer = useRef()`
-- 作用:保存标签对象,功能与`React.createRef()`一样
+- 作用: 保存标签对象,功能与`React.createRef()`一样
+  - `createRef` 每次渲染都会返回一个新的引用，而 `useRef` 每次都会返回相同的引用
+  - `useRef` 返回一个可变的 `ref` 对象，其 `.current` 属性被初始化为传入的参数。返回的 ref 对象在组件的整个生命周期内保持不变。
 
 ```jsx
 const myRef = React.createRef();
@@ -204,8 +232,6 @@ this.myRef.current.value;
 const myRef = useRef();
 myRef.current.value;
 ```
-
-
 
 `forwardRef` 对函数式组件`ref`的转发
 
@@ -243,7 +269,7 @@ useMemo(() => function, input)
 
 
 ```js
-useCallback(fn, deps) => useMemo(() => fn, deps)
+useCallback(fn, deps) === useMemo(() => fn, deps)
 ```
 
 
@@ -283,27 +309,7 @@ React 会等待浏览器完成画面渲染之后才会延迟调用 `useEffect`
 ### ``
 
 ```jsx
-function useReducer(reducer, initialState) {
-  const [state, setState] = useState(initialState);
 
-  function dispatch(action) {
-    const nextState = reducer(state, action);
-    setState(nextState);
-  }
-
-  return [state, dispatch];
-}
-
-
-function Todos() {
-  const [todos, dispatch] = useReducer(todosReducer, []);
-
-  function handleAddClick(text) {
-    dispatch({ type: 'add', text });
-  }
-
-  // ...
-}
 ```
 
 
@@ -444,8 +450,46 @@ reducer` 其实是在下次 `render` 时才执行的，所以在 `reducer` 里�
 
 
 
+## `setState` 更新问题
 
+```js
+const [n, setN] = useState(0);
+const onClick = () => {
+  // setN(n + 1);
+  // setN(n + 1); // 此时发现，n只能+1，而不会+2
+  setN((i) => i + 1);
+  setN((i) => i + 1); // n+2
+};
+```
+
+- `useState` 每次执行会返回一个新的 `state`（简单类型的等值拷贝）
+- `setState` 会触发UI更新（重新`render`，执行函数组件）由于UI更新是异步任务，所以`setState` 也是一个异步过程。当我们两次`setN(n+1)`时候，实际上形成了两个闭包，都保存了对此时 `n`的状态 `(n=0)` 的引用
+- 在`setN`后，先分别生成了两个新的`n`，数值上都等于`n+1 即1`，但彼此无关。分别进行了`render`，而只有最新一次`render`有效，此次`render`引用了最后一次`setN`函数里生成的`n`
+- 接收的函数 `x=>x+1` 并未保持对`n`的引用，而是表达了一种 加1 操作
+
+
+
+## `Immutable Data` 
+
+:::note Ref
 
 - [Immer 中文文档](https://github.com/ronffy/immer-tutorial)
 
+:::
+
+`js` 中的对象一般是可变的 `mutable`，因为使用了引用赋值，新的对象简单地引用了原始对象，改变新的对象将影响到原始对象
+
+`Immutable Data` 就是一旦创建，就不能再更改的数据
+
+`Immutable` 实现的原理是持久化的数据结构 `persistent data structure`，也就是使用旧数据创建新数据时，要保证旧数据同时可用且不变。同时为了避免深拷贝把所有节点都复制一遍带来的性能损耗，`Immutable` 使用了结构共享 `structural sharing`，即如果对象树中一个节点发生变化，只修改这个节点和受它影响的父节点，其他节点则进行共享。
+
+### `Immer`
+
 `produce(currentState, producer: (draftState) => void): nextState`
+
+
+
+
+
+
+

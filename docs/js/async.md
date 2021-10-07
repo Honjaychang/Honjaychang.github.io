@@ -554,7 +554,14 @@ loadImage(url1)
 - `JS`是单线程运行的，异步要基于回调来实现
 - `event loop` 就是异步回调的实现原理
 
+##### `Node`
 
+`process.nextTick`
+
+`setImmediate()`
+
+- `nextTick`队列会比`Promie`先执行，`nextTick`中的可执行任务执行完毕之后，才会开始执行`Promise`队列中的任务
+- `setTimeout` 比`setImmediate`先执行？ 倒不一定 比较复杂 得看`node`执行机制 暂时没深入
 
 ##### Event Loop 流程
 

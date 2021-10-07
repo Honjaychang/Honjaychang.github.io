@@ -645,7 +645,7 @@ addchEvent
 - 接受一个或多个函数作为输入
 - 输出一个函数
 
-### 高阶组件
+### [高阶组件](https://zh-hans.reactjs.org/docs/higher-order-components.html)
 
 - 接收一个组件并返回一个新的组件
 - 高阶组件就是接受一个组件作为参数，在函数中对组件做一系列的处理，随后返回一个新的组件作为返回值
@@ -704,7 +704,11 @@ didmount→HOC didmount→(HOCs didmount)→will unmount→HOC will unmount→(H
 - 被包裹组件的静态方法会消失
 - 这其实也是很好理解的，我们将组件当做参数传入函数中，返回的已经不是原来的组件，而是一个新的组件，原来的静态方法自然就不存在了。如果需要保留，我们可以手动将原组件的方法拷贝给新的组件，或者使用hoist-non-react-statics之类的库来进行拷贝。
 
-## `renderProps`
+## [`renderProps`](https://zh-hans.reactjs.org/docs/render-props.html)
+
+> 在 React 组件之间使用一个值为函数的 prop 共享代码的简单技术
+>
+> `render prop` 是一个用于告知组件需要渲染什么内容的函数 `prop`
 
 核心思想：通过一个函数将 `class` 组件的 `state` 作为 `props` 传递给纯函数组件
 
@@ -727,7 +731,21 @@ const App = () => {
         (props) => <p>{props.a} {props.b}...</p>
     } />
 }
+
+const Hoc = (Component) {
+  return class extends React.Component {
+    render() {
+      return {
+        <Factory render={
+            <Component {...this.props}>
+        }>
+      }
+    }
+  }
+}
 ```
+
+如果你在 render 方法里创建函数，那么使用 render prop 会抵消使用 `React.PureComponent`带来的优势。因为浅比较 props 的时候总会得到 false，并且在这种情况下每一个 `render` 对于 render prop 将会生成一个新的值。
 
 ## 回调写法对比
 
@@ -839,35 +857,57 @@ export default React.memo(MyComponent, areEqual)
 
 ### 父向子
 
-#### `props`
+> `props`
+
+> `Instance Methods`
+
+- 当父组件挂载时，`react`会去执行这个`ref`回调函数，并将子组件实例作为参数传给回调函数
+- 常用场景 弹窗组件
+
+```js
+class Modal extends React.Component {
+  show = () => {// do something to show the modal}
+  hide = () => {// do something to hide the modal}
+  render() {
+    return <div>I'm a modal</div>
+  }
+}
+
+class Parent extends React.Component {
+  componentDidMount() {
+    if(some condition)  this.modal.show()
+  }
+  render() {
+    return (
+      <Modal
+        ref={el => {
+          this.modal = el
+        }}
+      />
+    )
+  }
+}
+```
 
 ### 子向父
 
-回调函数
+> 回调函数
+
+> 事件冒泡机制
 
 ### 兄弟组件
 
+兄弟间组件通信，一般的思路就是找一个相同的父组件，这时候既可以用`props`传递数据，也可以用`context`的方式来传递数据。 当然也可以用一些全局的机制去实现通信，比如`redux`等
+
 ### 跨级组件
 
-层层传递 `props`
+> 层层传递 `props`
 
-`context`
+> `context`
 
-> context是一个全局变量,像是一个大容器,在任何地方都可以访问到,我们可以把要通信的信息放在context上,然后在其他组件中可以随意取到; 但是React官方不建议使用大量context,尽管他可以减少逐层传递,但是当组件结构复杂的时候,我们并不知道context是从哪里传过来的;而且context是一个全局变量,全局变量正是导致应用走向混乱的罪魁祸首.
+> 消息发布订阅
 
-消息订阅发布
-
-
-
-
-
-订阅消息 消息名
-
-`PubSubJS`
-
-
-
-
+> Redux
 
 ## 补充
 
@@ -928,41 +968,67 @@ import {Fragment} from 'react'
 
 ## `Context`
 
-- 使用 `context`, 我们可以避免通过中间元素传递 `props`：
+- 使用 `context`, 我们可以避免通过中间元素传递 `props`
+
+```js
+const MyContext = React.createContext(defaultValue)
+```
+
+当 `React` 渲染一个订阅了这个 `Context` 对象的组件，这个组件会从组件树中离自身最近的那个匹配的 `Provider` 中读取到当前的 `context` 值
+
+**只有**当组件所处的树中没有匹配到 `Provider` 时，其 `defaultValue` 参数才会生效。
 
 ```jsx
-const MyContext = React.createContext(defaultValue)
-
-// 通过 MyContext.Provider 传递 prop
+// value 可以是简单类型 也可以是对象
 
 <MyContext.Provider value={{ name, age }}>
   <Child />
 </MyContext.Provider>
-  
-// 在对应的组件里 指定 contextType 读取当前的 MyContext
-static contextType = MyContext
-// 通过this.context.xxx调用
-
-
-
-<MyContext.Consumer>
-  {value => /* 基于 context 值进行渲染*/}
-</MyContext.Consumer>
 ```
 
 每个 `Context` 对象都会返回一个 `Provider` 组件，它允许消费组件订阅 `context` 的变化。
 
 `Provider` 接收一个 `value` 属性，传递给消费组件。一个 `Provider` 可以和多个消费组件有对应关系。多个 `Provider` 也可以嵌套使用，里层的会覆盖外层的数据。
 
-当 `Provider` 的 `value` 值发生变化时，它内部的所有消费组件都会重新渲染。`Provider` 及其内部 `consumer` 组件都不受制于 `shouldComponentUpdate` 函数。
-
-
-
-当 `React` 渲染一个订阅了这个 `Context` 对象的组件，这个组件会从组件树中离自身最近的那个匹配的 `Provider` 中读取到当前的 `context` 值
-
-**只有**当组件所处的树中没有匹配到 `Provider` 时，其 `defaultValue` 参数才会生效。
-
 当 `Provider` 的 `value` 值发生变化时，它内部的所有消费组件都会重新渲染。`Provider` 及其内部 `consumer` 组件都不受制于 `shouldComponentUpdate` 函数，因此当 `consumer `组件在其祖先组件退出更新的情况下也能更新。
+
+- 在对应的组件里 指定 `contextType` 读取当前的 `MyContext`
+
+```js
+static contextType = MyContext
+// 并通过this.context.xxx调用
+```
+
+- 使用 `Consumer`
+
+```js
+<MyContext.Consumer>
+  {value => /* 基于 context 值进行渲染*/}
+</MyContext.Consumer>
+```
+
+一个 React 组件可以订阅 `context` 的变更，此组件可以让你在 函数式组件 中可以订阅 `context`
+
+## [`Portals`](https://zh-hans.reactjs.org/docs/portals.html#gatsby-focus-wrapper)
+
+> `Portal` 提供了一种将子节点渲染到存在于父组件以外的 DOM 节点的优秀的方案
+
+```jsx
+ReactDOM.createPortal(child, container)
+
+render() {
+  return ReactDOM.createPortal();
+}
+```
+
+- `child` 任何可渲染的 React 子元素
+- `container` DOM元素
+
+典型案例：当父组件有 `overflow: hidden` 或 `z-index` 样式时，但你需要子组件能够在视觉上“跳出”其容器
+
+
+
+
 
 
 
