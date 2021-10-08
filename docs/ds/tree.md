@@ -10,47 +10,87 @@ interface Node {
   val: number;
   children: Node[];
 }
+
+const tree = {
+  value: 1,
+  children: [
+    {
+      value: 2,
+      children: [
+        { value: 4, children: [] },
+        {
+          value: 5,
+          children: [
+            { value: 6, children: [{ value: 8, children: [] }] },
+            { value: 7, children: [] },
+          ],
+        },
+      ],
+    },
+    { value: 3, children: [] },
+  ],
+};
 ```
+
+> 给定一个父节点，使用DFS遍历返回所有节点
 
 ## 深度优先搜索 DFS
 
+> 递归
+
+```js
+const dfs = (node, res = []) => {
+  res.push(node.value);
+  // 遍历节点的每个孩子节点，并且在孩子节点上使用dfs递归 继续遍历
+  node.children.forEach((child) => dfs(child, res));
+  return res;
+};
+dfs(tree) // [ 1, 2, 4, 5, 6, 8, 7, 3 ]
+```
+
+> 非递归
+
 ```js
 const dfs = (root) => {
-  console.log(root.val)
-  root.children.forEach(dfs)
-  // root.children.forEach((child) => {dfs(child)})
-  // 遍历节点的每个孩子节点，并且在孩子节点上使用dfs递归 继续遍历
-}
-dfs(tree);
+  const stack = [root];
+  const res = [];
+  while (stack.length) {
+    const node = stack.pop();
+    res.push(node.value);
+    let len = node.children && node.children.length;
+    for (let i = len - 1; i >= 0; i--) {
+      stack.push(node.children[i]);
+    }
+  }
+  return res;
+};
 ```
 
 ## 广度优先搜索 BFS
 
 ```js
 const bfs = (root) => {
-  //1、新建一个队列，把根节点入队
-  const q = [root]
-  //4、重复第2，3步，直到队列为空
-  while (q.length > 0) {
-    //2、把对头出队，并访问
-    const n = q.shift();
-    console.log(n.val);
-    // 3、把对头的children挨个入队
-    n.children.forEach(child => {
-      q.push(child);
+  if (!root) throw new Error('');
+  // 1、新建一个队列，把根节点入队
+  const queue = [root];
+  const res = [];
+  // 4、重复第2，3步，直到队列为空
+  while (queue.length > 0) {
+    // 2、把队头出队，并访问
+    const head = queue.shift();
+    res.push(head.value);
+    // 3、把队头的children挨个入队
+    head.children.forEach((child) => {
+      queue.push(child);
     });
   }
-}
-bfs(tree);
+  return res;
+};
+
+bfs(tree) // [ 1, 2, 3, 4, 5, 6, 7, 8 ]
 ```
 
-
-
 ## 二叉树
-
-- 前序 `1 2 4 5 6 8 7 3`
-- 中序 `4 2 8 6 5 7 1 3`
-- 后序 `4 8 6 7 5 2 3 1`
 
 > 二叉树的定义
 
@@ -63,9 +103,7 @@ function TreeNode(val, left, right) {
 }
 ```
 
-### DFS
-
-### 递归前中后序遍历
+### 递归前中后
 
 ```js {5}
 const preorderTraversal = (root) => {
@@ -74,6 +112,7 @@ const preorderTraversal = (root) => {
   const order = (node) => {
     // 主要就是这三个的顺序
     res.push(node.val);
+    // node.left && order(node.left)
     if (node.left !== null) order(node.left);
     if (node.right !== null) order(node.right);
   };
@@ -86,19 +125,13 @@ const inorderTraversal = (root) => { };
 const postorderTraversal = (root) => { };
 ```
 
-### 迭代 显式维护一个栈
+### 迭代 
 
-从树的根节点，一直沿一条路走到底 然后回退到分岔节点继续走到底
-
-栈
-
-先将根入栈
-
-while栈不空？
-
-栈顶元素pop 同时放进res数组 并判断当前元素是否有左右节点 并且先放入右节点 再将左节点入栈
+> 迭代：显式维护一个栈
 
 #### 前序遍历
+
+- 前序 `1 2 4 5 6 8 7 3`
 
 ```js
 const preorderTraversal = (root) => {
@@ -117,6 +150,8 @@ const preorderTraversal = (root) => {
 ```
 
 #### 中序遍历
+
+- 中序 `4 2 8 6 5 7 1 3`
 
 ```js
 const inorderTraversal = (root) => {
@@ -145,6 +180,8 @@ const inorderTraversal = (root) => {
 ```
 
 #### 后序遍历
+
+- 后序 `4 8 6 7 5 2 3 1`
 
 ```js
 const postorderTraversal = (root) => {

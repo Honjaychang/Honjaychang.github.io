@@ -523,3 +523,23 @@ Set-Cookie: widget_session=abc123; SameSite=None; Secure
 - `cookie` 的跨域问题
   - 存在，`cookie`是跟域名绑定的；可以通过二级域名来解决跨域问题
 
+## 前端登陆鉴权
+
+- [前端登录](https://juejin.cn/post/6845166891393089544)
+- [前端鉴权：cookie、session、token、jwt、单点登录](https://juejin.cn/post/6898630134530752520)
+
+
+
+```js
+采用https 或者 代码层面也可以做安全检测，比如ip地址发生变化，MAC地址发生变化等等，可以要求重新登录
+
+a、在存储的时候把 token 进行对称加密存储，用时解开。
+b、将请求 URL、时间戳、token 三者进行合并加盐签名，服务端校验有效性。
+c、HTTPS 对 URL 进行判断。
+
+获取的token加密后存储 解密后 头部携带
+```
+
+
+
+内容安全策略 csp
