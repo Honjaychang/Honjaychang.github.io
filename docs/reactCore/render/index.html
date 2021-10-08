@@ -6,8 +6,8 @@
 <meta name="generator" content="Docusaurus v2.0.0-beta.4">
 <link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="HonjayChang Blog RSS Feed">
 <link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="HonjayChang Blog Atom Feed"><title data-react-helmet="true">render阶段 | HonjayChang</title><meta data-react-helmet="true" property="og:url" content="https://honjaychang.github.io//docs/reactCore/render"><meta data-react-helmet="true" name="docusaurus_locale" content="en"><meta data-react-helmet="true" name="docusaurus_version" content="current"><meta data-react-helmet="true" name="docusaurus_tag" content="docs-default-current"><meta data-react-helmet="true" property="og:title" content="render阶段 | HonjayChang"><meta data-react-helmet="true" name="description" content="应用程序渲染时在 render 阶段的一个重要工作就是构建 workInProgress 树，构建 workInProgress 树的过程中 React 也会完成更新 计算、调用生命周期函数以及收集副作用列表等工作"><meta data-react-helmet="true" property="og:description" content="应用程序渲染时在 render 阶段的一个重要工作就是构建 workInProgress 树，构建 workInProgress 树的过程中 React 也会完成更新 计算、调用生命周期函数以及收集副作用列表等工作"><link data-react-helmet="true" rel="shortcut icon" href="/img/photo.ico"><link data-react-helmet="true" rel="canonical" href="https://honjaychang.github.io//docs/reactCore/render"><link data-react-helmet="true" rel="alternate" href="https://honjaychang.github.io//docs/reactCore/render" hreflang="en"><link data-react-helmet="true" rel="alternate" href="https://honjaychang.github.io//docs/reactCore/render" hreflang="x-default"><link rel="stylesheet" href="/assets/css/styles.6b743985.css">
-<link rel="preload" href="/assets/js/runtime~main.b087496d.js" as="script">
-<link rel="preload" href="/assets/js/main.9cb9d5d7.js" as="script">
+<link rel="preload" href="/assets/js/runtime~main.762ae075.js" as="script">
+<link rel="preload" href="/assets/js/main.6b6955fb.js" as="script">
 </head>
 <body>
 <script>!function(){function t(t){document.documentElement.setAttribute("data-theme",t)}var e=function(){var t=null;try{t=localStorage.getItem("theme")}catch(t){}return t}();t(null!==e?e:"light")}()</script><div id="__docusaurus">
@@ -60,7 +60,7 @@
 </span></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block">
 </span></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block">
 </span></span></code></pre><button type="button" aria-label="Copy code to clipboard" class="copyButton_Ue-o clean-btn">Copy</button></div></div></div></article><nav class="pagination-nav docusaurus-mt-lg" aria-label="Docs pages navigation"><div class="pagination-nav__item"><a class="pagination-nav__link" href="/docs/reactCore/schedule"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">« 任务调度</div></a></div><div class="pagination-nav__item pagination-nav__item--next"><a class="pagination-nav__link" href="/docs/reactCore/diff"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">diff »</div></a></div></nav></div></div><div class="col col--3"><div class="tableOfContents_35-E thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#render阶段-1" class="table-of-contents__link">render阶段</a><ul><li><a href="#构建-wip-树" class="table-of-contents__link">构建 <code>wIP</code> 树</a></li><li><a href="#工作循环" class="table-of-contents__link">工作循环</a></li><li><a href="#解析不同类型fiber结点" class="table-of-contents__link">解析不同类型<code>Fiber</code>结点</a></li><li><a href="#完成工作单元的时机" class="table-of-contents__link">完成工作单元的时机</a></li></ul></li><li><a href="#首次渲染" class="table-of-contents__link">首次渲染</a></li><li><a href="#更新渲染" class="table-of-contents__link">更新渲染</a></li></ul></div></div></div></div></main></div></div></div>
-<script src="/assets/js/runtime~main.b087496d.js"></script>
-<script src="/assets/js/main.9cb9d5d7.js"></script>
+<script src="/assets/js/runtime~main.762ae075.js"></script>
+<script src="/assets/js/main.6b6955fb.js"></script>
 </body>
 </html>
