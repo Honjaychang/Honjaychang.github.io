@@ -828,13 +828,7 @@ dispatchEvent: function (topLevelType, nativeEvent) {
 
 
 
-`componentDidMount useEffect`执行时机
-
-- `useEffect`会在`commit`阶段执行完以后异步的调用回调函数
-
-- `componentDidMount` 在 `layout` 阶段同步的调用
-
-- `useLayoutEffect` 在 `layout`阶段同步的调用
+- 
 
 
 

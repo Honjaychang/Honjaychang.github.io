@@ -3,8 +3,75 @@
 :::note Ref
 
 - [React Router 入门完全指南(包含 Router Hooks)🛵](https://juejin.cn/post/6948226424427773983#heading-0)
+- 我不是外星人 [「源码解析 」这一次彻底弄懂react-router路由原理](https://juejin.cn/post/6886290490640039943)
 
 :::
+
+单页面应用路由实现原理是，切换url，监听url变化，从而渲染不同的页面组件
+
+## `history`
+
+`history.pushState`
+
+```js
+history.pushState(state,title,path)
+```
+
+- `state` ：一个与指定网址相关的状态对象， `popstate` 事件触发时，该对象会传入回调函数。如果不需要可填 `null`
+- `title`：新页面的标题，但是所有浏览器目前都忽略这个值，可填 `null`
+-  `path`：新的网址，必须与当前页面处在同一个域。浏览器的地址栏将显示这个地址
+
+`history.replaceState`
+
+```js
+history.replaceState(state,title,path)
+```
+
+这个方法会修改当前的` history `对象记录， `history.length` 的长度不会改变
+
+`popState` 事件  监听路由
+
+```js
+window.addEventListener('popstate',function(e){
+    /* 监听改变 */
+})
+```
+
+同一个文档的 `history` 对象出现变化时，就会触发` popstate` 事件  `history.pushState` 可以使浏览器地址改变，但是无需刷新页面。
+
+**⚠️：用 `history.pushState()` 或者 `history.replaceState()` 不会触发 `popstate` 事件**。 `popstate` 事件只会在浏览器某些行为下触发, 比如点击后退、前进按钮或者调用 `history.back()、history.forward()、history.go()`方法。
+
+## `hash`
+
+`window.location.hash`
+
+通过`window.location.hash ` 属性获取和设置 `hash `值
+
+`onhashchange` 监听路由
+
+```js
+window.addEventListener('hashchange',function(e){
+    /* 监听改变 */
+})
+```
+
+
+
+`url`变化是`history.pushState`产生的，并不会触发`popState`方法，所以需要手动`setState`，触发组件更新
+
+
+
+## 流程分析
+
+> 当地址栏改变url，组件的更新渲染都经历了什么？
+
+以`history`模式为例。当`url`改变时，首先触发`histoy`，调用事件监听`popstate`事件， 触发回调函数`handlePopState`，触发`history`下面的`setstate`方法，产生新的`location`对象，然后通知`Router`组件更新`location`并通过`context`上下文传递，`switch`通过传递的更新流，匹配出符合的`Route`组件渲染，最后有`Route`组件取出`context`内容，传递给渲染页面，渲染更新。
+
+**当我们调用`history.push`方法，切换路由，组件的更新渲染又都经历了什么呢？**
+
+我们还是拿`history`模式作为参考，当我们调用`history.push`方法，首先调用`history`的`push`方法，通过`history.pushState`来改变当前`url`，接下来触发`history`下面的`setState`方法，接下来的步骤就和上面一模一样了，这里就不一一说了。
+
+
 
 
 

@@ -15,6 +15,8 @@
 - [Redux 入门教程（二）：中间件与异步操作](https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_two_async_operations.html)
 - [Redux 入门教程（三）：React-Redux 的用法](https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_three_react-redux.html)
 
+我不是外星人 [「源码解析」一文吃透react-redux源码（useMemo经典源码级案例）](https://juejin.cn/post/6937491452838559781)
+
 :::
 
 ![redux原理图](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/redux.png)
@@ -36,31 +38,6 @@
 - `Store` - **状态容器**    在 Redux 中，状态将保存在 Store里面
 
 - `Reducers` 是**负责更新 Store 中状态的 JavaScript 函数**
-
->  `store->view`
-
-- 将 `Store` 里面的状态传递到 `View` 中，具体我们是通过 `React` 的 `Redux` 绑定库 `react-redux` 中的 `connect` 实现的
-
-```js
-const store = createStore(rootReducer, initialState);
-
-ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
-  document.getElementById("root")
-);
-
-const mapStateToProps = (state, props) => ({
-  todos: state.todos,
-});
-
-export default connect(mapStateToProps)(App); 
-```
-
-`connect` 其实是一个高阶函数。这里 `connect` 通过接收 `mapStateToProps` 然后调用返回一个新函数，接着这个新函数再接收 `App` 组件作为参数，通过 `mapStateToProps` 注入 `todos`属性，最后返回注入后的 `App` 组件。
-
-这里之所以我们能在 `App` 组件中通过 `mapStateToProps` 拿到 Store 中保存的 `js`  对象状态树，是因为我们在之前通过 `Provider` 包裹了 `App` 组件，并将 `store` 作为属性传递给了 `Provider`。
 
 ## Redux
 
@@ -344,6 +321,17 @@ export default function compose(...funcs) {
   const rest = funcs.slice(0, -1)
   return (...args) => rest.reduceRight((composed, f) => f(composed), last(...args))
 }
+
+
+export default function compose(...funcs) {
+  if (funcs.length === 0) {
+    return arg => arg
+  }
+  if (funcs.length === 1) {
+    return funcs[0]
+  }
+  return funcs.reduce((a, b) => (...args) => a(b(...args)))
+}
 ```
 
 
@@ -351,6 +339,31 @@ export default function compose(...funcs) {
 ### `createStore()`
 
 ## `React-redux`
+
+>  `store->view`
+
+- 将 `Store` 里面的状态传递到 `View` 中，具体我们是通过 `React` 的 `Redux` 绑定库 `react-redux` 中的 `connect` 实现的
+
+```js
+const store = createStore(rootReducer, initialState);
+
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  document.getElementById("root")
+);
+
+const mapStateToProps = (state, props) => ({
+  todos: state.todos,
+});
+
+export default connect(mapStateToProps)(App); 
+```
+
+`connect` 其实是一个高阶函数。这里 `connect` 通过接收 `mapStateToProps` 然后调用返回一个新函数，接着这个新函数再接收 `App` 组件作为参数，通过 `mapStateToProps` 注入 `todos`属性，最后返回注入后的 `App` 组件。
+
+这里之所以我们能在 `App` 组件中通过 `mapStateToProps` 拿到 Store 中保存的 `js`  对象状态树，是因为我们在之前通过 `Provider` 包裹了 `App` 组件，并将 `store` 作为属性传递给了 `Provider`。
 
 ### UI组件 容器组件
 
@@ -440,6 +453,60 @@ render(
   document.getElementById('root')
 )
 ```
+
+### `provider`
+
+```js
+/* provider 组件代码 */
+function Provider({ store, context, children }) {
+   /* 利用useMemo，跟据store变化创建出一个contextValue 包含一个根元素订阅器和当前store  */ 
+  const contextValue = useMemo(() => {
+      /* 创建了一个根 Subscription 订阅器 */
+    const subscription = new Subscription(store)
+    /* subscription 的 notifyNestedSubs 方法 ，赋值给  onStateChange方法 */
+    subscription.onStateChange = subscription.notifyNestedSubs  
+    return {
+      store,
+      subscription
+    } /*  store 改变创建新的contextValue */
+  }, [store])
+  /*  获取更新之前的state值 ，函数组件里面的上下文要优先于组件更新渲染  */
+  const previousState = useMemo(() => store.getState(), [store])
+
+  useEffect(() => {
+    const { subscription } = contextValue
+    /* 触发trySubscribe方法执行，创建listens */
+    subscription.trySubscribe() // 发起订阅
+    if (previousState !== store.getState()) {
+        /* 组件更新渲染之后，如果此时state发生改变，那么立即触发 subscription.notifyNestedSubs 方法  */
+      subscription.notifyNestedSubs() 
+    }
+    /*   */
+    return () => {
+      subscription.tryUnsubscribe()  // 卸载订阅
+      subscription.onStateChange = null
+    }
+    /*  contextValue state 改变出发新的 effect */
+  }, [contextValue, previousState])
+
+  const Context = context || ReactReduxContext
+  /*  context 存在用跟元素传进来的context ，如果不存在 createContext创建一个context  ，这里的ReactReduxContext就是由createContext创建出的context */
+  return <Context.Provider value={contextValue}>{children}</Context.Provider>
+}
+```
+
+
+
+**1 `react-redux` 中的 `provider` 作用 ，通过 `react` 的 `context` 传递 `subscription` 和 `redux` 中的`store`  ,并且建立了一个最顶部根 `Subscription` 。**
+
+**2 `Subscription` 的作用：起到发布订阅作用，一方面订阅 `connect` 包裹组件的更新函数，一方面通过 `store.subscribe` 统一派发更新。**
+
+**3 `Subscription` 如果存在这父级的情况，会把自身的更新函数，传递给父级 `Subscription` 来统一订阅。**
+
+
+
+
+
 
 
 

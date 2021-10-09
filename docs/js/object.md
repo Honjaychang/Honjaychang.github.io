@@ -535,17 +535,18 @@ var fred = new Person('Fred'); // ✅ Person {name: 'Fred'}
 4. 开始执行构造函数内部的代码。
 
 ```js
-function _new(constructor, params) {
+// function _new(constructor, ...args) {
+function _new() {
   // 将 arguments 对象转为数组
   var args = [].slice.call(arguments);
   // 取出构造函数
   var constructor = args.shift();
   // 创建一个空对象，继承构造函数的 prototype 属性
-  var context = Object.create(constructor.prototype);
+  var obj = Object.create(constructor.prototype);
   // 执行构造函数  将新创建的对象作为This的上下文
-  var result = constructor.apply(context, args);
-  // 如果返回结果是对象，就直接返回，否则返回 context 对象
-  return typeof result === 'object' && result != null ? result : context;
+  var res = constructor.apply(obj, args);
+  // 如果返回结果是对象，就直接返回，否则返回 obj 对象
+  return typeof res instanceof Object ? res : obj;
 }
 
 // 实例

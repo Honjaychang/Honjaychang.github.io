@@ -207,6 +207,16 @@ render -> clearEffect -> useEffect
 
 ### 对比
 
+`componentDidMount useEffect`执行时机
+
+- `useEffect`会在`commit`阶段执行完以后异步的调用回调函数
+
+- `componentDidMount` 在 `layout` 阶段同步的调用
+
+- `useLayoutEffect` 在 `layout`阶段同步的调用
+
+
+
 React 会等待浏览器完成画面渲染之后才会延迟调用 `useEffect`，因此会使得额外操作很方便。
 
 

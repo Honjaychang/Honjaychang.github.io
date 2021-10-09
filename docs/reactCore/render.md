@@ -1,12 +1,49 @@
 # render阶段
 
-应用程序渲染时在 render 阶段的一个重要工作就是构建 workInProgress 树，构建 workInProgress 树的过程中 React 也会完成更新 计算、调用生命周期函数以及收集副作用列表等工作
+`render` 阶段
 
-在这个过程中 React 也会完成结点 diff 的逻辑，最终会得到用于更新到屏幕的副作用列表。
+> 应用程序渲染时在 `render` 阶段的一个重要工作就是构建 `workInProgress` 树，构建 `workInProgress` 树的过程中 `React` 也会完成更新计算、调用生命周期函数以及收集副作用列表等工作
+>
+> 在这个过程中 React 也会完成结点 `diff` 的逻辑，最终会得到用于更新到屏幕的副作用列表
+>
+> React 应用程序首次渲染时构建 `workInProgress` 树的过程也是将 `React` 元素树转化为 `Fiber` 树的过程， `workInProgress` 树构建完成后会在该「树」上面完成更新计算、调用生命周期函数以及收集副作用列表等工作。
+>
+> 收集好的副作用列表会在 `commit` 阶段统一映射到屏幕上。
+
+`beginWork`
+
+`completeWork`
 
 
 
-React 应用程序首次渲染时构建 workInProgress 树的过程也是将 React 元素树转化为 Fiber 树的过程， workInProgress 树构建完成后会在该「树」上面完成更新计算、调用生命周期函数以及收集副作用列表等工作。收集好的副作用列表会在 commit 阶段统一映射到屏幕上。
+`commit` 阶段
+
+
+
+
+
+
+
+
+
+
+
+
+
+在 `Diff` 之后，`workInProgress`节点就会进入`complete`阶段
+
+这个时候拿到的`workInProgress`节点都是经过`diff`算法调和过的，也就意味着对于某个节点来说它`fiber`的形态已经基本确定了，但除此之外还有两点：
+
+- 目前只有`fiber`形态变了，对于原生DOM组件 `HostComponent` 和文本节点 `HostText` 的`fiber`来说，对应的DOM节点 `fiber.stateNode` 并未变化
+- 经过`Diff`生成的新的`workInProgress`节点持有了`flag` 即`effectTag`
+
+基于这两个特点，`completeWork`的工作主要有：
+
+- 构建或更新DOM节点
+  - 构建过程中，会自下而上将子节点的第一层第一层插入到当前节点。
+  - 更新过程中，会计算DOM节点的属性，一旦属性需要更新，会为DOM节点对应的`workInProgress` 节点标记`Update` 的 `effectTag`
+- 自下而上收集 `effectList`，最终收集到 `root`上
+- 错误处理
 
 ![image-20211002152401431](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211002152401.png)
 
@@ -230,7 +267,7 @@ function finishClassComponent(current$$1, workInProgress, Component, shouldUpdat
 
 在收集好的副作用列表中每个 `HostComponent` 类型 `Fiber` 结点的 `stateNode` 属性中存储了当前结点对应的 `DOM` 实例。那么，`React` 下一步要做的就是将副作用列表中的所有 `DOM` 实例更新到屏幕中
 
-
+## `commit` 阶段
 
 #### 何时进入`commit`阶段
 
@@ -631,7 +668,6 @@ HostComponent 宿主元素
 
 
 ```
-
 
 
 

@@ -19,6 +19,8 @@
 - [React16源码解析(六)-更新流程渲染阶段2](https://segmentfault.com/a/1190000020737054)
 - [React16源码解析(七)-更新流程渲染阶段3](https://segmentfault.com/a/1190000020737059)
 - [React16源码解析(八)-更新流程提交阶段](https://segmentfault.com/a/1190000020737069)
+- 
+- [neroneroffy React源码解析系列文章](https://github.com/neroneroffy/react-source-code-debug)
 
 :::
 
@@ -579,9 +581,11 @@ Fiber 和 fiber 不是同一个概念。前者代表新的调和器，后者代�
 1. 处理用户交互
 2. JS执行
 3. 一帧的开始，处理视窗变化、页面滚动等
-4. requestAnimationFrame(rAF)
-5. 重排(layout)
-6. 绘制(draw)
+4. `requestAnimationFrame(rAF)`
+5. 重排 `layout`
+6. 绘制 `draw`
+
+一帧的空闲时间会执行 `RequestIdelCallback`
 
 
 

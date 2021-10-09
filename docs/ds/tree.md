@@ -1,5 +1,11 @@
 # 树
 
+:::note Ref
+
+- [二叉树前中后序遍历非递归实现（JavaScript）](https://juejin.cn/post/6844904038060785671)
+
+:::
+
 ![tree](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/dfsTree.png)
 
 [在线绘图](http://mshang.ca/syntree/) `[1 [2  [4] [5 [6 [8][x]] [7] ] ] [3 ]`    `x 不存在 只是代表8 是左节点`
@@ -179,41 +185,73 @@ const inorderTraversal = (root) => {
 };
 ```
 
+```js
+const inorderTraversal = function (root) {
+  const res = [], stack = [];
+  while (root || stack.length) {
+    // 中序遍历，首先迭代左孩子，左孩子依次入栈
+    if (root.left) {
+      stack.push(root);
+      root = root.left;
+      // 如果左孩子为空了，输出节点，去右孩子中迭代，
+    } else if (root.right) {
+      res.push(root.val);
+      root = root.right;
+      // 如果左右孩子都为空了，输出当前节点，栈顶元素出栈，也就是回退到上一层，此时置空节点左孩子，防止while循环重复进入
+    } else if (!root.left && !root.right) {
+      res.push(root.val);
+      root = stack.pop();
+      root && (root.left = null);
+    }
+  }
+  return res;
+};
+```
+
 #### 后序遍历
 
 - 后序 `4 8 6 7 5 2 3 1`
 
 ```js
-const postorderTraversal = (root) => {
-  let res = [];
-  if (!root) return res;
+// 1, 先依次遍历左孩子, 在栈中依次记录，当左孩子为空时，遍历到叶子节点 //跳回上一层节点, 为防止while循环重复进入，将上一层左孩子置为空
+// 2, 接着遍历右孩子, 在栈中依次记录值，当右孩子为空时, 遍历到叶子节点
+// 跳回上一层节点, 为防止while循环重复进入，将上一层右孩子置为空
 
-  let stack = [];
-  let temp = root;
-  while (temp !== null) {
-    stack.push(temp);
-    temp = temp.left;
-  }
-  let prev = null;
-  while (stack.length > 0) {
-    const top = stack[stack.length - 1];
-    if (top.right === null) {
-      prev = stack.pop();
-      res.push(top.val);
+const postorderTraversal = (root) => {
+  const res = [];
+  const stack = [];
+  while (root || stack.length) {
+    if (root.left) {
+      stack.push(root);
+      root = root.left;
+    } else if (root.right) {
+      stack.push(root);
+      root = root.right;
     } else {
-      if (prev !== top.right) {
-        let temp2 = top.right;
-        while (temp2 !== null) {
-          stack.push(temp2);
-          temp2 = temp2.left;
-        }
-      } else {
-        prev = stack.pop();
-        res.push(top.val);
-      }
+      res.push(root.val);
+      root = stack.pop();
+      if (root && root.left) root.left = null;
+      else if (root && root.right) root.right = null;
     }
   }
   return res;
+};
+```
+
+> 前序遍历的逆序思维
+
+```js
+// 结果数组中依次进入的是节点的左孩子，右孩子，节点本身，注意使用的是
+// unshift，与前序遍历push不同，每次数组头部添加元素，实际上就是前序遍历的逆序过程
+const postorderTraversal = function(root) {
+    const res = [], stack = []
+    while (root || stack.length) {
+        res.unshift(root.val)
+        root.left && stack.push(root.left)
+        root.right && stack.push(root.right)
+        root = stack.pop()
+    }
+    return res
 };
 ```
 

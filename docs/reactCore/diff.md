@@ -10,6 +10,16 @@ diff
 
 
 
+同级  子树一样 父级不一样 重新生成	key prop 不同顺序 复用
+
+
+
+什么是节点的更新呢？对于DOM节点来说，在前后的节点类型（tag）和key都相同的情况下，节点的属性发生了变化，是节点更新。若前后的节点tag或者key不相同，Diff算法会认为新节点和旧节点毫无关系。
+
+
+
+Diff算法通过key和tag来对节点进行取舍，可直接将复杂的比对拦截掉，然后降级成节点的移动和增删这样比较简单的操作。对oldFiber和新的ReactElement节点的比对，将会生成新的fiber节点，同时标记上effectTag，这些fiber会被连到workInProgress树中，作为新的WIP节点。树的结构因此被一点点地确定，而新的workInProgress节点也基本定型。这意味着，在diff过后，workInProgress节点的beginWork节点就完成了。接下来会进入completeWork阶段。
+
 
 
 ## 协调算法
