@@ -213,6 +213,12 @@ a();
 
 #### 闭包
 
+:::danger 
+
+所有的自由变量的查找，是在函数定义的地方，向上级作用域查找  而不是在执行的地方！！！
+
+:::
+
 ##### 关于闭包
 
 - 定义在一个函数内部的函数
@@ -283,7 +289,41 @@ function fn() {
 console.log(print(fn)); //100
 ```
 
+##### 隐藏数据
+
+```js
+// 闭包隐藏数据，只提供API
+function createCache() {
+  const data = {} // 闭包中的数据，被隐藏，不被外界访问
+  return {
+    set: function (key, val) {
+      data[key] = val
+    },
+    get: function (key) {
+      return data[key]
+    },
+  }
+}
+const c = createCache()
+c.set('a', 100)
+console.log(c.get('a')) //100
+```
+
 ##### 实现私有变量
+
+```js
+var obj = {
+  a: 1,
+  get() {
+    return this.a;
+  },
+  set(val) {
+    this.a = val % 2 === 1 ? val : this.a;
+  },
+};
+```
+
+> 构造函数
 
 ```js
 function Closure(init) {
@@ -298,11 +338,39 @@ function Closure(init) {
 const closure = new Closure(1);
 ```
 
-:::danger 
+> `defineProperty`
 
-所有的自由变量的查找，是在函数定义的地方，向上级作用域查找  而不是在执行的地方！！！
+```js
+let obj = {};
+let aValue = 1;
+Object.defineProperty(obj, "a", {
+  // value: 1, 
+  // 如果一个描述符同时拥有 value 或 writable 和 get 或 set 键，则会产生一个异常。
+  get: function () {
+    return aValue;
+  },
+  set: function (val) {
+    aValue = val % 2 === 1 ? val : aValue;
+  },
+});
+```
 
-:::
+> `class`
+
+```js
+class Obj {
+  constructor() {
+    this._a = 1;
+  }
+  set a(val) {
+    if (val % 2 === 1) this._a = val;
+    else this._a = this._a;
+  }
+  get a() {
+    return this._a;
+  }
+}
+```
 
 :::note Ref
 

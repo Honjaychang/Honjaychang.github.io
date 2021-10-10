@@ -192,6 +192,8 @@ server : https://b.com/api/xxx
 
 #### 反向代理
 
+![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211010161857.webp)
+
 - 在`vue`中使用`proxy`进行跨域的原理是：将域名发送给本地的服务器（启动 vue 项目的服务,`loclahost:8080`），再由本地的服务器去请求真正的服务器。
 
 ```js

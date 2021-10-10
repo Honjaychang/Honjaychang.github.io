@@ -1,4 +1,6 @@
-#### 作用域和自由变量
+# 题
+
+## 作用域和自由变量
 
 - 所有的自由变量的查找，是在**函数定义**的地方，向上级作用域查找  而不是在执行的地方！！！
 
@@ -43,7 +45,7 @@ console.log(var1)
 
 
 
-#### 类型转换
+## 类型转换
 
 ##### `a == 1 && a == 2 && a == 3`
 
@@ -130,7 +132,7 @@ console.log(window.a)// 1
 
 
 
-#### This
+## This
 
 - 
 
@@ -167,7 +169,7 @@ bar.call({ a: 4 }) //7 2
 
 
 
-#### Promise
+## Promise
 
 - 
 
@@ -284,71 +286,7 @@ console.log(6)
 // 执行第三个宏任务 7
 ```
 
-
-
-
-
-
-
-
-
-
-
-#### Set get应用
-
-```js
-var obj = {
-  a: 1,
-  get() {
-    return this.a;
-  },
-  set(val) {
-    this.a = val % 2 === 1 ? val : this.a;
-  },
-};
-
-
-
-let obj = {};
-let aValue = 1;
-Object.defineProperty(obj, "a", {
-  // value: 1, // 如果一个描述符同时拥有 value 或 writable 和 get 或 set 键，则会产生一个异常。
-  get: function () {
-    return aValue;
-  },
-  set: function (val) {
-    aValue = val % 2 === 1 ? val : aValue;
-  },
-});
-
-class Obj {
-  constructor() {
-    this._a = 1;
-  }
-  set a(val) {
-    if (val % 2 === 1) this._a = val;
-    else this._a = this._a;
-  }
-  get a() {
-    return this._a;
-  }
-}
-let obj = new Obj();
-
-console.log(obj.a); // 1
-obj.a = 2;
-console.log(obj.a); // 1
-obj.a = 3;
-console.log(obj.a); // 3
-```
-
-
-
-
-
-
-
-
+## 日期格式化
 
 ```js
 function formatDate(t, str) {
@@ -383,58 +321,6 @@ function commonParentNode(oNode1, oNode2) {
 
 
 ```js
-// 获取 url 中的参数
-// 1. 指定参数名称，返回该参数的值 或者 空字符串
-// 2. 不指定参数名称，返回全部的参数对象 或者 {}
-// 3. 如果存在多个同名参数，则返回数组
-
-// http://www.nowcoder.com?key=1&key=2&key=3&test=4#hehe key
-
-// [1, 2, 3]
-
-function getUrlParam(sUrl, sKey) {
-  let res = [];
-  let obj = {};
-  let param = sUrl.split("?")[1].split("#")[0]; // key=1&key=2&key=3&test=4
-  let arr = param.split("&"); // [ 'key=1', 'key=2', 'key=3', 'test=4' ]
-  console.log(param, arr);
-  if (sKey) {
-    for (let i = 0; i < arr.length; i++) {
-      arr[i] = arr[i].split("=");
-      if (arr[i][0] === sKey) {
-        res.push(arr[i][1]);
-      }
-    }
-    if (res.length === 0) {
-      return "";
-    } else if (res.length === 1) {
-      return res[0];
-    } else return res;
-  } else {
-    if (param === "" || param == null) {
-      return {};
-    } else {
-      for (let i = 0; i < arr.length; i++) {
-        arr[i] = arr[i].split("=");
-        if (!Object.keys(obj).includes(arr[i][0])) {
-          obj[arr[i][0]] = [];
-        }
-        obj[arr[i][0]].push(arr[i][1]);
-      }
-      return obj;
-    }
-  }
-}
-
-console.log(
-  getUrlParam("http://www.nowcoder.com?key=1&key=2&key=3&test=4#hehe")
-);
-```
-
-
-
-```js
-
 function namespace(oNamespace, sPackage) {
   sPackage.split(".");
 }
@@ -596,10 +482,6 @@ Math.max.apply(null, arr);
 sort()
 ```
 
-
-
-
-
 - 
 
 ```js
@@ -616,17 +498,6 @@ fn(...[].slice.call(arguments, 1))
 
 
 
-
-#####  `url` 参数解析
-
-```js
-const search = location.search.substr(1) // ?...
-
-const pList = new URLSearchParams('?a=10&b=20&c=30')
-for (const [key, value] of pList) {
-  console.log(key,value) // a 10 b 20 ...
-}
-```
 
 
 
@@ -724,83 +595,7 @@ const splitStr = (str, point = 3, split = '.') => {
 '10000000000'.replace(/(\d)(?=(\d{3})+\b)/g, '$1.')
 ```
 
-两数之和
 
-```js
-// nums = [2,7,11,5]; target = 9; return index
-// 普通遍历
-function returnIndex(nums, target) {
-  const length = nums.length
-  for (let i = 0; i < length; i++) {
-    let res = target - nums[i]
-    for (let j = length; j > i; j--) {
-      if (res === nums[j]) {
-        return [i, j]
-      }
-    }
-  }
-  return []
-}
-
-returnIndex([2, 7, 11, 5], 9) // 0, 1
-returnIndex([3, 4, 3, 4], 6) // 0, 2
-
-// 哈希表
-// new Map() 遍历数组 计算每一个数 组成target的差值
-// 如果map里面存在 差值 则直接返回 差值的val 以及当前的 i
-// 如果map里面没有 则将当前的val, index 存入map
-// 遍历完还没有得到解的话则返回 []
-
-function twoSum(nums, target) {
-  const map = new Map()
-  for (let i = 0; i < nums.length; i++) {
-    let res = target - nums[i]
-    if (map.has(res)) {
-      return [map.get(res), i]
-    } else {
-      map.set(nums[i], i)
-    }
-  }
-  return []
-}
-
-twoSum([2, 7, 11, 5], 9) // 0, 1
-twoSum([3, 4, 3, 4], 6) // 0, 2
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-##### 实际开发中闭包的应用场景，举例说明
-
-- 隐藏数据：如做一个简单的cache 工具
-
-```js
-// 闭包隐藏数据，只提供API
-function createCache() {
-  const data = {} // 闭包中的数据，被隐藏，不被外界访问
-  return {
-    set: function (key, val) {
-      data[key] = val
-    },
-    get: function (key) {
-      return data[key]
-    },
-  }
-}
-const c = createCache()
-c.set('a', 100)
-console.log(c.get('a')) //100
-```
 
 ##### 创建10个`<a>`标签点击的时候弹出来对应的序号
 

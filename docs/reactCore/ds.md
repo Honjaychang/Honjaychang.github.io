@@ -91,6 +91,16 @@ ReactDOM.render(element, document.getElementById('root'));
 - React组件元素
 - 宿主组件元素-HostComponent（div、span
 
+> `type`
+
+```js
+转换为fiber对应的type
+HostRoot 根结点
+HostText 文本元素
+HostComponent 宿主元素 div、span
+ClassComponent 组件元素
+```
+
 ### `react Component`
 
 `ClassComponent`对应的`Element`的`type`字段为`AppClass`自身。

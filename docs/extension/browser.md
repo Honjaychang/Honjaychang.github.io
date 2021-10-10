@@ -543,3 +543,6 @@ c、HTTPS 对 URL 进行判断。
 
 
 内容安全策略 csp
+
+- `Content Security Policy` 内容安全策略
+- 实质：白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行

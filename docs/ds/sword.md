@@ -1,10 +1,12 @@
-## 剑指 Offer
+# 剑指 Offer
 
-#### [ 03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
+## 数组
 
-> 在一个长度为 `n` 的数组 `nums` 里的所有数字都在 `0～n-1` 的范围内。请找出数组中任意一个重复的数字。
+### [ 03. 数组中重复的数字](https://leetcode-cn.com/problems/shu-zu-zhong-zhong-fu-de-shu-zi-lcof/)
 
-##### 原地排序
+在一个长度为 `n` 的数组 `nums` 里的所有数字都在 `0～n-1` 的范围内。请找出数组中任意一个重复的数字。
+
+> 原地排序
 
 ```js
 // 一个萝卜 一个坑
@@ -21,9 +23,7 @@ var findRepeatNumber = function (nums) {
 };
 ```
 
-## 数组
-
-#### [21. 调整数组顺序使奇数位于偶数前面](https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/)
+### [21. 调整数组顺序使奇数位于偶数前面](https://leetcode-cn.com/problems/diao-zheng-shu-zu-shun-xu-shi-qi-shu-wei-yu-ou-shu-qian-mian-lcof/)
 
 ```js
 /**
@@ -36,7 +36,7 @@ var findRepeatNumber = function (nums) {
 const isOdd = (num: number): boolean => num % 2 === 1;
 ```
 
-##### 双指针移动
+> 双指针移动
 
 ```tsx
 const fn = (arr: number[]): number[] => {
@@ -60,7 +60,7 @@ const fn = (arr: number[]): number[] => {
 };
 ```
 
-##### 快慢指针
+> 快慢指针
 
 ```tsx
 const fn = (arr: number[]): number[] => {
@@ -76,9 +76,7 @@ const fn = (arr: number[]): number[] => {
 };
 ```
 
-
-
-#### [04. 二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
+### [04. 二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
 
 ```js
 // 从右上角开始判断，如果右上角的数字比targrt大，删去所在列；反之，删去所在行,逐步逼近左下
@@ -97,6 +95,108 @@ var findNumberIn2DArray = function (matrix, target) {
   }
   return false;
 };
+```
+
+### 数组中出现次数大于 1/2
+
+```js
+let arr = [1, 2, 3, 2, 2, 2, 5, 4, 2]; // 2
+```
+
+- `sort`
+
+```js
+return arr.sort((a, b) => a - b)[Math.floor(arr.length / 2)];
+```
+
+- Map 存储遍历
+
+```js
+function fn(arr) {
+  let length = arr.length;
+  let map = new Map();
+  let count;
+  for (let i = 0; i < arr.length; i++) {
+    if (map.has(arr[i])) {
+      count = map.get(arr[i]);
+      map.set(arr[i], ++count);
+    } else {
+      map.set(arr[i], 1);
+    }
+  }
+
+  for (let [key, value] of map) {
+    if (value > Math.floor(length / 2)) return key;
+  }
+}
+```
+
+- 摩尔投票
+
+```js
+function moer(arr) {
+  let candiater = arr[0];
+  let count = 0;
+  for (let i = 0; i < arr.length; i++) {
+    if (count === 0) {
+      // 如果此时没有候选人 就让当前这人为候选人
+      candiater = arr[i];
+    }
+    if (arr[i] === candiater) {
+      // 如果此时有候选人 且与候选人相等 ++
+      count++;
+    } else count--; // 不一样 count--
+  }
+  return candiater;
+}
+```
+
+### 两数之和
+
+```js
+nums = [2,7,11,5]; target = 9; return index
+```
+
+> 普通遍历
+
+```js
+function returnIndex(nums, target) {
+  const length = nums.length
+  for (let i = 0; i < length; i++) {
+    let res = target - nums[i]
+    for (let j = length; j > i; j--) {
+      if (res === nums[j]) {
+        return [i, j]
+      }
+    }
+  }
+  return []
+}
+```
+
+> 哈希表
+
+- `new Map()` 遍历数组 计算每一个数 组成`target`的差值
+- 如果`map`里面存在 差值 则直接返回 差值的val 以及当前的 `i`
+- 如果 `map`里面没有 则将当前的`val, index` 存入`map`
+- 遍历完还没有得到解的话则返回 `[]`
+
+```js
+function twoSum(nums, target) {
+  const map = new Map()
+  for (let i = 0; i < nums.length; i++) {
+    let res = target - nums[i]
+    if (map.has(res)) {
+      return [map.get(res), i]
+    } else {
+      map.set(nums[i], i)
+    }
+  }
+  return []
+}
+
+twoSum([2, 7, 11, 5], 9) // 0, 1
+twoSum([3, 4, 3, 4], 6) // 0, 2
 ```
 
 #### [05. 替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
@@ -119,128 +219,7 @@ var replaceSpace = function (s) {
 };
 ```
 
-#### [09. 用两个栈实现队列](https://leetcode-cn.com/problems/yong-liang-ge-zhan-shi-xian-dui-lie-lcof/)
-
-```js
-//两个数组模拟栈的行为
-var stack1 = [], //存储栈
-  stack2 = []; //辅助栈
-
-//栈是后入先出（LIFO,last in first out），队列是先入先出（FIFO,first in first out）
-
-//队列插入元素函数
-function push(ele) {
-  //模拟队列的push操作，直接往存储栈stack1中推入即可
-  //但是要考虑辅助栈stack2中还存在值的情况，需要先将辅助栈中的值推回存储栈中
-  while (stack2.length !== 0) {
-    stack1.push(stack2.pop());
-  }
-  stack1.push(ele);
-}
-
-//队列删除元素函数
-function pop() {
-  //模拟队列的pop操作则要考虑栈的后入先出特性，需要先将存储栈stack1中的数组，推入辅助栈stack2，然后辅助栈弹出元素
-  while (stack1.length !== 0) {
-    stack2.push(stack1.pop());
-  }
-  return stack2.pop();
-}
-```
-
 #### [11. 旋转数组的最小数字](https://leetcode-cn.com/problems/xuan-zhuan-shu-zu-de-zui-xiao-shu-zi-lcof/)
-
-
-
-## 动态规划
-
-#### [10- I. 斐波那契数列](https://leetcode-cn.com/problems/fei-bo-na-qi-shu-lie-lcof/)
-
-##### [10- II. 青蛙跳台阶问题](https://leetcode-cn.com/problems/qing-wa-tiao-tai-jie-wen-ti-lcof/)
-
-> 斐波拉契数列改版
-
-```
-F(0) = 0
-F(1) = 1
-F(2) = 2
-
-F(n) = F(n-1) + F(n-2) + F(n-3)
-```
-
-- 常规 === 超时
-
-```
-return solution(n - 1) + solution(n - 2) + solution(n - 3)
-```
-
-- 动态规划
-  - 时间：`O(n)` 空间：`O(n)`
-
-```js
-function solution(n) {
-  let dp = new Array(n);
-  dp[0] = 0;
-  dp[1] = 1;
-  dp[2] = 2;
-  for (let i = 3; i <= n; i++) {
-    dp[i] = dp[i - 1] + dp[i - 2] + dp[i - 3];
-  }
-  return dp[n];
-}
-```
-
-- 动态规划再优化
-  - 时间：`O(n)` 空间：`O(1)`
-
-```js
-function solution(n) {
-  if (n < 3) return n;
-  let a = 0,
-    b = 1,
-    c = 2,
-    res;
-  for (let i = 3; i <= n; i++) {
-    d = a + b + c;
-    a = b;
-    b = c;
-    c = res;
-  }
-  return res;
-}
-```
-
-#### [322. 零钱兑换](https://leetcode-cn.com/problems/coin-change/)
-
-```js
-// const coins = [1, 2, 5], target = 120
-// dp[120] = Math.min(dp[119] + 1, dp[118] + 1, dp[115] + 1)
-// dp[i] = Math.min(dp[i - coins[0]] + 1, dp[i - coins[2]] + 1, ...)
-// dp[i]  表示总金额为 i 的时候最优解法的硬币数
-
-function coinChange(coins, amount) {
-  let dp = new Array(amount + 1).fill(Infinity);
-  dp[0] = 0;
-
-  for (let i = 1; i <= amount; i++) {
-    for (let coin of coins) {
-      if (i - coin >= 0) {
-        dp[i] = Math.min(dp[i], dp[i - coin] + 1);
-      }
-    }
-  }
-
-  return dp[amount] === Infinity ? -1 : dp[amount];
-}
-```
-
-
-
-
-
-
-
-
 
 
 
@@ -417,8 +396,6 @@ function divide(nums, left, right) {
 
 ## 打印螺旋矩阵
 
-出现次数大于一半
-
 
 
 
@@ -431,201 +408,4 @@ function divide(nums, left, right) {
 
 
 
-
-
-
-
-## 数组中出现次数大于 1/2
-
-```js
-let arr = [1, 2, 3, 2, 2, 2, 5, 4, 2]; // 2
-```
-
-- `sort`
-
-```js
-return arr.sort((a, b) => a - b)[Math.floor(arr.length / 2)];
-```
-
-- Map 存储遍历
-
-```js
-function fn(arr) {
-  let length = arr.length;
-  let map = new Map();
-  let count;
-  for (let i = 0; i < arr.length; i++) {
-    if (map.has(arr[i])) {
-      count = map.get(arr[i]);
-      map.set(arr[i], ++count);
-    } else {
-      map.set(arr[i], 1);
-    }
-  }
-
-  for (let [key, value] of map) {
-    if (value > Math.floor(length / 2)) return key;
-  }
-}
-```
-
-- 摩尔投票
-
-```js
-function moer(arr) {
-  let candiater = arr[0];
-  let count = 0;
-  for (let i = 0; i < arr.length; i++) {
-    if (count === 0) {
-      // 如果此时没有候选人 就让当前这人为候选人
-      candiater = arr[i];
-    }
-    if (arr[i] === candiater) {
-      // 如果此时有候选人 且与候选人相等 ++
-      count++;
-    } else count--; // 不一样 count--
-  }
-  return candiater;
-}
-```
-
-## 
-
-
-
-```js
-/**
- * Definition for singly-linked list.
- * function ListNode(val) {
- *     this.val = val;
- *     this.next = null;
- * }
- */
-```
-
-
-
-
-
-
-
-#### [24. 反转链表](https://leetcode-cn.com/problems/fan-zhuan-lian-biao-lcof/)
-
-```js
-// 输入: 1->2->3->4->5->NULL
-// 输出: 5->4->3->2->1->NULL
-
-const reverseList = (head) => {
-  // 定义cur指向头部 pre指向头部前面的null
-  let [cur, pre] = [head, null];
-  // 遍历链表
-  while (cur) {
-    // 定义next为cur下一个
-    const next = cur.next;
-    // cur的指向改为pre
-    cur.next = pre;
-    // pre改为当前cur的指向
-    pre = cur;
-    // cur的指向改为next的指向
-    cur = next;
-  }
-  // 遍历结束，cur指向null，返回pre
-  return pre;
-};
-
-const reverseList = (head) => {
-  let [cur, pre] = [head, null];
-  while (cur) [pre, cur, cur.next] = [cur, cur.next, pre];
-  return pre;
-};
-```
-
-
-
-核心思路就是留一个前置指针，在游标移动K次之后前置指针开始移动，当游标到达最后一个元素时，前置指针刚好是要返回链表的头
-
-```js
-// 给定一个链表: 1->2->3->4->5, 和 k = 2.
-// 返回链表 4->5.
-
-const getKthFromEnd = (head, k) => {
-  let fast = head;
-  let slow = head;
-  let flag = 0;
-  while (fast) {
-    if (flag >= k) slow = slow.next;
-    fast = fast.next;
-    flag++;
-  }
-  return slow;
-};
-```
-
-
-
-```js
-// 递归
-var mergeTwoLists = function (l1, l2) {
-  // 当其中有null 则返回有效值
-  if (!l1 || !l2) return l1 || l2;
-  // 进行大小对比
-  if (l1.val < l2.val) {
-    l1.next = mergeTwoLists(l1.next, l2);
-    return l1;
-  } else {
-    l2.next = mergeTwoLists(l1, l2.next);
-    return l2;
-  }
-};
-
-var mergeTwoLists = function (l1, l2) {
-  if (!l1) return l2;
-  else if (!l2) return l1;
-
-  let preHead = new ListNode(-1);
-  let node = preHead;
-
-  while (l1 && l2) {
-    if (l1.val <= l2.val) {
-      node.next = l1;
-      l1 = l1.next;
-    } else {
-      node.next = l2;
-      l2 = l2.next;
-    }
-    node = node.next;
-  }
-
-  if (l1) node.next = l1;
-  else if (l2) node.next = l2;
-
-  return preHead.next;
-};
-```
-
-
-
-```js
-var reversePrint = function (head) {
-    let nums = []
-    const visitor = function (head) {
-        if (head !== null) {
-            visitor(head.next)
-            nums.push(head.val)
-        }
-    };
-    visitor(head)
-    return nums
-}
-
-var reversePrint = function (head) {
-  let cur = head;
-  let res = [];
-  while (cur) {
-    res.unshift(cur.val);
-    cur = cur.next;
-  }
-  return res;
-};
-```
 

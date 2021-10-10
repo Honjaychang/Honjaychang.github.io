@@ -441,7 +441,7 @@ nodeD.next = nodeE;
 nodeE.next = nodeC;
 ```
 
-#### 标志法
+> 标志法
 
 - 给每个已遍历过的节点加标志位，遍历链表，当出现下一个节点已被标志时，则证明单链表有环
 
@@ -456,7 +456,7 @@ const hasCycle = (head) => {
 };
 ```
 
-#### 快慢指针
+> 快慢指针
 
 - 如果单链表中存在环，则快慢指针终会指向同一个节点，否则直到快指针指向 `null` 时，快慢指针都不可能相遇
 
@@ -508,7 +508,7 @@ node3.next = nodeD4;
 nodeD4.next = nodeE5;
 ```
 
-#### 正常方法
+> 正常方法
 
 ```js
 function intersectNode(head1, head2) {
@@ -556,7 +556,7 @@ console.log(intersectNode(nodeA, node1));
 // Node { data: 'D4', next: Node { data: 'E5', next: null } }
 ```
 
-#### 双指针法
+> 双指针法
 
 ```js
 如果链表一样长且有交点，则第一次遍历就能找到交点，返回
@@ -584,8 +584,6 @@ var getIntersectionNode = function (headA, headB) {
   return a;
 };
 ```
-
-
 
 ### 回文链表
 
@@ -652,7 +650,7 @@ var reversePrint = function (head) {
   //     res.unshift(head.val)
   //     head = head.next
   // }
-  const fn = function (head) {
+  const fn = (head) => {
     if (head) {
       fn(head.next);
       res.push(head.val);
@@ -679,7 +677,7 @@ var reversePrint = function (head) {
 
 
 
-- 循环依次对比  (虚拟节点+ 迭代
+> 循环依次对比  (虚拟节点+ 迭代
 
 ```js
 var mergeTwoLists = function (l1, l2) {
@@ -702,7 +700,7 @@ var mergeTwoLists = function (l1, l2) {
 };
 ```
 
-- 递归 分治剪枝：返回有效期望链表项
+> 递归 分治剪枝：返回有效期望链表项
 
 ```js
 var mergeTwoLists = function (l1, l2) {
@@ -727,7 +725,7 @@ var mergeTwoLists = function (l1, l2) {
 返回链表 4->5.
 ```
 
-#### 快慢指针
+> 快慢指针
 
 - 快指针先走k步
 - 快慢指针再一起走
@@ -759,9 +757,12 @@ const getKthFromEnd = (head, k) => {
 输出: 5->4->3->2->1->NULL
 ```
 
-#### 迭代法
+> 迭代法 双指针
 
 - 将单链表中的每个节点的后继指针指向它的前驱节点即可
+- `cur.next -> prev`
+- `prev -> cur`
+- `cur -> cur.next`
 
 ```js
 const reverseList = (head) => {
@@ -777,7 +778,7 @@ const reverseList = (head) => {
 };
 ```
 
-#### ES6
+> ES6
 
 ```js
 var reverseList = function (head) {
@@ -813,109 +814,27 @@ var reverseList = function (head) {
 解释: 给定你链表中值为 5 的第二个节点，那么在调用了你的函数之后，该链表应变为 4 -> 1 -> 9.
 ```
 
-
+> 哑节点
 
 ```js
 var deleteNode = function (head, val) {
-  let sNode = head;
-  let cur = sNode;
+  // 定义虚拟节点
+  let dummy = new ListNode(-1);
+  // 虚拟节点连接到head
+  dummy.next = head;
+	// 定义 cur 指针，最开始指向虚拟节点天头部
+  let cur = dummy
+	// 遍历链表
   while (cur && cur.next) {
-    let nextNode = cur.next;
-    if (nextNode.val === val) {
-      cur.next = nextNode.next;
-    }
-    cur = cur.next;
-  }
-  return sNode;
-};
-```
-
-
-
-```js
-定义虚拟节点，用指针遍历链表
-如果下一个值等于val，则删除下一个值
-使用了ES6的?.运算符
-
-const deleteNode = (head, val) => {
-    // 定义虚拟节点
-    const res = new ListNode(-1);
-    // 虚拟节点连接到head
-    res.next = head;
-    // 定义p指针，最开始指向虚拟节点天头部
-    let p = res;
-    // 遍历链表
-    while (p?.next) {
-        // 如果下一个值等于val，则删除下一个值
-        if (p.next.val === val) p.next = p.next.next;
-        p = p.next;
-    }
-    return res.next;
-};
-
-
-改变val值的head.next指向
-var deleteNode = function(head, val) {
-    if(head.val == val){
-        return head.next
-    }
-    /**
-     * 假设【1，2，3】，目标值是2
-     * 当前head是1.
-     * 本来head.next是2,但是调用deletenode函数的时候刚刚好2==2,把2（head）的下一个值3的指针返回回去
-     * 所以head.next = 3
-     * 1->3
-     * 
-    */
-    head.next = deleteNode(head.next,val);
-    return head
-};
-```
-
-
-
-
-
-```js
-//单指针
-function deleteNode(head, val) {
-  if (head.val == val) return head.next;
-  let cur = head;
-  while (cur.next) {
-    if (cur.next.val == val) {
-      cur.next = cur.next.next;
-      return head;
-    }
-    cur = cur.next;
-  }
-  return head;
-}
-
-//dummy 单指针
-function deleteNode(head, val) {
-  let dummy = new ListNode(-1, head);
-  let pre = dummy;
-  while (cur.next) {
-    if (cur.next.val == val) {
-      cur.next = cur.next.next;
-      return dummy.next;
-    }
-    cur = cur.next;
+    // 如果下一个值等于val，则删除下一个值
+    if(cur.next.val === val) cur.next = cur.next.next
+    cur = cur.next
   }
   return dummy.next;
-}
-
-
-
-//递归
-var deleteNode = function (head, val) {
-  if (head.val == val) return head.next;
-  head.next = deleteNode(head.next, val);
-  return head;
 };
 ```
 
-#### [19. 删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
+### [19. 删除链表的倒数第 N 个结点](https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list/)
 
 ```
 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
@@ -923,7 +842,7 @@ var deleteNode = function (head, val) {
 输出：[1,2,3,5]
 ```
 
-
+> 快慢指针
 
 ```js
 const removeNthFromEnd = (head, n) => {
@@ -949,7 +868,7 @@ const removeNthFromEnd = (head, n) => {
 
 
 
-#### [876. 链表的中间结点](https://leetcode-cn.com/problems/middle-of-the-linked-list/)
+### [876. 链表的中间结点](https://leetcode-cn.com/problems/middle-of-the-linked-list/)
 
 - 利用双指针，快指针走两步，慢指针走一步，快指针走完，慢指针则为中间值
 

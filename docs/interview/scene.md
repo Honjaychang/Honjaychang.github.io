@@ -2,8 +2,6 @@
 
 
 
-
-
 ## 前端实现并发请求
 
 - 比如说五个 limit [前端请求并发控制](https://www.jianshu.com/p/232fcecc8225)

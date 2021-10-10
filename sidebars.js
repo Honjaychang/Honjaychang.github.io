@@ -37,6 +37,7 @@ module.exports = {
         'reactCore/createUpdate',
         'reactCore/schedule',
         'reactCore/render',
+        'reactCore/commit',
         'reactCore/diff',
       ],
       Dev: ['dev/basic', 'dev/git', 'dev/node', 'dev/os', 'dev/webpack'],
