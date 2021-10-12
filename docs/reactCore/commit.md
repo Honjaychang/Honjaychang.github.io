@@ -40,9 +40,16 @@
 
 整个`commit`阶段主要是针对`root`上收集的`effectList`进行处理。在真正的工作开始之前，有一个准备阶段，主要是变量的赋值，以及将`root`的`effect`加入到`effectList`中。 随后开始针对`effectList`分三个阶段进行工作：
 
-- `before mutation`：读取组件变更前的状态，针对类组件，调用`getSnapshotBeforeUpdate`，让我们可以在DOM变更前获取组件实例的信息；针对函数组件，异步调度`useEffect`。
-- `mutation`：针对`HostComponent`，进行相应的DOM操作；针对类组件，调用`componentWillUnmount`；针对函数组件，执行`useLayoutEffect`的销毁函数。
-- `layout`：在DOM操作完成后，读取组件的状态，针对类组件，调用生命周期`componentDidMount`和`componentDidUpdate`，调用`setState`的回调；针对函数组件填充`useEffect` 的 `effect`执行数组， 并调度`useEffect`
+- `before mutation`：读取组件变更前的状态
+  - 针对类组件，调用`getSnapshotBeforeUpdate`，让我们可以在DOM变更前获取组件实例的信息
+  - 针对函数组件，异步调度`useEffect`
+- `mutation`：
+  - 针对`HostComponent`，进行相应的DOM操作 (真正操作DOM节点)
+  - 针对类组件，调用`componentWillUnmount`
+  - 针对函数组件，执行`useLayoutEffect`的销毁函数
+- `layout`：在DOM操作完成后，读取组件的状态
+  - 针对类组件，调用生命周期`componentDidMount`和`componentDidUpdate`，调用`setState`的回调
+  - 针对函数组件填充`useEffect` 的 `effect`执行数组， 并调度`useEffect`
 
 `before mutation`和`layout`针对函数组件的`useEffect`调度是互斥的，只能发起一次调度
 
@@ -148,7 +155,7 @@ function commitRoot(root, finishedWork) {
 
 #### `commitBeforeMutationLifecycles` 
 
-- 遍历effect链，在这个循环中，组件的state已经更新，但是节点还没有更新。
+- 遍历`effect`链，在这个循环中，组件的`state`已经更新，但是节点还没有更新。
 - 通过 `getSnapshotBeforeUpdate` 获取`prevProps, prevState`状态快照，用于 `componentDidUpdate` 生命周期参数传递
 
 ```js
@@ -174,7 +181,7 @@ function commitBeforeMutationLifecycles() {
 
 - 遍历 `effect` 链
 - 会根据不同的 `effectTag`，执行不同的操作，比如重置文本节点，执行 插入、更新、删除等的 `effect` 操作，真正的对 dom 进行修改。
-- 此阶段正式 commit 副作用，将副作用更新到屏幕。
+- 此阶段正式 `commit` 副作用，将副作用更新到屏幕。
 - 应用首次渲染时副作用类型会匹配到 `PlacementAndUpdate`，具体处理逻辑在 `commitPlacement` 函数中，该函数主要负责插入 DOM 元素到屏幕
 
 
@@ -295,12 +302,28 @@ function commitAllLifeCycles(finishedRoot, committedExpirationTime) {
 
 
 
+```js
+function commitRootImpl(root, renderPriorityLevel) {
+    ...
 
+    // finishedWork即为workInProgress树的根节点，
+    // root.current指向它来完成树的切换
+    root.current = finishedWork;
+
+    ...
+}
+```
+
+
+
+# 分割
+
+`
 
 ## 首次渲染
 
 ```js
-React 应用程序首次渲染时，在 prerender 阶段主要做一些 render 前的准备工作，在 render 阶段做最重要的更新 计算，然后在 commit 阶段将上一阶段计算得到的更新内容映射到屏幕。
+React 应用程序首次渲染时，在 prerender 阶段主要做一些 render 前的准备工作，在 render 阶段做最重要的更新计算，然后在 commit 阶段将上一阶段计算得到的更新内容映射到屏幕。
 
 
 

@@ -46,7 +46,9 @@
 
 
 
-## render阶段
+## `beginWork`
+
+> 从初始化 `workInProgress` 对象到形成 `workInProgress` 树，应用程序会执行多次循环，每一次循环都是在解析 `Fiber` 结点并返回下一个要解析的结点。这 个过程中会使用重要的「协调」算法，对结点进行 `diff` 操作
 
 ### 构建 `wIP` 树
 
@@ -70,6 +72,10 @@
 
 ### 工作循环
 
+> React 通过工作循环来构建`workInProgress` 
+>
+> 两个关键环节 解析工作单元 完成工作单元
+
 #### 循环解析工作单元
 
 - 工作循环主要是执行 `workLoop` 函数来循环解析工作单元。每次循环解析的工作单元就是上一次 `Fiber` 结点的 `child`。
@@ -82,26 +88,9 @@
 
 #### 完成工作单元
 
-工作单元解析执行到 `workInProgress` 树的叶子结点时，会完成当前工作单元。完成工作单元的主要工作是收集副作用，同时处理 `HostComponent` 类型的结点，创建对应的 `DOM` 元素并将他们 `append` 到父结点上
+即`completeWork`
 
 
-
-
-
-
-
-```js
-构建 workInProgress 树的过程也是执行「协调算法」过程，通过循环解析工作单元获取下一个 Fiber 结点，同时 父子结点和兄弟结点也会被串联起来。这个过程从整体上可以分为两步，分别是 初始化 workInProgress 对象和 完善 workInProgress 对象。首先，我们先看一下应用程序执行过程刚进入 render 阶段时的 fiberRoot 对象。
-
-
-
-
-从初始化 workInProgress 对象到形成 workInProgress 树，应用程序会执行多次循环，每一次循环都是在解析 Fiber 结点并返回下一个要解析的结点。这 个过程中会使用重要的「协调」算法，同时也会进行结点的 diff 操作。
-
-
-
-通过工作循环来构建workInProgress 两个关键环节 解析工作单元 完成工作单元
-```
 
 ### 解析不同类型`Fiber`结点
 
@@ -224,7 +213,13 @@ function finishClassComponent(current$$1, workInProgress, Component, shouldUpdat
 
 
 
+工作单元解析执行到 `workInProgress` 树的叶子结点时，会完成当前工作单元。完成工作单元的主要工作是收集副作用，同时处理 `HostComponent` 类型的结点，创建对应的 `DOM` 元素并将他们 `append` 到父结点上
 
+
+
+
+
+## `completeWork`
 
 在 `Diff` 之后，`workInProgress`节点就会进入`complete`阶段
 
@@ -235,33 +230,53 @@ function finishClassComponent(current$$1, workInProgress, Component, shouldUpdat
 
 基于这两个特点，`completeWork`的工作主要有：
 
-- 构建或更新DOM节点
+- 构建或更新DOM节点 (为 `HostComponent` 类型的结点创建 `DOM` 元素实例)
   - 构建过程中，会自下而上将子节点的第一层第一层插入到当前节点。
   - 更新过程中，会计算DOM节点的属性，一旦属性需要更新，会为DOM节点对应的`workInProgress` 节点标记`Update` 的 `effectTag`
-- 自下而上收集 `effectList`，最终收集到 `root`上
+- 自下而上收集副作用 `effectList`，最终收集到 `root`上
 - 错误处理
 
+![image-20211011102119660](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211011102119.png)
+
+### DOM节点的创建插入
+
+> 完成DOM树的创建
+
+**DOM的插入并不是将当前DOM插入它的父节点，而是将当前这个DOM节点的第一层子节点插入到它自己的下面**
+
+- 总是优先看本身可否插入，再往下找，之后才是找`sibling`节点
+
+由于`fiber`树和`dom`树的差异，每个`fiber`节点不一定对应一个`dom`节点，但一个`dom`节点一定对应一个`fiber`节点
+
+由于一个原生DOM组件的子组件有可能是类组件或函数组件，所以会优先检查自身，发现自己不是原生DOM组件，不能被插入到父级`fiber`节点对应的DOM中，所以要往下找，直到找到原生DOM组件，执行插入，最后再从这一层找同级的fiber节点，同级节点也会执行`先自检，再检查下级，再检查下级的同级`的操作。
+
+节点的插入也是深度优先。值得注意的是，这一整个插入的流程并没有真的将DOM插入到真实的页面上，它只是在操作`fiber`上的`stateNode`。真实的插入DOM操作发生在`commit`阶段。
+
+```js
+  1              App
+                  |
+                  |
+  2              div
+                /
+               /
+  3        <List/>--->span
+            /
+           /
+  4       p ----> 'text node'
+         /
+        /
+  5    h1
+
+             div
+          /   |   \
+         /    |    \
+       p   'text'  span
+      /
+     /
+    h1
+```
 
 
-### 完成工作单元的时机
-
-- 检查当前结点是否有兄弟结点，如果没有兄弟结点就检查父结点有没有兄弟结点
-- 为 `HostComponent` 类型的结点创建 `DOM` 元素实例
-- 收集副作用 `Effect List`
-
-
-
-入口函数`completeUnitOfWork -> completeWork`
-
-在 `completeUnitOfWork` 函数中执行了一个遍历，这个遍历的方向是由子结点向父结点层层返回
-
-#### 创建或更新 DOM 元素
-
-`completeWork` 函数负责对不同类型的工作单元 `Fiber 结点`分别处理
-
-##### `HostComponent`
-
-##### `HostText`
 
 `HostComponent` 和`HostText`类型的 `Fiber `结点是有对应的真实 `DOM` 元素，因此在完成工作单元阶段 `React`要为它们创建自己的 `DOM` 实例
 
@@ -272,7 +287,53 @@ function finishClassComponent(current$$1, workInProgress, Component, shouldUpdat
 
 `updateHostComponent` 函数和 `updateHostText` 函数分别用于更新 DOM 元素
 
-#### 收集副作用
+
+
+### DOM属性的处理
+
+> 属性的创建
+
+主要就是调用`setInitialDOMProperties`将属性直接设置进DOM节点（事件在这个阶段绑定）
+
+> 属性的更新
+
+以`HostComponent`为例，会调用`updateHostComponent`函数对DOM节点属性进行更新
+
+- 主要就是计算新的属性，并挂载到`workInProgress`节点的`updateQueue`中
+- 会调用`diffProperties`对比`lastProps`和`nextProps`，计算出`updatePayload`
+
+```js
+lastProps
+{
+  "className": "test",
+  "title": "更新前的标题",
+  "style": { "color": "red", "fontSize": 18},
+  "props": "自定义旧属性",
+  "children": "测试div的Props变化",
+  "onClick": () => {...}
+}
+
+nextProps
+{
+  "className": "test",
+  "title": "更新后的标题",
+  "style": { "color":"blue", "fontSize":18 },
+  "children": "测试div的Props变化",
+  "onClick": () => {...}
+}
+  // index为偶数的是key，为奇数的是value
+[
+   "props", null,
+   "title", "更新后的标题",
+   "style", {"color":"blue"}
+]
+```
+
+DOM节点属性的`diff`为`workInProgress`节点挂载了带有新属性的`updateQueue`，一旦节点的`updateQueue`不为空，它就会被标记上`Update`的`effectTag`，`commit`阶段会处理`updateQueue`。
+
+### `effectTag` 收集
+
+经过`beginWork`和上面对于DOM的操作，有变化的`workInProgress`节点已经被打上了`effectTag`
 
 在收集副作用的过程中主要有两种情况
 
@@ -281,13 +342,19 @@ function finishClassComponent(current$$1, workInProgress, Component, shouldUpdat
 
 事实上，应用程序首次渲染时的副作用列表就是整个 `workInProgress` 树，因为整个 `workInProgress` 树的结点中携带的内容都需要更新到屏幕，而在应用程序更新渲染时副作用列表将会是 `workInProgress` 树的子集
 
-下图便为应用程序首次渲染完成工作循环后的 `wIP`树  `firstEffect lastEffect` 便为副作用链表
+
+
+每个`workInProgress`节点都有一个`firstEffect`和`lastEffect`，是一个单向链表，来表示它自身以及它的子节点上所有持有`effectTag`的`workInProgress`节点。`completeWork`阶段在向上遍历的过程中也会逐层收集`effect`链，最终收集到`root`上，供接下来的`commit`阶段使用。
 
 
 
 在收集好的副作用列表中每个 `HostComponent` 类型 `Fiber` 结点的 `stateNode` 属性中存储了当前结点对应的 `DOM` 实例。那么，`React` 下一步要做的就是将副作用列表中的所有 `DOM` 实例更新到屏幕中
 
 
+
+`completeWork`阶段处在`beginWork`之后，`commit`之前，起到的是一个承上启下的作用。它接收到的是经过`diff`后的`fiber`节点，然后他自己要将DOM节点和`effectList`都准备好。因为`commit`阶段是不能被打断的，所以充分准备有利于`commit`阶段做更少的工作。
+
+一旦`workInProgress`树的所有节点都完成`complete`，则说明`workInProgress`树已经构建完成，所有的更新工作已经做完，接下来这棵树会进入`commit`阶段
 
 
 

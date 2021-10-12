@@ -255,9 +255,11 @@ function FiberNode(tag, pendingProps, key, mode) {
 
   this.alternate = null;
 }
+```
 
+`tag`
 
-Tag
+```js
 export const FunctionComponent = 0; // 函数组件元素对应的 Fiber 结点
 export const ClassComponent = 1; // Class组件元素对应的 Fiber 结点
 export const IndeterminateComponent = 2; // 在不确定是 Class 组件元素还是函数组件元素时的取值 
@@ -266,17 +268,16 @@ export const HostPortal = 4; // 对应一颗子树，可以另一个渲染器的
 export const HostComponent = 5; // 宿主组件元素(如div，button等)对应的 Fiber 结点
 export const HostText = 6; // 文本元素(如div，button等)对应的 Fiber 结点
 export const Fragment = 7;
+```
 
 
+
+```js
 Fiber 对象中 stateNode 属性用于存储 Fiber 结点在更新完成后的状态，比如 HostComponent 类型的 Fiber 结点的stateNode 属性值是其 DOM 元素实例， ClassComponent 类型的 Fiber 结点的 stateNode 属性值是其组件实例。
 
 HostComponent.stateNode --> #div, #span
 ClassComponent.stateNode --> new Component(...)
-                                           
-
 ```
-
-
 
 ### `update`
 
@@ -367,11 +368,63 @@ JS | & 按位或 按位与
 & 操作可以用来判断某个变量中是否含有某个属性
 ```
 
+### `task`
+
+```js
+var task = {
+  // 任务的回调函数，主要用于和其他框架的链接，比如React fiber 
+  callback,
+  // 任务优先级，数值越小优先级别越高
+  priorityLevel,
+   // 任务开始执行时间
+  startTime,
+  // 任务过期时间，具体取值见代码示例4-2-3 
+  expirationTime,
+  // 下一个任务
+  next: null,
+  // 上一个任务
+  previous: null,
+};
+```
+
+- 「任务」是一个抽象的概念，React 给「任务」定义了数据结构，使其具有过期时间、下一个任务和上一个任务等 属性，多个任务对象链接成一个双向循环链表。
+
+### `taskQueue`
+
+![image-20211001095608588](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211001095608.png)
+
+任务调度器中维护的任务队列在内存中的结构是一个双向循环链表，每个 `task` 对象可以通过 `previous` 和 `next`找到 其上一个任务和下一个任务。
+
+```js
+
+任务调度器(scheduler)为任务维护了一个队列，这个队列的结构是 双向循环链表，任务加入任务队列 (taskQueue)的过程也是将所有任务根据过期时间进行排序的过程
+
+insertScheduledTask(newTask, expirationTime)
+
+
+将任务插入到任务队列其实就是一个处理双向链表的过程，在这个过程中使用   走向下一个结点，当 找到正确的结点位置时使用 next 和 previous 指针将新结点和链表中已有的结点串联起来。任务加入到任务队列后， 任务队列(taskQueue)会形成一个双向循环链表
+```
+
+
+
+## 优先级
+
+- 事件优先级：按照用户事件的交互紧急程度，划分的优先级
+- 更新优先级：事件导致React产生的更新对象`update `的优先级`update.lane`
+- 任务优先级：产生更新对象之后，React去执行一个更新任务，这个任务所持有的优先级
+- 调度优先级：`Scheduler`依据React更新任务生成一个调度任务，这个调度任务所持有的优先级
+
+### 事件优先级
+
+- 离散事件 `DiscreteEvent`：`click、keydown、focusin`等，这些事件的触发不是连续的，优先级为0。
+- 用户阻塞事件 `UserBlockingEvent`：`drag、scroll、mouseover`等，特点是连续触发，阻塞渲染，优先级为1。
+- 连续事件 `ContinuousEvent`：`canplay、error、audio`标签的`timeupdate`和`canplay`，优先级最高，为2。
+
+### 更新优先级
+
 ### `expirationTime`
 
 - 在 `React` 中，为防止某个 `update` 因为优先级的原因一直被打断而未能执行，`React`  会设置一个 `expirationTime` ，当时间到了 `expirationTime` 的时候，如果某个 `update` 还未执行的话，`React`  将会强制执行该 `update` ，这就是 `expirationTime` 的作用。
-
-// fiber对象的 与update对象的是一样的吗
 
 
 
@@ -409,7 +462,7 @@ var LOW_PRIORITY_TIMEOUT = 10000;
 var IDLE_PRIORITY = maxSigned31BitInt;
 ```
 
-#### 任务优先级
+### 任务优先级
 
 ```js
 // 立即执行(可由饥饿任务转换)，最高优先级 
@@ -532,43 +585,6 @@ function computeExpirationBucket(
 
 - 低优先级更新的 `expirationTime` 间隔是25ms，抹平了25ms内计算过期时间的误差，`React`让两个相近 `update` （25ms内）的得到相同的 `expirationTime`，目的就是让这两个`update`自动合并成一个`update`，从而达到批量更新。
 - 这里如果用高优先级更新去尝试多组数据，你会发现 `expirationTime` 间隔是10ms
-
-### `task`
-
-```js
-var task = {
-  // 任务的回调函数，主要用于和其他框架的链接，比如React fiber 
-  callback,
-  // 任务优先级，数值越小优先级别越高
-  priorityLevel,
-   // 任务开始执行时间
-  startTime,
-  // 任务过期时间，具体取值见代码示例4-2-3 
-  expirationTime,
-  // 下一个任务
-  next: null,
-  // 上一个任务
-  previous: null,
-};
-```
-
-- 「任务」是一个抽象的概念，React 给「任务」定义了数据结构，使其具有过期时间、下一个任务和上一个任务等 属性，多个任务对象链接成一个双向循环链表。
-
-### `taskQueue`
-
-![image-20211001095608588](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211001095608.png)
-
-任务调度器中维护的任务队列在内存中的结构是一个双向循环链表，每个 `task` 对象可以通过 `previous` 和 `next`找到 其上一个任务和下一个任务。
-
-```js
-
-任务调度器(scheduler)为任务维护了一个队列，这个队列的结构是 双向循环链表，任务加入任务队列 (taskQueue)的过程也是将所有任务根据过期时间进行排序的过程
-
-insertScheduledTask(newTask, expirationTime)
-
-
-将任务插入到任务队列其实就是一个处理双向链表的过程，在这个过程中使用   走向下一个结点，当 找到正确的结点位置时使用 next 和 previous 指针将新结点和链表中已有的结点串联起来。任务加入到任务队列后， 任务队列(taskQueue)会形成一个双向循环链表
-```
 
 
 

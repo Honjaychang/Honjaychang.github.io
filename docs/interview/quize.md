@@ -5,6 +5,49 @@
 - 所有的自由变量的查找，是在**函数定义**的地方，向上级作用域查找  而不是在执行的地方！！！
 
 ```js
+if不算局部作用域？
+var a;
+if (true) {
+  a = 90;
+  var a = 100;
+}
+console.log(a); // 100
+
+var a;
+function fn() {
+  a = 90;
+  var a = 100;
+}
+fn();
+console.log(a); // undefined
+
+
+var a;
+if (true) {
+  a = 5;
+
+  function a() {}
+  a = 0;
+  console.log(a)
+}
+console.log(a) // 0 5
+
+var a¹;
+ if (true) {
+   function a²() {} // hoisted
+   a² = 5;
+   a¹ = a²; // at the location of the declaration, the variable leaves the block      
+   a² = 0;
+  console.log(a²)
+}
+console.log(a¹);
+
+https://stackoverflow.com/questions/58619924/confused-about-function-declaration-in/58620404#58620404
+```
+
+- 
+
+```js
 let i
 for (i = 1; i <= 3; i++) {
   setTimeout(function () {
@@ -597,6 +640,30 @@ const splitStr = (str, point = 3, split = '.') => {
 
 
 
+```js
+三个分割
+var f = '1232418318741';
+console.log(f.replace(/\d{1,3}(?=(\d{3})+$)/g, '$&,'));
+
+const splitStr = (str) => {
+  let res = '';
+  const reverseStr = str.split('').reverse().join('');
+  for (let i = 0; i < reverseStr.length; i++) {
+    if (i % 3 === 2) {
+      res += reverseStr[i] + ',';
+    } else {
+      res += reverseStr[i];
+    }
+  }
+  return res.split('').reverse().join('');
+};
+console.log(splitStr(f));
+```
+
+
+
+
+
 ##### 创建10个`<a>`标签点击的时候弹出来对应的序号
 
 ```js
@@ -615,5 +682,23 @@ for (let i = 0; i < 10; i++) {
 }
 
 块级作用域 立即执行函数
+```
+
+
+
+```js
+// FEAT: 生成随机字符串
+
+const randomString = (n) => {
+  const str = 'abcdefghijklmnopgrstuvwxyz9876543210';
+  const len = str.length;
+  let res = '';
+  for (let i = 0; i < n; i++) {
+    res += str.charAt(Math.floor(Math.random() * len));
+  }
+  return res;
+};
+
+console.log(randomString(5));
 ```
 

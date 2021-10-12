@@ -68,9 +68,11 @@ let [counter,setCounter] = useState(getInitState);
 
 ## `useReducer`
 
-```jsx
-const [state, dispatch] = useReducer(reducer, initialState, init)
+`const [state, dispatch] = useReducer(reducer, initialState, init)`
 
+- 更新之后 `state` 的值    派发更新的 `dispatch` 函数
+
+```jsx
 const countReducer = (state, action) => {
   switch (action.type) {
     case 'add':
@@ -96,6 +98,8 @@ const App = () => {
 };
 ```
 
+> 实现简单的 `useReducer`
+
 ```js
 function useReducer(reducer, initialState) {
   const [state, setState] = useState(initialState);
@@ -106,17 +110,6 @@ function useReducer(reducer, initialState) {
   }
 
   return [state, dispatch];
-}
-
-
-function Todos() {
-  const [todos, dispatch] = useReducer(todosReducer, []);
-
-  function handleAddClick(text) {
-    dispatch({ type: 'add', text });
-  }
-
-  // ...
 }
 ```
 
@@ -248,6 +241,8 @@ myRef.current.value;
 
 ## `useCallback`
 
+- `memoized fn`
+
 ```js
 useCallback(
   () => {
@@ -258,26 +253,13 @@ useCallback(
 保证函数是同一引用？
 ```
 
-
-
-`memoized fun`?
-
-1. **useCallback**：接收一个内联回调函数参数和一个依赖项数组（子组件依赖父组件的状态，即子组件会使用到父组件的值） ，useCallback 会返回该回调函数的 memoized 版本，该回调函数仅在某个依赖项改变时才会更新
-
 ## `useMemo`
 
-`memoized value`?
-
-```js
-React.memo  固定组件
-React.pureComponent
-
-
-useMemo(() => function, input)
-?
-```
-
-
+- `useMemo(() => fn, deps)`  `memoized value`
+- 当数组里面的依赖项发生变化，重新执行第一个函数，产生**新的值**
+- **缓存一些值，避免重新执行上下文**
+- **减少不必要的`dom`循环**
+- **减少子组件渲染**
 
 ```js
 useCallback(fn, deps) === useMemo(() => fn, deps)
@@ -289,7 +271,9 @@ useCallback(fn, deps) === useMemo(() => fn, deps)
 
 ## `useLayoutEffect`
 
+**`useEffect`执行顺序:** 组件更新挂载完成 -> 浏览器 `dom` 绘制完成 -> 执行 `useEffect` 回调。
 
+ **`useLayoutEffect` 执行顺序:** 组件更新挂载完成 ->  执行 `useLayoutEffect` 回调-> 浏览器`dom`绘制完成。
 
 
 

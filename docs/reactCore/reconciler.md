@@ -1,6 +1,39 @@
-# Diff
+# 协调器
 
+:::note Ref
 
+- [React 源码剖析系列 － 不可思议的 react diff](https://zhuanlan.zhihu.com/p/20346379)
+
+:::
+
+- 只对同层的子节点进行比较，不进行跨级节点比较
+
+- `Tree diff` 两颗树只会对同一层级的节点进行比较，不同层级的就算说相同节点的移动也会销毁重新创建
+- `component diff` 如果不是同一类型下的组件，则将该组件判断为 `dirty component`，从而替换整个组件下的所有子节点
+- `element diff` 处于同一层级的节点，拥有以下三种操作插入、移动、删除，同时如果某些节点只是在同级发生移位。允许开发者对同一层级的同组子节点，添加唯一`key`进行区分，提高性能优化。
+
+### Tree Diff
+
+两棵树只会对同一层次的节点进行比较
+
+![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211011155426.png)
+
+`create A -> create B -> create C  ->   delete A`
+
+### component diff
+
+当 component D 改变为 component G 时，即使这两个 component 结构相似，一旦 React 判断 D 和 G 是不同类型的组件，就不会比较二者的结构，而是直接删除 component D，重新创建 component G 以及其子节点。
+
+![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211011155559.png)
+
+### element diff
+
+1. 当节点处于同一层级时，diff 提供了 3 种节点操作：插入、移动和删除。
+2. 对于同一层的同组子节点添加唯一 key 进行区分。
+
+新老集合进行 diff 差异化对比，通过 key 发现新老集合中的节点都是相同的节点，因此无需进行节点删除和创建，只需要将老集合中节点的位置进行移动，更新为新集合中节点的位置，此时 React 给出的 diff 结果为：B、D 不做任何操作，A、C 进行移动操作，即可。
+
+![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211011155933.png)
 
 `React`的`diff`会预设三个限制：
 
