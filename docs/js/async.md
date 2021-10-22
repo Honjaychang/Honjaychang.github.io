@@ -66,14 +66,14 @@
 - 解决异步流程化的一种手段
 - `ES6` 新增的语法，用同步的编码方式来处理异步代码，解决旧时代用回调函数来解决异步的问题，一定程度避免了回调地狱。
 
-##### promise 三种状态
+> `promise` 三种状态
 
 - `pending fulfilled rejected`
 - `pending --> fulfilled`
 - `pending --> rejected`
 - 变化不可逆
 
-##### 状态的表现
+> 状态的表现
 
 - `pending` 状态，不会触发 `then` 和 `catch`
 
@@ -81,7 +81,7 @@
 
 - `rejected` 状态，会触发后续的 `catch` 回调函数
 
-##### then 和 catch 对状态的影响
+> `then` 和 `catch` 对状态的影响
 
 - `then` 正常返回 `fulfilled`，里面有报错则返回 `rejected`
 
@@ -111,7 +111,7 @@ const p4 = Promise.reject('My error').catch(err => {
 console.log('p4', p4); //rejected 触发 catch 回调
 ```
 
-##### 三种状态转变的题目
+> 三种状态转变的题目
 
 ```js
 Promise.resolve()

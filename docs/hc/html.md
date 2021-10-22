@@ -1,6 +1,6 @@
 # HTML
 
-#### 如何理解HTML语义化？
+## HTML语义化
 
 - 让人更容易读懂 --> 增加代码可读性
 
@@ -8,7 +8,7 @@
 
 
 
-#### 默认情况下，哪些HTML标签是块级元素、哪些是内联元素？
+#### 块级元素、内联元素
 
 ```basic
 display: block/table; 有 div h1 h2 table ul ol p 等
@@ -19,13 +19,13 @@ display: inline/inline-block;  有span img input button 等
 
 - 内联元素、行内元素、行间元素
   - 不 独占一行	无法定义宽高
-  - `strong/em/del/ins/sub/sup/span/label/a/`
+  - `span/a/label/strong/em/del/ins/sub/sup`
 
 `block`：
 
 - 块级元素
   - 独占一行	可以定义宽高
-  - `div/p/hx/address/ul/ol/li/dl/dt/dd/table/form/fieldset/legend`
+  - `div/p/hx/ul/ol/li/dl/dt/dd/table/form/fieldset/legend/address`
 
 `inline-block`：
 
@@ -49,6 +49,23 @@ display: inline/inline-block;  有span img input button 等
 
 - `onchange` 在元素失去焦点时触发
 - `oninput` 在 `value` 变化时立即触发 通过 `js ` 改变不会触发
+
+
+
+
+
+```html
+<meta charset="UTF-8">
+
+<meta name="参数" content="具体的描述">
+
+<meta http-equiv="参数" content="具体的描述">
+
+```
+
+
+
+- [HTML meta标签总结与属性使用介绍](https://segmentfault.com/a/1190000004279791)
 
 
 

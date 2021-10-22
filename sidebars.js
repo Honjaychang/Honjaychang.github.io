@@ -17,7 +17,7 @@ module.exports = {
   docs: [
     'Home',
     {
-      HC: ['hc/html', 'hc/css'],
+      HC: ['hc/html', 'hc/css', 'hc/scss'],
       JS: [
         'js/basic',
         'js/advanced',
@@ -27,6 +27,7 @@ module.exports = {
         'js/module',
         'js/reg',
         'js/request',
+        'js/hand',
       ],
       Extension: [
         'extension/web-api',
@@ -49,6 +50,7 @@ module.exports = {
       Algo: [
         'ds/basic',
         'ds/sort',
+        'ds/stack',
         'ds/sword',
         'ds/dp',
         'ds/linkedList',

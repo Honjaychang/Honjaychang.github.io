@@ -124,7 +124,7 @@ instanceof
 
 ##### `Object.getPrototypeOf(obj)`
 
-- 获取原型
+- 获取原型	判断子类是否继承父类
 
 ```js
 var obj = { a: 1, b: 2 };
@@ -263,7 +263,7 @@ console.log(Object.keys(obj)); // [ 'a', 'b' ]
 
 
 
-### 解构赋值
+## 解构赋值
 
 - 使用解构赋值从对象中分配变量
 
@@ -293,7 +293,7 @@ console.log(arr); // [3, 4, 5, 7]
 //等同于  Array.prototype.slice()
 ```
 
-### `Object.defineProperty()`
+## `Object.defineProperty()`
 
 - `Object.defineProperty() `方法会直接在一个对象上定义一个新属性，或者修改一个对象的现有属性，并返回此对象。
 - 更加具体的去描述或设置一个对象内部属性的操作性
@@ -358,7 +358,7 @@ obj.a;
 obj.a = 2;
 ```
 
-### 深浅拷贝
+## 深浅拷贝
 
 - 浅拷贝只是将数据中存放的引用拷贝下来，但还是指向同一个存放地址
 - 深拷贝将数据中所有的数据拷贝下来，而不是引用，修改拷贝下来的数据并不会影响原数据。
@@ -546,7 +546,7 @@ function _new() {
   // 执行构造函数  将新创建的对象作为This的上下文
   var res = constructor.apply(obj, args);
   // 如果返回结果是对象，就直接返回，否则返回 obj 对象
-  return typeof res instanceof Object ? res : obj;
+  return res instanceof Object ? res : obj;
 }
 
 // 实例
@@ -589,7 +589,8 @@ function instanceof(left, right) {
 ### 原型链继承
 
 ```js
-// 父类 引用值会被子类共享 P242
+// P242
+// 父类 引用类型的属性 会被子类共享 
 // 创建实例时不能传递参数
 function Parent() {
   this.colors = ['red', 'pink'];
@@ -619,14 +620,13 @@ console.log(child2.colors); // [ 'red', 'pink', 'orange' ]
 ```js
 // 为防止引用值被共享 在子类构造函数中调用父类构造函数
 // 同时也可以在Parent.call(this, '') 传递参数
-// 缺点：必须在构造函数中定义方法不能复用
+// 缺点：必须在构造函数中定义方法 不能复用
 function Parent() {
   this.colors = ['red', 'pink'];
 }
 function Child() {
   Parent.call(this); // 每个实例都会有colors属性
 }
-Child.prototype = new Parent();
 
 let child = new Child();
 child.colors.push('orange');
@@ -657,10 +657,10 @@ Parent.prototype.getName = function () {
   console.log(this.name);
 };
 function Child(name, age) {
-  Parent.call(this, name);
+  Parent.call(this, name); //
   this.age = age;
 }
-Child.prototype = new Parent();
+Child.prototype = new Parent(); //
 
 let child = new Child('jack', 18);
 ```
@@ -668,7 +668,7 @@ let child = new Child('jack', 18);
 ### 原型式继承
 
 ```js
-// 还是得考虑引用值的问题
+// 还是得考虑引用值 共享的问题
 
 function createObj(o) {
   function F() {}
@@ -691,7 +691,7 @@ console.log(person2); // { name: 'John', age: 20 }
 
 ```js
 // 创建一个仅用于封装继承过程的函数，该函数在内部以某种形式来做增强对象，最后返回对象。
-// 难以复用
+// 跟盗用构造函数一样  难以复用
 function createObj(o) {
   var clone = Object.create(o);
   clone.sayName = function () {
@@ -735,7 +735,7 @@ Child.prototype = new F();
 let child = new Child('jack', 18);
 ```
 
-### ES6 class
+### `ES6 class`
 
 - 类本质上就是函数
 - 类中是严格模式
@@ -764,29 +764,32 @@ var child = new Child();
 - 子类 `prototype` 属性的 `__proto__`属性表示方法的继承，总是指向父类的 `prototype` 属性
   - `Child.prototype.__proto__ === Parent.prototype`
 
-
-
-## 构造函数 原型对象 实例对象
+> 判断继承
 
 ```js
+Object.getPrototypeOf(Child) === Parent // true
+```
+
+## 原型和原型链
+
+### 构造函数 原型对象 实例对象
+
+```js
+// 构造函数
 function Parent(name) {
   this.name = name;
 }
-Parent.prototype.getAge = function () {};
 
+// 实例对象
 const bob = new Parent('Bob');
-```
 
- - 构造函数 `Parent`
- - 原型对象 
-```js
+// 原型对象 
 Parent.prototype{
-  getAge: ƒ ()
 	constructor: ƒ Parent(name)
 	[[Prototype]]: Object
 }
 ```
- - 实例对象 `bob`
+
  - 每个构造函数都有一个原型对象 =>  `Parent.prototype`
  - 原型对象都包含一个指向构造函数的指针  => `constructor`
  - 实例都包含一个指向原型对象的内部指针  => `__proto__`
@@ -800,42 +803,28 @@ Parent.prototype.constructor === Parent
 
 // 实例对象的隐式原型 指向 原型对象
 bob.__proto__ === Parent.prototype
-```
 
-## 原型和原型链
 
-> 函数和类的 `prototype` 属性 是用 `new` 调用那个类或函数生成的所有对象的 `__proto__`
 
-对应名称：`prototype 原型` `__proto__ 原型链（链接点）`
+// ES5的方法,获得对象的原型（可以认为__proto__就是调用这个
+Object.getPrototypeOf(bob) === Parent.prototype
 
-从属关系
+// bob 上没有constructor 本就是从父上读取的
+bob.constructor === Parent.prototype.constructor
 
-- `prototype` -> 函数的一个属性: 对象 {}
-- `__proto__` -> 对象 Object 的一个属性: 对象
-- 对象的`__proto__`保存着(指向)该对象的构造函数的`prototype`
+Parent.prototype.__proto__ === Object.prototype
 
-- 构造函数通过 new 生成实例
-
-```js
-function Test() {}
-const test = new Test();
-
-Test.prototype === test.__proto__; // true
-Test.prototype.__proto__ === Object.prototype; // true
-Object.prototype.__proto__; // null
-Object.getPrototypeOf(Object.prototype); // null
-
-// prototype对象有一个constructor属性，默认指向prototype对象所在的构造函数
-Test.prototype.constructor === Test; //true
-
-// test.constructor -> 实例化test对象的构造函数
-test.constructor === Test; // true
-test.constructor === Test.prototype.constructor; // true
+Object.prototype.__proto__ // null
+Object.getPrototypeOf(Object.prototype) // null
 
 // constructor属性的作用是，可以得知某个实例对象，到底是哪一个构造函数产生的。
 
 // 修改原型对象时，一般要同时修改constructor属性的指向
 ```
+
+> 函数和类的 `prototype` 属性 是用 `new` 调用那个类或函数生成的所有对象的 `__proto__`
+
+对应名称：`prototype 原型` `__proto__ 原型链（链接点）`
 
 ### 原型链
 
@@ -906,7 +895,7 @@ var isMobile = 'ontouchstart' in document;
 test instanceof Test; //true
 ```
 
-
+### Demo
 
 ![image-20211004175142864](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211004175143.png)
 
@@ -931,7 +920,6 @@ class Husky extends Dog {
 }
 
 const husky = new Husky('husky', 2);
-console.log(husky);
 
 husky instanceof Husky
 husky instanceof Dog
@@ -945,9 +933,9 @@ husky instanceof Object
 typeof Husky // 'function'
 typeof Dog // 'function'
 
+// es6 两条继承
+Husky.__proto__ === Dog
 Husky.prototype.__proto__ === Dog.prototype
-
-Object.prototype.__proto__ === null
 
 `hasOwnProperty()` 判断是否是自己的属性
 husky.hasOwnProperty('name') // true

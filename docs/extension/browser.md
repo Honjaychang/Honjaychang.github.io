@@ -1,6 +1,33 @@
-# Browser
+# 浏览器相关
 
-## 运行环境
+## 浏览器输入网址到页面渲染全过程
+
+![DNS域名解析过程1](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211022223141.png)
+
+- DNS 解析：域名解析为 IP 地址
+  - 缓存命中：浏览器缓存 => 操作系统缓存 => `LDNS` 本地区域名服务器缓存（学校机房 / `ISP`）
+  - `LDNS` => 根域名服务器   根域名服务器返回给 `LDNS` 一个所查询的主域名服务器 `gTLD` 地址
+  - `LDNS` => `gTLD` 发起请求   返回域名对应的 `Name Server` 域名服务器地址
+  - `LDNS` => `Name Server` 查询请求域名的对应IP地址  返回对应IP以及TTL
+  - `LDNS` 根据返回的TTL对IP进行缓存 并将结果返回给用户
+  - `TTL: time to live` 域名缓存的最长时间
+- TCP 连接：三次握手
+- 发送 HTTP 请求
+- 服务器处理请求 并 返回 HTTP 响应报文
+
+
+
+- 浏览器解析渲染页面：`HTML、CSS、JS`文件
+- `DOM Tree + CSSOM => Render Tree => JS => Render Tree`
+- 连接结束
+
+:::note Ref
+
+- [前端经典面试题: 从输入 URL 到页面加载发生了什么？](https://segmentfault.com/a/1190000006879700)
+- [经典面试题：从 URL 输入到页面展现到底发生什么？](https://blog.fundebug.com/2019/02/28/what-happens-from-url-to-webpage/)
+- [五月的仓颉 DNS域名解析过程](https://www.cnblogs.com/xrq730/p/4931418.html)
+
+:::
 
 ### 页面渲染
 
@@ -49,15 +76,20 @@ Bytes(字节) -> Characters(字符) -> Tokens(词) -> Nodes(节点) -> CSSOM(CSS
 
 - `<script src="a.js" defer></script>`
 - `defer`的作用是延迟脚本的执行，等到 DOM 加载生成后，再执行脚本
+  - 该脚本将在文档完成解析后，触发 `DOMContentLoaded` 事件前执行
 - 浏览器发现带有`defer`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本，等待网页解析完成再去执行脚本
 
 ##### `async`
 
 - `<script src="a.js" async></script>`
 - `async`的作用是使用另一个进程下载脚本，下载时不会阻塞渲染
-- 浏览器发现带有`async`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本。当脚本下载完成会暂停 HTML 解析，先去执行脚本，执行完再来解析 HTML。 这与`defer`有点差异
+- 浏览器发现带有`async`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本。当脚本下载完成会 **暂停 HTML 解析**，先去执行脚本，执行完再来解析 HTML。 这与`defer`有点差异
 - `async`会无视脚本顺序，优先执行先下载完成的
 - 当同时存在`defer async`的时候 `defer`将会失效
+
+> [图源](https://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html)
+
+![image-20211013215208374](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211013215208.png)
 
 > `window.onload` 和 `DOMContentLoaded`的区别
 
@@ -151,6 +183,9 @@ animate()
 
 - `CSS` 的加载与解析不会阻塞 `HTML` 的解析，他们是并行的。
   - 但会阻塞渲染树 `RenderTree` 的生成，也会阻塞界面的渲染！
+- `CSS` 不会阻塞 `DOM` 的解析，但会阻塞 `DOM` 渲染。
+- `JS` 会阻塞 `DOM` 的解析和渲染
+  - 浏览器需要等`css|js`都解析完成之后才会执行渲染
 - 媒体资源 (如:图片音视频等) 的加载不会阻塞HTML的解析 所以他们可以并行加载
 
 
@@ -288,175 +323,72 @@ for (let i = 0; i < length; i++) {
   - 返回完整页面 就利于 SEO 优化
   - SSR 强在首屏渲染。而 CSR 强在用户和页面多交互的场景
 
-## 安全
-
-### `XSS` 跨站脚本攻击
-
-#### 攻击
-
-> 反射型`XSS`
-
-- 反射型`XSS`，非持久化，需要欺骗用户自己去点击链接才能触发`XSS`代码（服务器中没有这样的页面和内容），一般容易出现在搜索页面。
-
-> 存储型`XSS`
-
-一个博客网站，我发表一篇博客，其中嵌入`<script>`脚本，脚本内容：获取`cookie`，发送到我的服务器（服务器配合跨域）。发布这篇博客，有人查看它，我轻松收割访问者的`cookie`。
-
-#### 预防
-
-> 转译字符
-
-- 前端要替换，后端也要替换，都做总不会有错
-- `https://www.npmjs.com/package/xss`
-
-```js
-function escape(str) {
-  str = str.replace(/&/g, '&amp;');
-  str = str.replace(/</g, '&lt;');
-  str = str.replace(/>/g, '&gt;');
-  str = str.replace(/"/g, '&quto;');
-  str = str.replace(/'/g, '&#39;');
-  str = str.replace(/`/g, '&#96;');
-  str = str.replace(/\//g, '&#x2F;');
-  return str;
-}
-```
-
-> `HttpOnly`
-
-- 禁止通过`document.cookie`的方式获取`cookies`
-
-> 设置白名单或者黑名单
-
-- 对于富文本编辑器 建议使用 白名单
-
-> `csp`
-
-- `Content Security Policy` 内容安全策略
-- 实质：白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行
-
-如何启用`CSP`
-
-- 通过 HTTP 头信息的`Content-Security-Policy`的字段
-
-```js
-Content-Security-Policy: script-src 'self'; object-src 'none';
-style-src cdn.example.org third-party.org; child-src https:
-```
-
-- 通过网页的`<meta>`标签
-
-```js
-<meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none'; style-src cdn.example.org third-party.org; child-src https:">
-```
-
-- 如上设置
-  - 脚本：只信任当前域名
-  - `<object>`标签：不信任任何 URL，即不加载任何资源
-  - 样式表：只信任`cdn.example.org`和`third-party.org`
-  - 框架 `(frame)`：必须使用`HTTPS`协议加载
-  - 其他资源：没有限制
-
-### `CSRF` 跨站请求伪造
-
-#### 攻击
-
-原理： 诱导用户打开黑客的网站，在黑客的网站中，利用用户登录状态发起跨站点请求。
-
-1. 浏览器向网站 A 发起通信请求
-2. 网站 A 验证通过，建立了通信连接，在浏览器存了 A 的 cookie
-3. 浏览器在未关闭 A 的连接下访问网站 B
-4. 网站 B 含有恶意请求代码，向网站 A 发起请求
-5. 浏览器根据 B 发起的请求并且携带 A 的 cookie 访问 A
-6. 网站 A 验证 cookie 并且响应了这个请求
-
-网站 B 就通过盗用保存在客户端的 cookie，以客户端的身份来访问网站 A，以客户端身份进行一些非法操作。
-
-```js
-你正在购物，看中了某个商品，商品id是100
-付费接口是xxx.com/pay?id=100，但没有任何验证
-我是攻击者，我看中了一个商品，id是200
-
-我向你发送一封电子邮件，邮件标题很吸引人
-但邮件正文隐藏着<img src=xxx.com/pay?id=200/>
-你一查看邮件，就帮我购买了id是200的商品
-```
-
-#### 预防
-
-> `SameSite`
-
-- 对 `Cookie` 设置 `SameSite` 属性。表示 `Cookie` 不随着跨域请求发送，可以很大程度减少 `CSRF` 的攻击，但是存在兼容性问题。
-
-  - `Strict`：所有从当前域发送出来的非同域请求都不会带上`cookie`
-
-  - `Lax`：就是在 GET 方式提交表单时会携带`cookie，post、iframe/img`等标签加载时不会携带`cookie`。
-  - `None`：关闭`SameSite`，不过，前提是必须同时设置`Secure`属性`(Cookie 只能通过 HTTPS 协议发送)`，否则无效。
-
-```js
-Set-Cookie: CookieName=CookieValue; SameSite=Strict;
-//这个规则过于严格，可能造成非常不好的用户体验。
-//比如，当前网页有一个 GitHub 链接，用户点击跳转就不会带有 GitHub 的 Cookie，跳转过去总是未登陆状态。
-
-Set-Cookie: CookieName=CookieValue; SameSite=Lax;
-//Lax规则稍稍放宽，大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。
-
-Set-Cookie: widget_session=abc123; SameSite=None; Secure
-```
-
-> 验证 `HTTP Referer` 字段
-
-- `HTTP Referer`是`header`的一部分，当浏览器向 web 服务器发送请求时，一般会带上`Referer`信息告诉服务器是从哪个页面链接过来的，服务器籍此可以获得一些信息用于处理。可以通过检查请求的来源来防御`CSRF`攻击。正常请求的`referer`具有一定规律，如在提交表单的`referer`必定是在该页面发起的请求。所以通过检查`http`包头`referer`的值是不是这个页面，来判断是不是`CSRF`攻击。
-- `Refer` 可能被伪造
-
-> 在请求地址中添加 `token` 并验证
-
-- `token` 请求拦截 验证是否合法
-
-- 使用 `post` 接口
-- 增加验证，例如密码、短信验证码、指纹等
-
-### `sql` 注入
-
-> 权限最小化
-
-- 严格限制 Web 应用的数据库的操作权限，给此用户提供仅仅能够满足其工作的最低权限，从而最大限度的减少注入攻击对数据库的危害。
-
-> 正则匹配 字符转义
-
-- `const reg = /select|update|delete|exec|count|'|"|=|;|>|<|%/i;`
-
-### 点击劫持
-
-- 通过覆盖不可见的框架误导受害者点击
-  - 使用一个透明的`iframe`，覆盖在一个网页上，诱使用户在该页面上进行操作
-  - 使用一张图片覆盖在网页，遮挡网页原有位置的含义
-
-使用 HTTP 头 `X-Frame-Options` 进行攻击防御这个
-
-- `deny`：表示该页面不允许在 `frame` 中展示，即便是在相同域名的页面中嵌套也不允许
-- `sameorigin`：表示该页面可以在相同域名页面的 `frame` 中展示
-- `allow-form url`：表示该页面可以在指定来源的 `frame` 中展示
-
-:::note Ref
-
-- [前端安全](https://zhuanlan.zhihu.com/p/83865185)
-- [Content Security Policy 入门教程](http://www.ruanyifeng.com/blog/2016/09/csp.html)
-- [一、web 安全（xss/csrf）简单攻击原理和防御方案（理论篇）](https://juejin.cn/post/6951571103953190925)
-
-:::
-
 
 
 ## 存储
 
-### `cookie localStorage sessionStorage` 区别
+:::note Ref
+
+- [HTTP cookies 详解](https://www.kancloud.cn/kancloud/http-cookies-explained/48333)
+- [浏览器系列之 Cookie 和 SameSite 属性](https://github.com/mqyqingfeng/Blog/issues/157)
+
+:::
+
+### `cookie`
+
+> 如何设置`cookie` 
+
+- 客户端发送 HTTP 请求到服务器
+- 当服务器收到 HTTP 请求时，在响应头里面添加一个 `Set-Cookie` 字段
+- 浏览器收到响应后保存下 `Cookie`
+- 之后对该服务器每一次请求中都通过 `Cookie` 字段将 `Cookie` 信息发送给服务器
+
+- `cookie`的编码方式：`encodeURI()`
+
+#### 属性
+
+```json
+Set-Cookie: <cookie-name>=<cookie-value>; Expires=<date>; Max-Age=<non-zero-digit>; 
+Domain=<domain-value>; Path=<path-value>; Secure; HttpOnly; SameSite=Strict
+```
+
+- `name`:  `key-value` 键值对
+- `Expires`: `cookie` 的最长有效时间
+  - 会话性 `cookie`: `Expires` 属性缺省时，值保存在客户端内存中，并在用户关闭浏览器时失效
+  - 持久性 `cookie`，保存在用户的硬盘中，直至过期或者清除 `Cookie`
+- `Max-Age`: `cookie` 生成后失效的秒数
+  - `Expires` 和 `Max-Age` 都存在，`Max-Age` 优先级更高
+- `Domain`: 指定了 `cookie` 可以送达的主机名
+  - 如淘宝设置 `Domain = .taobao.com`，这样无论是 `a.taobao.com` 还是 `b.taobao.com` 都可以使用 `cookie`
+
+> 通过设置`document.domain`使得二级域名共享`cookie` 解决跨域问题
+
+- `Path`: 可以限制当前`cookie`只属于某个路径下
+  - `Domain` 和 `Path` 标识共同定义了 `cookie` 的作用域：即 `cookie` 应该发送给哪些 URL
+- `Secure`：只允许在 `https` 下传输 以免被 窃取 或 篡改
+- `HttpOnly`: 使得不能被客户端更改访问，无法通过`js`脚本读取到该`cookie`的信息。但还是能通过 `Application`中手动修改`cookie`，所以只是在一定程度上可以防止`xss`攻击，并不是绝对的安全
+- `SameSite`: 让 `cookie` 在跨站请求时不会被发送，从而可以阻止跨站请求伪造攻击`CSRF`
+  - `Strict`: 浏览器将只发送相同站点请求的 `cookie` 完全一致才可以
+  - `Lax`: 允许部分第三方请求携带 `cookie`
+  - `None`: 无论是否 **跨站** 都会发送 `cookie`
+
+#### 作用
+
+- 会话状态管理（如用户登录状态、购物车、游戏分数或其它需要记录的信息）
+- 个性化设置（如用户自定义设置、主题等）
+- 浏览器行为跟踪（如跟踪分析用户行为等）
+
+#### 缺点
+
+可以从大小、安全、增加请求大小等方面回答
+
+### 三者区别
 
 - 容量
 - API 易用性
 - 是否跟随`http`请求发送出去
 
-##### 比较`cookie、localStorage、sessionStorage`
+> 比较`cookie、localStorage、sessionStorage`
 
 相同点：都是存储数据，存储在 web 端，并且都是同源
 
@@ -470,12 +402,10 @@ Set-Cookie: widget_session=abc123; SameSite=None; Secure
   - `cookie` 有过期时间
 - `cookie` 和`localStorage`都可以支持多窗口共享(同源策略)，而`session`不支持多窗口共享。但是都支持 a 链接跳转的新窗口
 
-##### API
+#### API
 
 - `cookie:` 可用`document.cookie = '...'`来修改，但一次只能赋值一个且同一个 key 会覆盖，不同的 key 是追加的过程。
 - `localStorage sessionStorage:` API 简易使用`setItem getItem`
-
-#### 方法详解
 
 - `setItem(key, value)`设置存储内容
 
@@ -489,60 +419,101 @@ Set-Cookie: widget_session=abc123; SameSite=None; Secure
 
 - `length`存储的数据的个数
 
-#### 关于`cookie`
 
-- `cookie`的编码方式：`encodeURI()`
 
-#### cookie 有哪些字段可以设置
-
-- [HTTP cookies 详解](https://www.kancloud.cn/kancloud/http-cookies-explained/48333)
-- `Set-Cookie: value[; expires=date][; domain=domain][; path=path][; secure]`
-- `Set-Cookie: name=Nicholas; expires=Sat, 02 May 2021 23:38:25 GMT domain=nczonline.net; path=/blog; secure`
-  - `secure`：只允许在 https 下传输
-  - `Max-age`: cookie 生成后失效的秒数
-  - `expire`: cookie 的最长有效时间，若不设置则 cookie 生命期与会话期相同
-- `document.cookie="name=Nicholas;domain=nczonline.net;path=/";`
-- 通过给`cookie`设置`http-only`属性，使得不能被客户端更改访问，无法通过`js`脚本读取到该`cookie`的信息。但还是能通过 `Application`中手动修改`cookie`，所以只是在一定程度上可以防止`xss`攻击，并不是绝对的安全。
-- `cookie`数据有路径`path`的概念，可以限制当前`cookie`只属于某个路径下
-
-#### cookie 与 session
-
-- `cookie`数据存放在客户的浏览器上，`session`数据放在服务器上
-- `cookie`在`http`下是明文传输的，不是很安全。别人可以分析存放在本地的`cookie`并进行`cookie`欺骗
-  考虑到安全应当使用`session`。
-- `session`的运行依赖`sessionId`，而`sessionId`又保存在`cookie`中，所以如果禁用的`cookie`，`session`也是不能用的，不过硬要用也可以，可以把`sessionId`保存在`url`中
-- `session`会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能，考虑到减轻服务器性能方面，应当使用`cookie`
-- 单个`cookie`保存的数据不能超过 4K，很多浏览器都限制一个站点最多保存 20 个`cookie`
-
-#### localstorage 存满了怎么办？
-
-- 划分域名：各域名下的存储空间由各业务组统一规划使用
-- 跨页面传数据：考虑单页应用、优先采用 url 传输数据
-- 最后兜底方案：清掉别人的存储
-
-- `cookie` 的跨域问题
-  - 存在，`cookie`是跟域名绑定的；可以通过二级域名来解决跨域问题
-
-## 前端登陆鉴权
-
-- [前端登录](https://juejin.cn/post/6845166891393089544)
-- [前端鉴权：cookie、session、token、jwt、单点登录](https://juejin.cn/post/6898630134530752520)
+### `IndexDB`
 
 
 
-```js
-采用https 或者 代码层面也可以做安全检测，比如ip地址发生变化，MAC地址发生变化等等，可以要求重新登录
-
-a、在存储的时候把 token 进行对称加密存储，用时解开。
-b、将请求 URL、时间戳、token 三者进行合并加盐签名，服务端校验有效性。
-c、HTTPS 对 URL 进行判断。
-
-获取的token加密后存储 解密后 头部携带
-```
 
 
+## HTTP 缓存策略
 
-内容安全策略 csp
+![image-20211004094906556](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211022223403.png)
 
-- `Content Security Policy` 内容安全策略
-- 实质：白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行
+#### 浏览器的三级缓存
+
+- 内存 => 磁盘 => 网络请求
+
+#### 强制缓存
+
+- 在过期时间内，未被主动清除 都不会请求服务器 而使用强制缓存 => 协商缓存
+
+- `200 from disk cache` `200 from memory cache`
+
+##### `cache-control`
+
+- `max-age`：浏览器可以接收生存期不大于指定时间（秒）的响应
+- `no-cache`：不用强制缓存，让服务端缓存
+- `no-store`：不用强制缓存，也不让服务端缓存
+- `private`：允许终端用户
+- `public`：允许中间代理
+
+##### `Expires`
+
+- 同为控制缓存过期。如果 `cache-control` 与 `expires` 同时存在的话，`cache-control` 的优先级高于`expires`
+
+#### 协商缓存（对比缓存）
+
+- 浏览器和服务器协商，每次都需要和服务器通信
+- 第一次请求时，服务器会返回资源和一个资源的缓存标识
+- 第二次请求时，浏览器会先将缓存标识发给服务器 然后服务器对标识进行匹配
+  - 不匹配 => 资源有更新 => 服务器返回新资源和新的缓存标识
+  - 匹配 => 资源未更改 => 返回 304 状态码 读取本地浏览器缓存
+
+> `200 from cache` `304 Not Modified`
+
+- `200 OK from cache` 不向服务器发送请求，直接使用本地缓存文件
+- `304 Not Modified` 则向服务器询问，若服务器认为浏览器的缓存版本还可用，那么便会返回304
+
+> 服务端如何判断缓存失效
+
+##### `Last-Modified`
+
+- `Last-Modified` 响应资源的最后修改时间	对应 `If-Modified-Since`
+- 只能精确到秒级		配合 `cache-control` 使用
+
+##### `Etag`
+
+- `Etag`是服务器响应请求时，返回当前资源文件的一个唯一标识(类似指纹 由服务器生成)		对应 `If-None-Match`
+- 同时存在 会优先使用 `Etag`
+
+主要解决`Last-Modified` 存在的问题
+
+- `Last-Modified` 只能精确到秒级，如果1秒内被多次修改无法获取精确时间
+- 文件定期生成，但文件内容不变，会导致`Last-Modified`变化，而无法使用缓存  此时使用 `Etag` 会更合适
+- 服务器时间不一致的情况
+
+##### 浏览器加载`JS`文件有缓存
+
+- 浏览器加载 js 文件是根据路径加载，首先根据路径在缓存里查找
+- 解决办法：打包时加一些哈希值 or 版本号
+
+:::note Ref
+
+- [js 浏览器缓存机制](https://blog.csdn.net/i13738612458/article/details/80383390?utm_medium=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control&dist_request_id=&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~BlogCommendFromMachineLearnPai2~default-1.control)
+- [浏览器缓存带来的前端项目更新问题及解决方法](https://blog.csdn.net/feiyu_may/article/details/88376945)
+
+:::
+
+##### 刷新操作对缓存的影响
+
+- 正常操作:
+  - 地址栏输入`url`，跳转链接，前进后退等
+  - 强制缓存有效，协商缓存有效
+- 手动刷新:
+  - `F5`，点击刷新按钮，右击菜单刷新
+  - 强制缓存失效，协商缓存有效
+- 强制刷新:
+  - `ctrl + F5`
+  - 强制缓存失效，协商缓存失效
+
+##### 不能被缓存的请求
+
+- HTTP信息头中包含`Cache-Control:no-cache | max-age = 0`，等告诉浏览器不用缓存的请求
+- 需要根据`Cookie`，认证信息等决定输入内容的动态请求是不能被缓存的
+- 经过`HTTPS`安全加密的请求
+- POST请求无法被缓存
+- HTTP响应头中不包含`Last-Modified/Etag`，也不包含`Cache-Control/Expires`的请求无法被缓存
+
+## 

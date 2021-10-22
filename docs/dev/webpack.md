@@ -72,7 +72,34 @@ module.exports = {
   - `css-loader` 导入 `CSS` 模块，对 `CSS` 代码进行编译处理
   -  `style-loader` 创建 `style` 标签，把 `CSS` 内容写入标签
   - `css 比 style loader 优先执行 但是书写顺序 style写在前面`
-- 
+
+
+
+
+
+:::note Ref
+
+- [浅谈 webpack 性能优化（内附巨详细 webpack 学习笔记）](https://segmentfault.com/a/1190000022561279)
+
+:::
+
+## `webpack`性能优化
+
+### 使用新版本
+
+### 体积优化
+
+js压缩
+
+css压缩
+
+图片压缩
+
+### 速度优化
+
+
+
+
 
 ## 手动搭建项目
 

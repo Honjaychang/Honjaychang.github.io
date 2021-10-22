@@ -6,7 +6,7 @@
 
 :::
 
-![tree](https://cdn.jsdelivr.net/gh/honjaychang/bp/algo/dfsTree.png)
+![tree](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211019221959.png)
 
 [在线绘图](http://mshang.ca/syntree/) `[1 [2  [4] [5 [6 [8][x]] [7] ] ] [3 ]`    `x 不存在 只是代表8 是左节点`
 

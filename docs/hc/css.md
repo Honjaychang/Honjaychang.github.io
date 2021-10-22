@@ -11,8 +11,10 @@
 - css 盒模型本质是一个盒子，它包括`margin、border、padding、content`
 - 盒模型 `box-sizing`
   - 标准盒子模型 `box-sizing:content-box`
+    - `width`和`height`即为其内容区域的`width`和`height`
     - `content`不包括其他部分
   - `ie` 盒子模型 `box-sizing:border-box`
+    - `width`和`height`变成了其相对应的`content`+`padding`+`border`
     - `content`部分包括`padding border`
 
 #### 盒模型宽度计算
@@ -21,9 +23,16 @@
 
 #### margin 纵向重叠的问题
 
-- 相邻元素的`margin-top`和 `margin-bottom `会发生重叠
+> `border-box` 并不能解决这个问题 笔试没复习居然瞎写了
 
+- 相邻元素的`margin-top`和 `margin-bottom `会发生重叠
 - 空白内容的`<p></p>`也会重叠
+
+```css
+margin-top: 10px;        /* 绝对长度 */
+margin-top: 1em;         /*相对于字体大小 */
+margin-top: 5%;          /*相对于最相邻的父级元素块（block）的宽度*/
+```
 
 #### margin 负值的问题
 
@@ -132,15 +141,14 @@
 ```css
 .wrap {
   display: flex;
+  height: 200px;
 }
 .left {
-  height: 200px;
   background: purple;
   flex: 0 0 200px;
 }
 .right {
   background: skyblue;
-  height: 200px;
   flex: 1;
 }
 ```
@@ -774,15 +782,15 @@ MouseEvent.clientX
 
 ##### Vue 的 v-model 双向绑定
 
-##### 选择器
+## 选择器
 
 - 权重：`!important > id > class = 属性 > 标签 > * `
 
-##### 组合选择符
+### 组合选择符
 
 通配选择符 `*`
 
-- 后代选择器 ` `
+- 后代选择器 `  `
 - 子元素选择器 `>`
 - 相邻兄弟选择器 `+`
 - 后续兄弟选择器 `~`
@@ -829,6 +837,12 @@ if (
   // 支持 sticky
 }
 ```
+
+- `absolute` 生成绝对定位元素，相对于`static`定位以外的第一个父元素定位
+- `fixed` 生成绝对定位元素，相对于浏览器窗口进行定位
+- `relative` 生成相对定位元素，相对于其正常位置定位
+  - `relative`元素以它原来的位置为基准偏移，在其移动后，原来的位置仍然占据空间
+- 绝对定位和固定定位会脱离标准文档流 相对定位不会
 
 :::note Ref
 

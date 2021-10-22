@@ -301,6 +301,7 @@ response.setHeader('Access-Control-Allow-Credentials', 'true');
 
 - `JSON with Padding => <script>` `AJAX => XML`
 - `JSONP` 缺点：只限于`get`请求 但是兼容性好
+  - 因为`script` 标签不能进行`post`请求
 - 封装`jsonp`的核心就在于我们监听`window`上的`jsonp`进行回调时的名称
 
 ```js
@@ -425,3 +426,224 @@ window.addEventListener("message", receiveMessageFromIndex, false);
 - [使用 postMessage 解决 iframe 跨域通信问题](https://juejin.cn/post/6844903477018116104)
 
 :::
+
+
+
+## 登陆验证
+
+`cookie` 是存储在浏览器的小段文本，会在浏览器每次向同一服务器再发起请求时被携带并发送到服务 器上。我们可以把状态信息放在`cookie`里，带给服务器。
+
+`session` 是存储在服务器的用户数据。浏览器第一次向服务器发起请求时，服务器会为当前会话创建一个 `session`，并且把对应的 `session-id` 写入 `cookie` 中，用来标识 `session`。此后，每次用户的请求都会携带 一个包含了 `session-id` 的 `cookie`，服务器解析出了 `session-id`，便能定位到用户的用户信息。
+
+
+
+## 前端登陆鉴权
+
+- [前端登录](https://juejin.cn/post/6845166891393089544)
+- [前端鉴权：cookie、session、token、jwt、单点登录](https://juejin.cn/post/6898630134530752520)
+- [【第2397期】关于鉴权，看懂这篇就够了](https://mp.weixin.qq.com/s/rBzDQBL0FgnvwpWrCSSJmw)
+
+## 安全
+
+### `XSS` 跨站脚本攻击
+
+#### 攻击
+
+> 反射型`XSS`
+
+- 反射型`XSS`，非持久化，需要欺骗用户自己去点击链接才能触发`XSS`代码（服务器中没有这样的页面和内容），一般容易出现在搜索页面。
+
+> 存储型`XSS`
+
+一个博客网站，我发表一篇博客，其中嵌入`<script>`脚本，脚本内容：获取`cookie`，发送到我的服务器（服务器配合跨域）。发布这篇博客，有人查看它，我轻松收割访问者的`cookie`。
+
+#### 预防
+
+> 转译字符
+
+- 前端要替换，后端也要替换，都做总不会有错
+- `https://www.npmjs.com/package/xss`
+
+```js
+function escape(str) {
+  str = str.replace(/&/g, '&amp;');
+  str = str.replace(/</g, '&lt;');
+  str = str.replace(/>/g, '&gt;');
+  str = str.replace(/"/g, '&quto;');
+  str = str.replace(/'/g, '&#39;');
+  str = str.replace(/`/g, '&#96;');
+  str = str.replace(/\//g, '&#x2F;');
+  return str;
+}
+```
+
+> `HttpOnly`
+
+- 禁止通过`document.cookie`的方式获取`cookies`
+
+> 设置白名单或者黑名单
+
+- 对于富文本编辑器 建议使用 白名单
+
+> `csp`
+
+- `Content Security Policy` 内容安全策略
+- 实质：白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行
+
+如何启用`CSP`
+
+- 通过 HTTP 头信息的`Content-Security-Policy`的字段
+
+```js
+Content-Security-Policy: script-src 'self'; object-src 'none';
+style-src cdn.example.org third-party.org; child-src https:
+```
+
+- 通过网页的`<meta>`标签
+
+```js
+<meta http-equiv="Content-Security-Policy" content="script-src 'self'; object-src 'none'; style-src cdn.example.org third-party.org; child-src https:">
+```
+
+- 如上设置
+  - 脚本：只信任当前域名
+  - `<object>`标签：不信任任何 URL，即不加载任何资源
+  - 样式表：只信任`cdn.example.org`和`third-party.org`
+  - 框架 `(frame)`：必须使用`HTTPS`协议加载
+  - 其他资源：没有限制
+
+### `CSRF` 跨站请求伪造
+
+#### 攻击
+
+原理： 诱导用户打开黑客的网站，在黑客的网站中，利用用户登录状态发起跨站点请求。
+
+1. 浏览器向网站 A 发起通信请求
+2. 网站 A 验证通过，建立了通信连接，在浏览器存了 A 的 cookie
+3. 浏览器在未关闭 A 的连接下访问网站 B
+4. 网站 B 含有恶意请求代码，向网站 A 发起请求
+5. 浏览器根据 B 发起的请求并且携带 A 的 cookie 访问 A
+6. 网站 A 验证 cookie 并且响应了这个请求
+
+网站 B 就通过盗用保存在客户端的 cookie，以客户端的身份来访问网站 A，以客户端身份进行一些非法操作。
+
+```js
+你正在购物，看中了某个商品，商品id是100
+付费接口是xxx.com/pay?id=100，但没有任何验证
+我是攻击者，我看中了一个商品，id是200
+
+我向你发送一封电子邮件，邮件标题很吸引人
+但邮件正文隐藏着<img src=xxx.com/pay?id=200/>
+你一查看邮件，就帮我购买了id是200的商品
+```
+
+#### 预防
+
+> `SameSite`
+
+- 对 `Cookie` 设置 `SameSite` 属性。表示 `Cookie` 不随着跨域请求发送，可以很大程度减少 `CSRF` 的攻击，但是存在兼容性问题。
+
+  - `Strict`：所有从当前域发送出来的非同域请求都不会带上`cookie`
+
+  - `Lax`：就是在 GET 方式提交表单时会携带`cookie，post、iframe/img`等标签加载时不会携带`cookie`。
+  - `None`：关闭`SameSite`，不过，前提是必须同时设置`Secure`属性`(Cookie 只能通过 HTTPS 协议发送)`，否则无效。
+
+```js
+Set-Cookie: CookieName=CookieValue; SameSite=Strict;
+//这个规则过于严格，可能造成非常不好的用户体验。
+//比如，当前网页有一个 GitHub 链接，用户点击跳转就不会带有 GitHub 的 Cookie，跳转过去总是未登陆状态。
+
+Set-Cookie: CookieName=CookieValue; SameSite=Lax;
+//Lax规则稍稍放宽，大多数情况也是不发送第三方 Cookie，但是导航到目标网址的 Get 请求除外。
+
+Set-Cookie: widget_session=abc123; SameSite=None; Secure
+```
+
+> 验证 `HTTP Referer` 字段
+
+- `HTTP Referer`是`header`的一部分，当浏览器向 web 服务器发送请求时，一般会带上`Referer`信息告诉服务器是从哪个页面链接过来的，服务器籍此可以获得一些信息用于处理。可以通过检查请求的来源来防御`CSRF`攻击。正常请求的`referer`具有一定规律，如在提交表单的`referer`必定是在该页面发起的请求。所以通过检查`http`包头`referer`的值是不是这个页面，来判断是不是`CSRF`攻击。
+- `Refer` 可能被伪造
+
+> 在请求地址中添加 `token` 并验证
+
+- `token` 请求拦截 验证是否合法
+
+- 使用 `post` 接口
+- 增加验证，例如密码、短信验证码、指纹等
+
+### `sql` 注入
+
+> 权限最小化
+
+- 严格限制 Web 应用的数据库的操作权限，给此用户提供仅仅能够满足其工作的最低权限，从而最大限度的减少注入攻击对数据库的危害。
+
+> 正则匹配 字符转义
+
+- `const reg = /select|update|delete|exec|count|'|"|=|;|>|<|%/i;`
+
+### 点击劫持
+
+- 通过覆盖不可见的框架误导受害者点击
+  - 使用一个透明的`iframe`，覆盖在一个网页上，诱使用户在该页面上进行操作
+  - 使用一张图片覆盖在网页，遮挡网页原有位置的含义
+
+使用 HTTP 头 `X-Frame-Options` 进行攻击防御这个
+
+- `deny`：表示该页面不允许在 `frame` 中展示，即便是在相同域名的页面中嵌套也不允许
+- `sameorigin`：表示该页面可以在相同域名页面的 `frame` 中展示
+- `allow-form url`：表示该页面可以在指定来源的 `frame` 中展示
+
+:::note Ref
+
+- [前端安全](https://zhuanlan.zhihu.com/p/83865185)
+- [Content Security Policy 入门教程](http://www.ruanyifeng.com/blog/2016/09/csp.html)
+- [一、web 安全（xss/csrf）简单攻击原理和防御方案（理论篇）](https://juejin.cn/post/6951571103953190925)
+
+:::
+
+
+
+
+
+```js
+采用https 或者 代码层面也可以做安全检测，比如ip地址发生变化，MAC地址发生变化等等，可以要求重新登录
+
+a、在存储的时候把 token 进行对称加密存储，用时解开。
+b、将请求 URL、时间戳、token 三者进行合并加盐签名，服务端校验有效性。
+c、HTTPS 对 URL 进行判断。
+
+获取的token加密后存储 解密后 头部携带
+```
+
+
+
+内容安全策略 csp
+
+- `Content Security Policy` 内容安全策略
+- 实质：白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行
+
+
+
+
+
+
+
+- [ajax请求携带cookie和自定义请求头header（跨域和同域）](https://blog.csdn.net/menghuanzhiming/article/details/102736312?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7Edefault-1.no_search_link)
+
+- ajax会自动带上同源的cookie，不会带上不同源的cookie
+- 可以通过**前端设置withCredentials为true， 后端设置Header**的方式让ajax自动带上不同源的cookie，但是这个属性对同源请求没有任何影响。会被自动忽略。
+
+```js
+ajax跨域请求下，ajax不会自动携带同源的cookie，需要通过前端配置相应参数才可以跨域携带同源cookie，后台配置相应参数才可以跨域返回同源cookie；
+前端参数：
+	withCredentials: true(发送Ajax时，Request header中会带上Cookie信息)
+后台参数：
+	（1）.Access-Control-Allow-Origin：设置允许跨域的配置， 响应头指定了该响应的资源是否被允许与给定的origin共享；
+		特别说明：配置了Access-Control-Allow-Credentials:true则不能把Access-Control-Allow-Origin设置为通配符*；
+	（2）.Access-Control-Allow-Credentials：响应头表示是否可以将对请求的响应暴露给页面（cookie）。返回true则可以，其他值均不可以。
+
+xhrFields: {
+        withCredentials: true
+    },
+```
+

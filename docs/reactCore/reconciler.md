@@ -6,13 +6,42 @@
 
 :::
 
+
+
+首先我们需要知道：
+
+DOM 引擎、JS 引擎 相互独立，但又工作在同一线程（主线程）
+JS 代码调用 DOM API 必须 挂起 JS 引擎、转换传入参数数据、激活 DOM 引擎，DOM 重绘后再转换可能有的返回值，最后激活 JS 引擎并继续执行若有频繁的 DOM API 调用，且浏览器厂商不做“批量处理”优化，
+引擎间切换的单位代价将迅速积累若其中有强制重绘的 DOM API 调用，重新计算布局、重新绘制图像会引起更大的性能消耗。
+
+其次是 VDOM 和真实 DOM 的区别和优化：
+
+1. 虚拟 DOM 不会立马进行排版与重绘操作
+2. 虚拟 DOM 进行频繁修改，然后一次性比较并修改真实 DOM 中需要改的部分，最后在真实 DOM 中进行排版与重绘，减少过多DOM节点排版与重绘损耗
+3. 虚拟 DOM 有效降低大面积真实 DOM 的重绘与排版，因为最终与真实 DOM 比较差异，可以只渲染局部
+
+
+
+## Diff 算法
+
+在 `beginWork` 环节中调用`reconcileChildren` 时。
+
+- 对于`mount`的组件，他会创建新的`子Fiber节点`
+- 对于`update`的组件，他会将当前组件与该组件在上次更新时对应的Fiber节点比较（也就是俗称的Diff算法），将比较的结果生成新Fiber节点。
+
+> 本质：比较当前的`React Element` 和 `current Fiber`   生成 `workInProgress Fiber`
+
+
+
+## Diff原则
+
 - 只对同层的子节点进行比较，不进行跨级节点比较
 
 - `Tree diff` 两颗树只会对同一层级的节点进行比较，不同层级的就算说相同节点的移动也会销毁重新创建
 - `component diff` 如果不是同一类型下的组件，则将该组件判断为 `dirty component`，从而替换整个组件下的所有子节点
 - `element diff` 处于同一层级的节点，拥有以下三种操作插入、移动、删除，同时如果某些节点只是在同级发生移位。允许开发者对同一层级的同组子节点，添加唯一`key`进行区分，提高性能优化。
 
-### Tree Diff
+### `Tree Diff`
 
 两棵树只会对同一层次的节点进行比较
 
@@ -20,13 +49,13 @@
 
 `create A -> create B -> create C  ->   delete A`
 
-### component diff
+### `Component diff`
 
 当 component D 改变为 component G 时，即使这两个 component 结构相似，一旦 React 判断 D 和 G 是不同类型的组件，就不会比较二者的结构，而是直接删除 component D，重新创建 component G 以及其子节点。
 
 ![img](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211011155559.png)
 
-### element diff
+### `Element diff`
 
 1. 当节点处于同一层级时，diff 提供了 3 种节点操作：插入、移动和删除。
 2. 对于同一层的同组子节点添加唯一 key 进行区分。

@@ -2,29 +2,34 @@
 
 :::note Ref
 
+- [冴羽的博客](https://github.com/mqyqingfeng/Blog)
 - [前端应该知道的 JavaScript 浮点数和大数的原理](https://zhuanlan.zhihu.com/p/66949640)
 
 :::
 
-##### `Number`:
 
-双精度存储
 
-- 使用 IEEE 754 双精度格式存储整数和浮点数
-  - 64 个`bit`位来存储 => **1 个符号位+11 个指数位+52 个尾数位**
-- 存储浮点值使用的内存空间是存储整数值的两倍
-- 科学计数法`3e6==>3000000`
-- 值的范围`Number.MIN_VALUE&&Number.MAX_VALUE` `isFinite()`来判断一个数是不是有限大
+### 浮点数精度问题
 
-#### 浮点数精度问题
+`ECMAScript` 中的 `Number` 类型使用 `IEEE754` 双精度格式存储整数和浮点数
+
+- 64 个`bit`位来存储 => **1 个符号位+11 个指数位+52 个尾数位**
 
 ```javascript
-//JS 的数字类型是浮点类型的，没有整型。
-console.log((1/3)===(1-2/3));
-> false  //避免使用浮点数进行计算 存在精度损失
+// JS 的数字类型是浮点类型的，没有整型。
+(1/3)===(1-2/3)
+// false  // 避免使用浮点数进行计算 存在精度损失
+
+// 浮点数转二进制计算
+
+0.1 用二进制表示就是 0.00011001100110011……
+在计算机存储下来时 就已经发生了精度丢失
+toFixed
 ```
 
 `BigInt`
+
+- 值的范围`Number.MIN_VALUE&&Number.MAX_VALUE` `isFinite()`来判断一个数是不是有限大
 
 ```js
 BigInt(10n);
@@ -32,8 +37,6 @@ let a = 10n;
 ```
 
 `Number`类型的数字和`BigInt`类型的数字不能混合计算
-
-`//可以用 var newarr = [...arr] / var newarr = newarr.concat(arr);`
 
 `typeof null` 底层 000
 
@@ -53,7 +56,7 @@ let a = 10n;
 
 - 三元表达式：`condition ? statement-if-true : statement-if-false;`
 
-#### `var let const`
+### `var let const`
 
 - 局部作用域：
   - `var` 函数作用域 `let、const` 声明的是块级作用域
@@ -63,7 +66,7 @@ let a = 10n;
   - `const` 声明一个只读的常量 在声明的时候必须被赋值
 - `var` 可以多次声明同一变量名，`let`不可以重复声明
 
-##### 暂时性死区
+#### 暂时性死区
 
 - 暂时性死区”（`temporal dead zone`，简称 TDZ）
 - 在代码块内，使用`let/const`命令声明变量之前，该变量都是不可用的
@@ -76,7 +79,7 @@ let x;
 typeof a; // undefined
 ```
 
-##### class 不能变量提升
+#### class 不能变量提升
 
 ```js
 const p = new Rectangle();
@@ -419,6 +422,8 @@ nihao`;
 let name = 'honjay';
 let msg = `nihao,${name}`;
 console.log(msg); //nihao,honjay
+
+`${condition ? :}` // 配合三元表达式
 ```
 
 #### 方法
@@ -510,7 +515,7 @@ sentence.charAt(index); //"q"
 var arr = [1, 2, 3, 'hello', null, true];
 ```
 
-#### `创建数组`
+### `创建数组`
 
 ```javascript
 // 字面值
@@ -526,7 +531,7 @@ var arr4 = Array.of(10, 11, 12);
 //如果创建的数组只有一个参数的时候用 arr1/arr4。其他两个代表的是数组的长度
 ```
 
-#### 判断变量是否数组
+> 判断变量是否数组
 
 ```js
 function isArray(arr) {
@@ -540,13 +545,13 @@ Object.prototype.toString().call();
 Array.isArray();
 ```
 
-#### 方法
+### 方法
 
 - 功能是什么？
 - 返回值是什么？
 - 是否会对原数组造成影响？
 
-##### 纯函数 非纯函数
+#### 纯函数 非纯函数
 
 ```js
 // 纯函数		不改变源数组		返回一个数组
@@ -576,7 +581,7 @@ Array.from( { length: 4 } );
 
 `Array.from(..)` 检查第一个参数是否为 `iterable`，如果是的话，就使用迭代器 来产生值并“复制”进入返回的数组
 
-##### `pop push unshift shift`
+#### `pop push unshift shift`
 
 - 栈方法：`push(), pop()` 在栈顶操作 => 数组尾部操作
 - 队列方法：`unshift(), shift()` 头部
@@ -597,7 +602,7 @@ console.log(arr.unshift(10), arr); // 向队列头部添加元素
 // 6 [ 10, 1, 2, 3, 4, 5 ] 返回unshift后arr的长度
 ```
 
-##### `slice splice`
+#### `slice splice`
 
 - `slice: 切片` `splice: 剪接`
 
@@ -625,7 +630,7 @@ console.log(arr.splice(1, 4, 'a', 'b', 'c'), arr);
 // [ 2, 3, 4, 5 ] [ 1, 'a', 'b', 'c' ]
 ```
 
-##### `split join fill concat`
+#### `split join fill concat`
 
 ```javascript
 const str = 'i am groot!'
@@ -638,7 +643,7 @@ arr.fill(value[, start[, end]]) // [start, end)
 arr.concat			//注意：concat()并没有修改数组，只是会返回一个新的数组
 ```
 
-##### `toString() valueOf()`
+#### `toString() valueOf()`
 
 - `valueOf()` 返回的还是数组本身。
 - `toString() ` 返回由数组中每个值的等效字符串拼接而成的一个逗号分隔的字符串
@@ -650,7 +655,7 @@ console.log(arr.toString()); // '1,2,3,4'
 console.log(arr.valueOf()); // [1, 2, 3, 4]
 ```
 
-##### `find findIndex indexOf includes`
+#### `find findIndex indexOf includes`
 
 - `find() => return first value || undefined`
   - 只能在`Array`中使用
@@ -677,7 +682,7 @@ var above5 = arr.includes(6); // false
 var below5 = arr.includes(3); // true
 ```
 
-##### `reverse sort`
+#### `reverse sort`
 
 - `sort()` 方法用**原地算法**对数组的元素进行排序，并返回数组
 - `arr.sort([compareFunction])  =>  用来指定按某种顺序进行排列的函数` 默认是按 `ASCII` 码排列的
@@ -719,7 +724,7 @@ arr2.sort() === arr2; // true
 arr1.sort() === arr2.sort(); // false
 ```
 
-##### `every() some()`
+#### `every() some()`
 
 - `every()` 检测数组中所有元素是否**都**符合指定条件 满足返回布尔值`true`
 
@@ -739,7 +744,7 @@ function checkPositive(arr) {
 checkPositive([1, 2, 3, -4, 5]); //true
 ```
 
-##### `map()`
+#### `map()`
 
 - `array.map(function(currentValue, index, arr), thisValue)`
 
@@ -751,7 +756,7 @@ var newArr = [55, 44, 66, 11].map(function (item, index, arr) {
 newArr = arr.map(item => item * 10); //[550, 440, 660, 110]
 ```
 
-##### `filter() `
+#### `filter() `
 
 `array.filter(function(currentValue, index, arr), thisValue)`
 
@@ -782,7 +787,7 @@ arr.filter(Boolean); // 移除所有的 ”false“ 类型元素
 // =>["undefined", 1]
 ```
 
-##### `reduce() `
+#### `reduce() `
 
 - 对于空数组是不会执行回调函数
 - 从左到右
@@ -807,9 +812,55 @@ newArr = arr.reduce((acc, cur) => acc + cur, 0)
 arr.reduceRight(callback(accumulator, currentValue[, index[, array]])[, initialValue])
 ```
 
+#### `FlatMap()`
 
+- `FlatMap` 和 `map` 的作用几乎是相同的，但是对于多维数组来说，会将原数组降维。可以将 `FlatMap` 看成是 `map` + `flatten` ，但是目前该函数在浏览器中还不支持。
 
-##### `Spread rest`
+```js
+[1, [2], 3].flatMap(v => v + 1);
+// -> [2, 3, 4]
+```
+
+如果想将一个多维数组彻底的降维，可以这样实现
+
+```js
+const flattenDeep = arr =>
+  Array.isArray(arr)
+    ? arr.reduce((a, b) => [...a, ...flattenDeep(b)], [])
+    : [arr];
+
+flattenDeep([1, [[2], [3, [4]], 5]]);
+```
+
+### 类数组
+
+- 类数组有`length`属性和索引元素，但不具有数组原型上的方法
+- `arguments`对象是所有（非箭头）函数中都可用的局部变量
+- `document.querySelectorAll('div')`
+
+> 类数组 转为 数组
+
+```js
+var arrayLike = {0: 'name', 1: 'age', 2: 'sex', length: 3 }
+
+// Array.prototype.slice.call()
+const args = Array.prototype.slice.call(arguments);
+const args = [].slice.call(arguments, 1); //相当于从第二项开始
+
+// splice
+const args = Array.prototype.splice.call(arguments, 0); 
+
+// Array.from()  ES2015
+const args = Array.from(arguments);
+
+// 扩展运算符
+const args = [...arguments];
+
+// concat
+Array.prototype.concat.apply([], arguments);
+```
+
+### `Spread rest`
 
 - `Spread Operator and Rest Parameters`
 - 两者都是 `... +` 变量/参数的形式
@@ -871,54 +922,51 @@ Array.prototype.slice.call(xxx) ==>  [...xxx]
 // 能将有length属性的对象转换为数组
 ```
 
-##### 类数组
+## 迭代器 & 生成器
 
-- 类数组有`length`属性和索引元素，但不具有数组原型上的方法
-- `arguments`对象是所有（非箭头）函数中都可用的局部变量
-- `document.querySelectorAll('div')`
+### 迭代器
 
-###### 类数组 转为 数组
+一个具有 `next()` 方法的对象，每次调用 `next()` 都会返回一个结果对象，该结果对象有两个属性，`value` 表示当前的值，`done` 表示遍历是否结束
 
-```js
-//可以通过如下方法转换为数组
+### 生成器
 
-// Array.prototype.slice.call()
-var args = Array.prototype.slice.call(arguments);
-var args = [].slice.call(arguments, 1); //相当于从第二项开始
-
-// Array.from()  ES2015
-const args = Array.from(arguments);
-
-// 扩展运算符
-const args = [...arguments];
-
-// concat
-Array.prototype.concat.apply([], arguments);
-```
-
-##### `FlatMap()`
-
-- `FlatMap` 和 `map` 的作用几乎是相同的，但是对于多维数组来说，会将原数组降维。可以将 `FlatMap` 看成是 `map` + `flatten` ，但是目前该函数在浏览器中还不支持。
+- 生成 / 返回一个迭代器
+- 调用 `Generator` 函数，会返回一个内部指针（即迭代器/遍历器 ），即执行它不会返回结果，返回的是指针对象
 
 ```js
-[1, [2], 3].flatMap(v => v + 1);
-// -> [2, 3, 4]
+const arr = [1, 2, 3];
+function* generator() {
+  for (let v of arr) {
+    yield v;
+  }
+}
+
+const iterator = generator(arr);
+console.log(iterator.next()); // {value: 1, done: false}
+console.log(iterator.next().value, iterator.next().done); // 2 false
+console.log(iterator.next()); // {value: 3, done: false}
+console.log(iterator.next()); // {value: undefined, done: true}
 ```
 
-如果想将一个多维数组彻底的降维，可以这样实现
+> 自己编写 `generator`
 
 ```js
-const flattenDeep = arr =>
-  Array.isArray(arr)
-    ? arr.reduce((a, b) => [...a, ...flattenDeep(b)], [])
-    : [arr];
-
-flattenDeep([1, [[2], [3, [4]], 5]]);
+function generator(arr) {
+  let nextIndex = 0;
+  return {
+    // 这里返回的是对象
+    next() {
+      return nextIndex < arr.length
+        ? { value: arr[nextIndex++], done: false }
+        : { value: undefined, done: true };
+    },
+  };
+}
 ```
 
-#### 循环 遍历 迭代
+### 遍历方法
 
-`forEach`
+#### `forEach`
 
 ```js
 arr.forEach((val, index, arr) => {
@@ -930,7 +978,9 @@ arr.forEach((val, index, arr) => {
 - `forEach()`返回值是`undefined`，不可以链式调用
 - 不适合写异步
 
-`for of`
+#### `for of`
+
+> 本质遍历的是对象的 `Symbol.iterator` 属性
 
 - 不能用于对象
 - `for...of`语句在可迭代对象（包括 `Array，Map，Set，String，TypedArray，arguments 对象`等等 （但是对象不行））上创建一个迭代循环，调用自定义迭代钩子，并为每个不同属性的值执行语句
@@ -964,7 +1014,7 @@ const square = num => {
 // for of 、 for in  普通for 都可以异步循环
 ```
 
-`for in`
+#### `for in`
 
 - `for...in`语句以任意顺序遍历一个对象的除 Symbol 以外的可枚举属性
 - `for-in`是为普通对象设计的，遍历得到字符串类型的键
@@ -999,7 +1049,6 @@ for (let key in arr) {
   console.log(key, arr[key]);
 }
 
-//
 
 // 原型上有 Symbol(Symbol.iterator): ƒ values()
 
@@ -1008,47 +1057,7 @@ for (let key in arr) {
 // for...of 语句遍历可迭代对象定义要迭代的数据。
 ```
 
-##### 生成器
-
-- 生成 / 返回一个迭代器
-- 调用 `Generator` 函数，会返回一个内部指针（即迭代器/遍历器 ），即执行它不会返回结果，返回的是指针对象
-
-```js
-const arr = [1, 2, 3];
-function* generator() {
-  for (let v of arr) {
-    yield v;
-  }
-}
-
-const iterator = generator(arr);
-console.log(iterator.next()); // {value: 1, done: false}
-console.log(iterator.next().value, iterator.next().done); // 2 false
-console.log(iterator.next()); // {value: 3, done: false}
-console.log(iterator.next()); // {value: undefined, done: true}
-```
-
-自己编写 `generator`
-
-```js
-function generator(arr) {
-  let nextIndex = 0;
-  return {
-    // 这里返回的是对象
-    next() {
-      return nextIndex < arr.length
-        ? { value: arr[nextIndex++], done: false }
-        : { value: undefined, done: true };
-    },
-  };
-}
-```
-
-## 单例内置对象
-
-#### Global
-
-##### `eval()`
+## `eval()`
 
 - 通过`eval()`定义的任何变量和函数都不会被提升
 - `eval(string)` `eval()` 函数会将传入的字符串当做 `JavaScript` 代码进行执行。
@@ -1061,11 +1070,11 @@ console.log(eval(new String('2 + 2'))); // 2 + 2
 console.log(eval('2 + 2') === eval('4')); //  true
 ```
 
-##### Global 对象属性
+## Global 对象属性
 
-##### window 对象
+### window 对象
 
-#### `Math`
+### `Math`
 
 ```javascript
 Math.PI;
@@ -1087,7 +1096,7 @@ Math.max.apply(null, [1, 2, 10]); //10
 Math.max(...[1, 2, 10]); //10
 ```
 
-#### `Date`
+### `Date`
 
 ```javascript
 Date.now(); // 获取当前时间毫秒数
@@ -1123,7 +1132,7 @@ let allFives = new Date(Date.UTC(2005, 4, 5, 17, 55, 55));
 return new Date().toLocaleDateString().split('/').join('-'); // 2021-3-14
 ```
 
-#### `Json`
+### `Json`
 
 - `JSON.stringify()`方法用于将一个值转为 `JSON` 字符串
 - `JSON.parse()`方法用于将 `JSON` 字符串转换成对应的值
@@ -1139,7 +1148,7 @@ JSON.parse(JSON.stringify(user));
 // => { name: 'A', age: 20 }
 ```
 
-##### `json`与`js对象`区别
+#### `json`与`js对象`区别
 
 ```javascript
 var obj = { a: 'hello', b: 'world' };
@@ -1151,20 +1160,39 @@ var json = '{"a":"hello","b":"world"}';
   - 对象中的 `value` 可以是任意的数据类型，包括函数
   - ` JSON` 中的 `value` 不能为函数或日期对象
 
-#### `Map & Set`
+## `Map & Set`
 
-- 应用场景：Set 用于数据重组，Map 用于数据储存
+> `Set` 无序不重复的集合
 
-- Set：
-  - 成员不能重复
-  - 只有键值没有键名，类似数组
-  - 可以遍历，方法有`add, delete, has`
-- Map:
-  - 本质上是健值对的集合，类似集合
-  - 可以遍历，可以跟各种数据格式转换
+- 成员不能重复
+- 只有键值没有键名，类似数组
+- 可以遍历，方法有`add, delete, has`
+
+```js
+var set = new Set([3, 1, 1, 1]);
+
+set.add(2); //{3,1,2}
+set.delete(3); // true {1,2}
+set.has(2); //是否包含某个元素
+set.size // 2
+set.clear()
+
+//遍历
+set.forEach(value => {
+  console.log(value);
+});
+
+const arr = [...new Set([3, 1, 2, 3, 4])];
+console.log(arr.length, arr[2]);
+// 4 2
+```
+
+> `Map` 数据储存 键值对
+
+- 本质上是健值对的集合，类似集合
+- 可以遍历，可以跟各种数据格式转换
 
 ```javascript
-//Map 键值对
 var map = new Map([
   ['tom', 100],
   ['jack', 90],
@@ -1191,34 +1219,45 @@ for (let [key, value] of map) {
 for (let item of map.entries()) {
   console.log(item[0], item[1]);
 }
-
-
-
-//Set无序不重复的集合
-var set = new Set([3, 1, 1, 1]);
-set.add(2); //{3,1,2}
-set.delete(3); // true {1,2}
-set.has(2); //是否包含某个元素
-set.size // 2
-set.clear()
-
-//遍历
-set.forEach(value => {
-  console.log(value);
-});
 ```
+
+> `WeakMap`
+
+- 只接受对象作为键名，并且对于对象的引用是**弱引用**
+
+##  `call apply bind`
+
+- `call` 和 `apply` 都是为了解决改变 `this` 的指向 
+- 传参方式不一样
+- `fn.call(this, p1, p2, p3)`
+- `fn.apply(this, [...arguments])`
 
 ```javascript
-const arr = [...new Set([3, 1, 2, 3, 4])];
-console.log(arr.length, arr[2]);
-// 4 2
+var emp = {
+  id: 1,
+  name: 'honjay',
+};
+
+function printInfo(dep1, dep2, dep3) {
+  console.log('info ' + this.name, dep1, dep2, dep3);
+}
+//使用call可以更改this指向
+printInfo.call(emp, 'WEB', 'IT', 'Office');
+printInfo.apply(emp, ['WEB', 'IT', 'Office']); //可以作为数组传入
+
+var empPrintInfo = printInfo.bind(emp, 'WEB', 'IT', 'Office'); 
+//返回绑定参数的新函数 用于后续执行
+empPrintInfo();
 ```
+
+- `bind` 多次绑定 只会生效一次（第一次
+- 当执行绑定函数时，`this`指向与形参在`bind`方法执行时已经确定了，无法改变
 
 ## 异常
 
 - `Error` 所有错误的父类型
 
-#### 类型
+### 类型
 
 - `ReferenceError`(引用错误)： 引用的变量不存在
 
@@ -1252,7 +1291,7 @@ let a = '1"
 // Uncaught SyntaxError: Invalid or unexpected token
 ```
 
-#### 捕获异常
+### 捕获异常
 
 - `try catch finally`
 
@@ -1274,7 +1313,7 @@ window.onerror = function (message, source, lineNum, colNum, error) {
 };
 ```
 
-#### 抛出异常
+### 抛出异常
 
 - `throw error`
 
@@ -1292,30 +1331,4 @@ try {
 }
 ```
 
-##  `call apply bind`
-
-- `call` 和 `apply` 都是为了解决改变 `this` 的指向 
-- 传参方式不一样
-- `fn.call(this, p1, p2, p3)`
-- `fn.apply(this, [...arguments])`
-
-```javascript
-var emp = {
-  id: 1,
-  name: 'honjay',
-};
-
-function printInfo(dep1, dep2, dep3) {
-  console.log('info ' + this.name, dep1, dep2, dep3);
-}
-//使用call可以更改this指向
-printInfo.call(emp, 'WEB', 'IT', 'Office');
-printInfo.apply(emp, ['WEB', 'IT', 'Office']); //可以作为数组传入
-
-var empPrintInfo = printInfo.bind(emp, 'WEB', 'IT', 'Office'); 
-//返回绑定参数的新函数 用于后续执行
-empPrintInfo();
-```
-
-- `bind` 多次绑定 只会生效一次（第一次
-- 当执行绑定函数时，`this`指向与形参在`bind`方法执行时已经确定了，无法改变
+##  

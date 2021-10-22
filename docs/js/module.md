@@ -201,14 +201,13 @@ export default {
 
 ## ES6与`CommonJs`区别
 
-- `CommonJs`输出的是一个值的拷贝	ES6输出的是一个值的引用
-- `CommonJs`模块是在运行时加载    ES6模块是在编译时加载
+- `CommonJS` 模块输出的是一个值的拷贝，`ES6` 模块输出的是值的引用
+- `CommonJS`  模块是运行时加载，`ES6`  模块是编译时加载
+- `CommonJS`  是单个值导出，`ES6 Module`可以导出多
+- `CommonJS`  是动态语法可以写在判断里，`ES6 Module` 静态语法只能写在顶层
+- `CommonJS`  的 `this` 是当前模块，`ES6 Module` 的 `this` 是 `undefined`
 
 
-
-
-
-对于 `CommonJS` 和 ES6 中的模块化的两者区别是：
 
 - 前者支持动态导入，也就是 `require(${path}/xx.js)`，后者目前不支持，但是已有提案
 - 前者是同步导入，因为用于服务端，文件都在本地，同步导入即使卡住主线程影响也不大。而后者是异步导入，因为用于浏览器，需要下载文件，如果也采用同步导入会对渲染有很大影响

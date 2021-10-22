@@ -14,7 +14,7 @@ sidebar_position: 1
 
 :::
 
-![git流程图](https://cdn.jsdelivr.net/gh/honjaychang/bp/dev/git.png)
+![git流程图](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211019222255.png)
 
 ## 工作流
 
@@ -274,6 +274,12 @@ rm -rf
 rimraf
 
 yarn cache clean --force
+
+
+git rm <fileName>  会将工作区的文件删除
+git rm <fileName> --cached   工作区的文件不会删除，仅删除暂存区中对应的文件
+
+
 ```
 
 

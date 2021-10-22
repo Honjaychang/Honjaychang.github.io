@@ -305,8 +305,9 @@ function fn(arr) {
 
 #### 动态规划
 
-- 时间复杂度：`O(n)`
-- 空间复杂度：`O(n)`
+> 动态规划为了找到不同子序列之间的递推关系，**是以子序列的结束点为基准的**
+
+- 时间复杂度：`O(n)`    空间复杂度：`O(n)`
 
 ```js
 /**
@@ -321,40 +322,11 @@ function fn(nums) {
     // if (sum > 0) sum += nums[i];
     // else sum = nums[i];
     sum = sum > 0 ? sum + nums[i] : nums[i]
+    // sum = Math.max(sum+nums[i], nums[i])
     res = Math.max(res, sum);
   }
   return res;
 }
-```
-
-```js
-// 待验证
-const dpMaxSubarray = (nums) => {
-  let maxSum = -Infinity;
-  let currentSum = 0;
-
-  let start = 0;
-  let end = nums.length - 1;
-  let currentIndex = 0;
-
-  nums.forEach((item, index) => {
-    currentSum += item;
-
-    if (currentSum > maxSum) {
-      maxSum = currentSum;
-      start = currentIndex;
-      end = index;
-    }
-    if (currentSum < 0) {
-      currentSum = 0;
-      currentIndex = index + 1;
-    }
-  });
-
-  return nums.slice(start, end + 1);
-};
-
-console.log(dpMaxSubarray(arr));
 ```
 
 #### 分治
@@ -394,6 +366,44 @@ function divide(nums, left, right) {
 }
 ```
 
+#### [3. 无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/)
+
+> 滑动窗口，循环去掉左边第一个元素，直到窗口中元素无重复，此时再扩大窗口
+>
+> 首先 右指针 扩张到滑动窗口不满足条件的时候暂停
+> 左指针 开始收缩窗口，让窗口满足条件后再进行扩张（右指针）
+
+```js
+function lengthOfLongestSubstring(s) {
+  let len = s.length;
+  let result = 0;
+
+  let set = new Set();
+  // 左指针用来收缩窗口
+  let left = 0;
+  // 右指针用来扩张窗口
+  let right = 0;
+
+  while (left < len) {
+    // 如果不重复，就不断扩张窗口，元素添加到set中
+    while (right < len && !set.has(s[right])) {
+      set.add(s[right]);
+      right++;
+    }
+    // 到这里说明有元素重复了，先记录子串长度，然后收缩窗口
+    result = Math.max(result, right - left);
+    // 收缩窗口
+    set.delete(s[left]);
+    left++;
+  }
+  return result;
+}
+```
+
+
+
+
+
 ## 打印螺旋矩阵
 
 
@@ -404,8 +414,32 @@ function divide(nums, left, right) {
 
 
 
+#### [215. 数组中的第K个最大元素](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/)
+
+> Top K
+
+- 排序，取第 `k` 个
+- 构造前 `k` 个最大元素小顶堆，取堆顶
 
 
+
+- 时间复杂度：`O(nlogn)`	空间复杂度：`O(logn)`
+
+```js
+let findKthLargest = function(nums, k) {
+    return nums.sort((a, b) => b - a)[k-1];
+};
+```
+
+
+
+- 从数组中取前 k 个数（ 0 到 k-1 位），构造一个小顶堆
+- 从 k 位开始遍历数组，每一个数据都和小顶堆的堆顶元素进行比较，如果小于堆顶元素，则不做任何处理，继续遍历下一元素；如果大于堆顶元素，则将这个元素替换掉堆顶元素，然后再堆化成一个小顶堆。
+- 遍历完成后，堆顶的数据就是第 K 大的数据
+
+
+
+[写给前端同学的题解，一文讲懂堆排序，解决topK问题](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/solution/xie-gei-qian-duan-tong-xue-de-ti-jie-yi-kt5p2/)
 
 
 
