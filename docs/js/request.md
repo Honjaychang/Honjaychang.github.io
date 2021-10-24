@@ -1,12 +1,12 @@
 # 网络请求
 
-## `Xhr & Fetch`
+## `XHR`
 
 ### `XMLHttpRequest`
 
-- 通过`XMLHttpRequest`向服务器发送异步请求，获得服务器返回的数据，利用`js`更新页面
+通过`XMLHttpRequest`向服务器发送异步请求，获得服务器返回的数据，利用`js`更新页面
 
-#### Get实现
+#### 实现
 
 - 创建`XMLHttpRequest`对象，也就是创建一个异步调用对象
 - 创建一个新的 HTTP 请求，并指定该 HTTP 请求的方法、URL 及验证信息
@@ -24,30 +24,13 @@ if (window.XMLHttpRequest) {
 } else {
   xhr = new ActiveXObject('Microsoft.XMLHTTP'); //兼容ie5/6
 }
-// 0
-xhr.open('GET', 'data.json', false); // 是否异步 false // 1
-xhr.onreadystatechange = function () {
-  if (xhr.readyState === 4 && xhr.status === 200) {
-    // 2 3 4
-    console.log(JSON.parse(xhr.responseText));
-    console.log(xhr.responseText);
-  } else {
-    console.log('some error happened');
-  }
-};
-xhr.send(null);
-```
+xhr.open('GET', 'data.json', false); // 是否异步 false 
 
-#### Post实现
-
-```js
-// XMLHttpRequest post 请求
-const xhr = new XMLHttpRequest();
-xhr.open('POST', '/login', true); // 是否异步 true --> 异步
 /* xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded')
  * xhr.send('status=1&flag=1')
  * POST请求方式必须设置这个请求头信息，目的是请求体中的数据转换为键值对，这样后端接收到status=1&flag=1这样的数据才知道是这是一个POST方式传来的数据
  */
+
 xhr.onreadystatechange = function () {
   if (xhr.readyState === 4 && xhr.status === 200) {
     console.log(JSON.parse(xhr.responseText));
@@ -56,11 +39,14 @@ xhr.onreadystatechange = function () {
     console.log('some error happened');
   }
 };
+/*
 const postData = {
   username: 'zhangsan',
   password: 'xxx',
 };
 xhr.send(JSON.stringify(postData));
+*/
+xhr.send(null);
 ```
 
 #### 状态码
@@ -102,7 +88,7 @@ xhr.send(null);
 
 - `Asynchronous Javascript and XML`
 - 异步`JavaScrpt`和`xml`，用于在 Web 页面中实现异步数据交互，实现页面局部刷新
-- `ajax` 基于 `XMLHttpRequest`分别执行成功和失败的回调。
+- `ajax` 基于 `XMLHttpRequest`分别执行成功和失败的回调
 
 优点：
 
@@ -121,7 +107,7 @@ xhr.send(null);
 
 - `Axios` 是一个基于 `promise` 的 `HTTP` 库，可以用在浏览器和 `node.js` 中。它本质也是对原生`XMLHttpRequest` 的封装，只不过它是 `Promise` 的实现版本，符合最新的ES规范。
 
-### `Fetch`
+## `Fetch`
 
 `Fetch API`提供了一个 `JavaScript` 接口，用于访问和操作`HTTP`管道的部分，例如请求和响应。它还提供了一个全局`fetch()`方法，该方法提供了一种简单，合理的方式来跨网络异步获取资源。
 
@@ -288,10 +274,48 @@ response.setHeader('Access-Control-Allow-Credentials', 'true');
 - 首先使用 `OPTIONS` 方法发起一个预检请求到服务器，以获知服务器是否允许该实际请求
 - 可以避免跨域请求对服务器的用户数据产生未预期的影响。
 
+在预检请求里，头信息除了有表明来源的 `Origin` 字段外，还会有一个 `Access-Control-Request-Method` 字段和 `Access-Control-Request-Headers` 字段，它们分别表明了该浏览器 `CORS` 请求用到的 `HTTP` 请求方法和指定浏览器 `CORS` 请求会额外发送的头信息字段
+
+##### 例子
+
+```js
+// Ajax 请求
+let url = 'http://www.hahaha.com/abc'
+let xhr = new XMLHttpRequest()
+xhr.open('POST', url, true)
+xhr.setRequestHeader('X-Token', 'YGJHJHGJAHSGJDHGSJGJHDGSJHS')
+xhr.setRequestHeader('X-Test', 'YGJHJHGJAHSGJDHGSJGJHDGSJHS')
+xhr.send()
+
+
+// 所以这个非简单请求在预检请求头信息中就会携带以下信息
+
+
+// 来源
+Origin: http://www.hahaha.com
+// 该CORS请求的请求方法
+Access-Control-Request-Method: POST
+// 额外发出的头信息字段
+Access-Control-Request-Headers: X-Token, X-Test
+```
+
+##### 发送cookie
+
+CORS 请求默认不发送 Cookie 和 HTTP 认证信息
+
+```js
+// 服务端设置
+Access-Control-Allow-Credentials: true
+
+// 客户端请求时配置
+xhr = new XMLHttpRequest()
+xhr.withCredentials = true
+```
 
 
 
 ::: note Ref
+
 - [跨源资源共享（CORS）](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS)
 - [跨域资源共享 CORS 详解](https://www.ruanyifeng.com/blog/2016/04/cors.html)
 
@@ -356,6 +380,7 @@ function foo(data) {
 
 - `HTTP` 通信只能由客户端发起 如果服务器有连续的状态变化，客户端只能使用“轮询”的方法获取新的信息 效率很低 浪费资源（不停连接 或 连接始终打开
 - `WebSocket` 服务器可以主动向客户端推送信息，客户端也可以主动向服务器发送信息
+- 在 `WebSocket API` 中，浏览器和服务器只需要完成一次握手，两者之间就直接可以创建持久性的连接，并进行双向数据传输
 
 ```js
 var ws = new WebSocket('wss://echo.websocket.org');

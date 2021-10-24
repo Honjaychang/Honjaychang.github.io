@@ -2,24 +2,14 @@
 
 ## 浏览器输入网址到页面渲染全过程
 
-![DNS域名解析过程1](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211022223141.png)
-
 - DNS 解析：域名解析为 IP 地址
-  - 缓存命中：浏览器缓存 => 操作系统缓存 => `LDNS` 本地区域名服务器缓存（学校机房 / `ISP`）
-  - `LDNS` => 根域名服务器   根域名服务器返回给 `LDNS` 一个所查询的主域名服务器 `gTLD` 地址
-  - `LDNS` => `gTLD` 发起请求   返回域名对应的 `Name Server` 域名服务器地址
-  - `LDNS` => `Name Server` 查询请求域名的对应IP地址  返回对应IP以及TTL
-  - `LDNS` 根据返回的TTL对IP进行缓存 并将结果返回给用户
-  - `TTL: time to live` 域名缓存的最长时间
 - TCP 连接：三次握手
 - 发送 HTTP 请求
 - 服务器处理请求 并 返回 HTTP 响应报文
 
-
-
 - 浏览器解析渲染页面：`HTML、CSS、JS`文件
 - `DOM Tree + CSSOM => Render Tree => JS => Render Tree`
-- 连接结束
+- 连接结束：四次挥手
 
 :::note Ref
 
@@ -27,9 +17,15 @@
 - [经典面试题：从 URL 输入到页面展现到底发生什么？](https://blog.fundebug.com/2019/02/28/what-happens-from-url-to-webpage/)
 - [五月的仓颉 DNS域名解析过程](https://www.cnblogs.com/xrq730/p/4931418.html)
 
+isboyjc
+
+- [「一道面试题」输入URL到渲染全面梳理上-网络通信篇](https://juejin.cn/post/6844904132071915527)
+- [「一道面试题」输入URL到渲染全面梳理中-页面渲染篇](https://juejin.cn/post/6844904134307495943)
+- [「一道面试题」输入URL到渲染全面梳理下-总结篇](https://juejin.cn/post/6844904155077672968)
+
 :::
 
-### 页面渲染
+## 页面渲染
 
 :::note Ref
 
@@ -39,9 +35,19 @@
 
 :::
 
+### 渲染进程
+
+- 即通常所说的浏览器内核(`Renderer`进程，内部是多线程)
+- 每个Tab页面都有一个渲染进程，互不影响
+- 主要作用为页面渲染，脚本执行，事件处理等
+
+![image-20211024104939801](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211024104939.png)
+
+### 渲染流程
+
 ![Webkit渲染流程图](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/webkitflow.png)
 
-#### 构建DOM树
+### 解析HTML构建DOM树
 
 - 根据 `HTML` 代码生成 `DOM Tree`
 
@@ -49,7 +55,7 @@
 Bytes(字节) -> Characters(字符) -> Tokens(词) -> Nodes(节点) -> DOM(DOM树)
 ```
 
-#### 构建CSSOM树
+### 解析CSS构建CSSOM树
 
 - 根据 `CSS` 代码生成 `CSSOM`
   - `css` 不会阻塞`DOM`树的解析
@@ -59,41 +65,90 @@ Bytes(字节) -> Characters(字符) -> Tokens(词) -> Nodes(节点) -> DOM(DOM�
 Bytes(字节) -> Characters(字符) -> Tokens(词) -> Nodes(节点) -> CSSOM(CSSOM树)
 ```
 
+### 解析JS脚本
+
+- 遇到正常 `<script>` 则暂停渲染，优先加载并执行`JS`代码，完成再继续
+
+#### `async`
+
+- `<script src="a.js" async></script>`
+- 异步执行，并行下载，下载过程不阻碍HTML解析
+- 下载完成，立即执行。会 **暂停 HTML 解析**
+- `async` 不确保执行顺序，优先执行先下载完成的。一定在 `onload` 前，但不确定在 `DOMContentLoaded` 事件的前或后
+- 当同时存在`defer async`的时候 `defer`将会失效
+
+#### `defer`
+
+- `<script src="a.js" defer></script>`
+- 延迟执行，并行下载，下载过程不阻碍HTML解析
+- 等到 DOM 加载生成后，再执行脚本（即触发 `DOMContentLoaded` 事件前执行
+
+> [图源](https://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html)
+
+### ![image-20211013215208374](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211013215208.png)构建渲染树
+
+渲染树 `Render Tree` 由 `DOM树`、`CSSOM树` 合并而成，并且无先后条件，会有所交叉，并行构建。因此会形成一边加载，一边解析，一边渲染的工作现象
+
+- 浏览器首先会从DOM树的根节点开始遍历每个**可见节点**
+- 对于每个可见节点，找到其对应的的 CSSOM 规则并应用它们
+- 输出可见节点，连同其内容和计算的样式
+
+### 布局
+
+计算它们在设备 视口 内的确切位置和大小
+
+此阶段如果元素的内容、结构、位置或尺寸发生了变化，需要重新计算样式和渲染树
+
+### 绘制
+
+经由前几步我们知道了哪些节点可见、它们的计算样式以及几何信息，我们将这些信息传递给最后一个阶段将渲染树中的每个节点转换成屏幕上的实际像素，也就是俗称的 `绘制` 或 `栅格化`
+
+#### 回流 重绘
+
+- 回流`reflow`：`render`树中一部分或全部元素需要改变尺寸、布局、或着需要隐藏而需要重新构建
+- 重绘`repaint`：`render`树中一部分元素改变，而不影响布局的，只影响外观的，比如颜色
+- 回流必将引起重绘
+
+### 合成
+
+图成的概念 未深入
+
+### 总结
+
+- 调用 `GUI` 渲染线程 解析 `HTML CSS `
+- 调用 `JS` 引擎 解析 `JS`
+
+
+
+- 解析代码：解析 `HTML` 构建 `DOM` 树 解析 `CSS` 构建 `CSSOM` 树
+  - 解析过程中碰到 `js` 代码会停止解析去请求
+- 对象合成：根据 `DOM CSSOM` 生成 `Render Tree`
+- 布局：计算出 `Render Tree` 的布局
+- 绘制：将 `Render Tree` 绘制到屏幕
+
+
+
+- `CSS` 的加载与解析不会阻塞 `HTML` 的解析，他们是并行的。
+  - 但会阻塞渲染树 `RenderTree` 的生成，也会阻塞界面的渲染！
+- `CSS` 不会阻塞 `DOM` 的解析，但会阻塞 `DOM` 渲染。
+- `JS` 会阻塞 `DOM` 的解析和渲染
+  - 浏览器需要等`css|js`都解析完成之后才会执行渲染
+- 媒体资源 (如:图片音视频等) 的加载不会阻塞HTML的解析 所以他们可以并行加载
+
+### 渲染优化
+
 > 为什么要将 `CSS <link href="#">` 放在 head 中
 
 - 在`DOM`树生成前就将`CSS`规则加载完
 - 在`DOM`生成完成后直接和所有的`CSS`规则整合 => 一步渲染完成 `Render Tree`
 
-#### 解析JS脚本
-
-- 遇到 `<script>` 则暂停渲染，优先加载并执行`JS`代码，完成再继续
-
 > 为何建议将`JS`放在`body`最后
 
 - 不放在最后的话，`JS` 代码会阻塞 `render tree` 的渲染，可能会导致页面渲染时间比较长
 
-##### `defer`
-
-- `<script src="a.js" defer></script>`
-- `defer`的作用是延迟脚本的执行，等到 DOM 加载生成后，再执行脚本
-  - 该脚本将在文档完成解析后，触发 `DOMContentLoaded` 事件前执行
-- 浏览器发现带有`defer`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本，等待网页解析完成再去执行脚本
-
-##### `async`
-
-- `<script src="a.js" async></script>`
-- `async`的作用是使用另一个进程下载脚本，下载时不会阻塞渲染
-- 浏览器发现带有`async`属性的`script`会继续往下解析 HTML 网页，同时并行下载`script`的外部脚本。当脚本下载完成会 **暂停 HTML 解析**，先去执行脚本，执行完再来解析 HTML。 这与`defer`有点差异
-- `async`会无视脚本顺序，优先执行先下载完成的
-- 当同时存在`defer async`的时候 `defer`将会失效
-
-> [图源](https://www.growingwiththeweb.com/2014/02/async-vs-defer-attributes.html)
-
-![image-20211013215208374](https://cdn.jsdelivr.net/gh/honjaychang/bp/fe/20211013215208.png)
-
 > `window.onload` 和 `DOMContentLoaded`的区别
 
-- 建议使用`document.addEventListener('DOMContentLoaded', fn(){...})`
+- 建议使用`document.addEventListener('DOMContentLoaded', callback)`
 
 ```js
 window.addEventListener('load', function () {
@@ -104,19 +159,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // DOM 渲染完成即可执行，此时图片、视频可能还没有加载完
 });
 ```
-
-#### 构建渲染树
-
-- 将 `DOM Tree` 和 `CSSOM` 整合形成 `Render Tree`
-- 根据 `Render Tree` 渲染页面
-
-- 直至把 `Render Tree` 渲染完成
-
-#### 回流 重绘
-
-- 回流`reflow`：`render`树中一部分或全部元素需要改变尺寸、布局、或着需要隐藏而需要重新构建
-- 重绘`repaint`：`render`树中一部分元素改变，而不影响布局的，只影响外观的，比如颜色
-- 回流必将引起重绘
 
 > 优化方案
 
@@ -165,40 +207,6 @@ function animate() {
 }
 animate()
 ```
-
-#### 总结
-
-- 调用 `GUI` 渲染线程 解析 `HTML CSS `
-- 调用 `JS` 引擎 解析 `JS`
-
-
-
-- 解析代码：解析 `HTML` 构建 `DOM` 树 解析 `CSS` 构建 `CSSOM` 树
-  - 解析过程中碰到 `js` 代码会停止解析去请求
-- 对象合成：根据 `DOM CSSOM` 生成 `Render Tree`
-- 布局：计算出 `Render Tree` 的布局
-- 绘制：将 `Render Tree` 绘制到屏幕
-
-
-
-- `CSS` 的加载与解析不会阻塞 `HTML` 的解析，他们是并行的。
-  - 但会阻塞渲染树 `RenderTree` 的生成，也会阻塞界面的渲染！
-- `CSS` 不会阻塞 `DOM` 的解析，但会阻塞 `DOM` 渲染。
-- `JS` 会阻塞 `DOM` 的解析和渲染
-  - 浏览器需要等`css|js`都解析完成之后才会执行渲染
-- 媒体资源 (如:图片音视频等) 的加载不会阻塞HTML的解析 所以他们可以并行加载
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
